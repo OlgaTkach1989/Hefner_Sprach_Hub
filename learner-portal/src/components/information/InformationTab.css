@@ -1,0 +1,109 @@
+.information-tab {
+  color: var(--text-primary);
+  display: grid;
+  gap: 1rem;
+}
+
+.information-tab__buttons {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.information-tab__buttons button {
+  align-items: center;
+  background: rgba(19, 82, 140, 0.08);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 999px;
+  color: var(--brand-teal);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.95rem;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.72rem 1rem;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  width: 100%;
+}
+
+.information-tab__buttons button.active,
+.information-tab__buttons button:hover {
+  background: linear-gradient(180deg, var(--brand-teal) 0%, var(--brand-deep) 100%);
+  border-color: transparent;
+  color: #f7f2e9;
+}
+
+.information-tab__content {
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 20px;
+  display: grid;
+  gap: 0.95rem;
+  padding: 1.1rem;
+}
+
+.information-tab__content h2,
+.information-tab__content h3,
+.information-tab__content h4 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0;
+}
+
+.information-tab__content h2 {
+  font-size: 1.6rem;
+}
+
+.information-tab__content h3 {
+  font-size: 1.14rem;
+}
+
+.information-tab__content p,
+.information-tab__content ul,
+.information-tab__content li {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.information-tab__content ul {
+  display: grid;
+  gap: 0.6rem;
+  padding-left: 1.15rem;
+}
+
+.information-tab__tutorial-card {
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 18px;
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.information-tab__tutorial-subtitle {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .information-tab__buttons button {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .information-tab__buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .information-tab__content {
+    border-radius: 18px;
+    padding: 0.95rem;
+  }
+}

@@ -1,0 +1,198 @@
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.controlGrid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: minmax(0, 320px);
+}
+
+.policyPanel {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  background: rgba(22, 74, 97, 0.06);
+  border: 1px solid rgba(22, 74, 97, 0.12);
+}
+
+.policyHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.policyHeader > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.policyHeader strong {
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.policyText {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.policyRoles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.form,
+.editPanel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 20px;
+  background: rgba(22, 74, 97, 0.06);
+  border: 1px solid rgba(22, 74, 97, 0.12);
+}
+
+.formGrid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.field,
+.checkboxField {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.checkboxWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 49px;
+  padding: 0.84rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-input);
+  color: var(--text-main);
+}
+
+.checkboxWrap span {
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+.formActions,
+.inlineLinks,
+.roleCell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.helperText,
+.rolePill {
+  white-space: nowrap;
+}
+
+.helperText {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.successText {
+  margin: 0;
+  color: #24663b;
+  font-weight: 600;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  appearance: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 0.74rem 0.98rem;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.dangerButton:hover {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.dangerButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+}
+
+.primaryButton {
+  background: linear-gradient(180deg, rgba(24, 61, 80, 0.98) 0%, rgba(41, 84, 107, 0.98) 100%);
+  border: 1px solid rgba(24, 61, 80, 0.2);
+  box-shadow: 0 14px 24px rgba(11, 52, 90, 0.14);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(22, 74, 97, 0.16);
+  color: var(--text-main);
+}
+
+.dangerButton {
+  background: #fff0ef;
+  border: 1px solid #f2c2bd;
+  color: #9b2823;
+}
+
+@media (max-width: 1180px) {
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .controlGrid,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .policyHeader {
+    flex-direction: column;
+  }
+
+  .headerActions,
+  .formActions,
+  .inlineLinks {
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .dangerButton {
+    width: 100%;
+  }
+
+  .checkboxWrap {
+    align-items: flex-start;
+  }
+}

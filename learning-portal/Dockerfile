@@ -1,0 +1,30 @@
+FROM node:20-alpine AS build
+WORKDIR /app
+
+ARG VITE_ONLINE_API_BASE_URL=http://localhost:1212/api/online
+ARG VITE_ONLINE_STUDENT_URL=http://localhost:5180/login
+ARG VITE_PUBLIC_SITE_URL=http://localhost:5182
+ARG VITE_PUBLIC_BASE_PATH=/
+ARG VITE_GOOGLE_CLIENT_ID=
+
+ENV VITE_ONLINE_API_BASE_URL=$VITE_ONLINE_API_BASE_URL
+ENV VITE_ONLINE_STUDENT_URL=$VITE_ONLINE_STUDENT_URL
+ENV VITE_PUBLIC_SITE_URL=$VITE_PUBLIC_SITE_URL
+ENV VITE_PUBLIC_BASE_PATH=$VITE_PUBLIC_BASE_PATH
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
+
+COPY package.json package-lock.json* ./
+RUN [ -f package-lock.json ] && npm ci || npm install
+
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+LABEL org.opencontainers.image.authors="Serhii TK" \
+      org.opencontainers.image.vendor="Serhii TK" \
+      org.opencontainers.image.title="Learning Hub Portal" \
+      org.opencontainers.image.licenses="LicenseRef-Proprietary"
+COPY --from=build /app/dist /usr/share/nginx/html
+RUN printf 'server {\n  listen 80;\n  server_name _;\n  root /usr/share/nginx/html;\n  index index.html;\n  location / { try_files $uri $uri/ /index.html; }\n}\n' > /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

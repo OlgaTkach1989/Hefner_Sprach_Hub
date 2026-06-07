@@ -1,0 +1,499 @@
+.training-hub {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.training-hub--loading {
+  align-items: center;
+  color: var(--text-secondary);
+  display: grid;
+  font-size: 1rem;
+  min-height: 180px;
+  place-items: center;
+}
+
+.training-hub__hero,
+.training-hub__detail-header,
+.training-hub__section-headline,
+.training-hub__hint-header {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.training-hub__eyebrow,
+.training-hub__stat span,
+.training-hub__card-label,
+.training-hub__list-label,
+.training-hub__workflow-step-number {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.training-hub__hero h3,
+.training-hub__workflow h4,
+.training-hub__list h4,
+.training-hub__detail h4,
+.training-hub__section-title,
+.training-hub__section-headline h5,
+.training-hub__ai-panel h5,
+.training-hub__follow-ups h6,
+.training-hub__quiz h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0;
+}
+
+.training-hub__lead,
+.training-hub__workflow-copy p,
+.training-hub__list-head p,
+.training-hub__detail-copy p,
+.training-hub__panel-copy,
+.training-hub__body-copy,
+.training-hub__submission p,
+.training-hub__submission span,
+.training-hub__assistant-detail p,
+.training-hub__quiz-result,
+.training-hub__quiz-explanation,
+.training-hub__escalation,
+.training-hub__upload-hint,
+.training-hub__card > span:last-child,
+.training-hub__hint span,
+.training-hub__message p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.training-hub__refresh,
+.training-hub__primary,
+.training-hub__secondary,
+.training-hub__reference-chip,
+.training-hub__citation {
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.training-hub__refresh,
+.training-hub__secondary,
+.training-hub__reference-chip {
+  background: rgba(19, 82, 140, 0.08);
+  color: var(--brand-teal);
+}
+
+.training-hub__refresh,
+.training-hub__primary,
+.training-hub__secondary {
+  font-weight: 700;
+  min-height: 42px;
+  padding: 0.78rem 1.05rem;
+}
+
+.training-hub__primary {
+  background: linear-gradient(180deg, var(--brand-teal) 0%, var(--brand-deep) 100%);
+  color: #f7f2e9;
+}
+
+.training-hub__summary,
+.training-hub__workflow-steps,
+.training-hub__summary-cards,
+.training-hub__lab-insights {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.training-hub__summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.training-hub__workflow-steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.training-hub__stat,
+.training-hub__workflow,
+.training-hub__list,
+.training-hub__detail-card,
+.training-hub__body,
+.training-hub__callout,
+.training-hub__upload,
+.training-hub__history,
+.training-hub__ai-panel,
+.training-hub__hint,
+.training-hub__submission,
+.training-hub__citation,
+.training-hub__message,
+.training-hub__quiz-question,
+.training-hub__quiz-option,
+.training-hub__summary-cards article,
+.training-hub__lab-insight,
+.training-hub__test-item,
+.training-hub__card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(116, 145, 174, 0.22);
+  border-radius: 20px;
+}
+
+.training-hub__stat,
+.training-hub__workflow,
+.training-hub__list,
+.training-hub__detail-card,
+.training-hub__upload,
+.training-hub__history,
+.training-hub__ai-panel,
+.training-hub__summary-cards article,
+.training-hub__lab-insight,
+.training-hub__hint,
+.training-hub__submission,
+.training-hub__quiz-question,
+.training-hub__test-item,
+.training-hub__message,
+.training-hub__body,
+.training-hub__callout,
+.training-hub__card {
+  padding: 1rem;
+}
+
+.training-hub__stat strong {
+  color: var(--text-primary);
+  font-size: 1.65rem;
+}
+
+.training-hub__workflow {
+  gap: 1rem;
+}
+
+.training-hub__workflow-copy {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.training-hub__workflow-step {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(116, 145, 174, 0.2);
+  border-radius: 18px;
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.95rem;
+}
+
+.training-hub__workflow-step strong {
+  color: var(--text-primary);
+}
+
+.training-hub__workflow-step p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.training-hub__error,
+.training-hub__warning {
+  color: #9d2a3a;
+  margin: 0;
+}
+
+.training-hub__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+}
+
+.training-hub__list {
+  display: grid;
+  gap: 0.9rem;
+  max-height: calc(100vh - 10rem);
+  overflow: hidden;
+  position: sticky;
+  top: 1rem;
+}
+
+.training-hub__list-head,
+.training-hub__detail-copy,
+.training-hub__content-panel,
+.training-hub__follow-ups,
+.training-hub__quiz,
+.training-hub__hint-header > div {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.training-hub__list-scroll,
+.training-hub__list-group,
+.training-hub__ai-feed,
+.training-hub__history {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.training-hub__list-scroll {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.training-hub__list-label {
+  margin-bottom: 0.1rem;
+}
+
+.training-hub__card {
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 0.45rem;
+  text-align: left;
+}
+
+.training-hub__card.is-active {
+  border-color: rgba(215, 182, 104, 0.48);
+  box-shadow: 0 0 0 2px rgba(215, 182, 104, 0.14);
+}
+
+.training-hub__card strong,
+.training-hub__summary-cards strong,
+.training-hub__lab-insight strong,
+.training-hub__citation strong,
+.training-hub__message-role,
+.training-hub__upload-label {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.training-hub__card-meta,
+.training-hub__reference-list,
+.training-hub__submission-meta,
+.training-hub__submission-links,
+.training-hub__highlight-list,
+.training-hub__citations,
+.training-hub__quiz-options,
+.training-hub__ai-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.training-hub__card-meta span,
+.training-hub__meta span {
+  background: rgba(19, 82, 140, 0.06);
+  border: 1px solid rgba(116, 145, 174, 0.16);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  padding: 0.48rem 0.8rem;
+}
+
+.training-hub__detail {
+  min-width: 0;
+}
+
+.training-hub__detail-card,
+.training-hub__content-panel,
+.training-hub__ai-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.training-hub__detail-actions {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 190px;
+}
+
+.training-hub__callout {
+  display: grid;
+  gap: 0.45rem;
+  border-color: rgba(215, 182, 104, 0.3);
+  background: rgba(247, 242, 233, 0.72);
+}
+
+.training-hub__callout strong {
+  color: var(--text-primary);
+}
+
+.training-hub__detail-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  align-items: start;
+}
+
+.training-hub__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.training-hub__body {
+  gap: 0.85rem;
+}
+
+.training-hub__section-title {
+  font-size: 1rem;
+}
+
+.training-hub__summary-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.training-hub__summary-cards article,
+.training-hub__lab-insight,
+.training-hub__test-item,
+.training-hub__submission,
+.training-hub__message,
+.training-hub__quiz-question {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.training-hub__summary-cards span,
+.training-hub__lab-insight span,
+.training-hub__test-item span,
+.training-hub__section-headline span {
+  color: var(--text-muted);
+}
+
+.training-hub__lab-insights {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.training-hub__upload-input,
+.training-hub__textarea {
+  color: var(--text-primary);
+}
+
+.training-hub__upload-input {
+  max-width: 100%;
+}
+
+.training-hub__submit-button {
+  justify-content: center;
+}
+
+.training-hub__reference-chip,
+.training-hub__citation {
+  padding: 0.82rem 1rem;
+  text-align: left;
+}
+
+.training-hub__citation {
+  border-radius: 16px;
+  display: grid;
+  gap: 0.28rem;
+  width: 100%;
+}
+
+.training-hub__textarea {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(116, 145, 174, 0.22);
+  border-radius: 18px;
+  font: inherit;
+  min-height: 120px;
+  padding: 0.95rem 1rem;
+  resize: vertical;
+}
+
+.training-hub__ai-feed {
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.training-hub__message--assistant {
+  border-left: 4px solid rgba(215, 182, 104, 0.6);
+}
+
+.training-hub__message--user {
+  border-left: 4px solid rgba(22, 74, 97, 0.7);
+}
+
+.training-hub__quiz-option {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.training-hub__quiz-option.is-correct {
+  border-color: rgba(61, 107, 87, 0.45);
+}
+
+.training-hub__quiz-option.is-wrong {
+  border-color: rgba(157, 42, 58, 0.34);
+}
+
+.training-hub__feedback {
+  background: rgba(247, 242, 233, 0.82);
+  border-left: 3px solid rgba(215, 182, 104, 0.72);
+  color: var(--text-secondary);
+  margin: 0;
+  padding: 0.9rem 1rem;
+}
+
+.training-hub__highlight-chip {
+  background: rgba(215, 182, 104, 0.12);
+  border: 1px solid rgba(215, 182, 104, 0.3);
+  border-radius: 999px;
+  color: var(--text-primary);
+  display: inline-flex;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0.35rem 0.75rem;
+}
+
+.training-hub__hint.is-recommended {
+  border-color: rgba(215, 182, 104, 0.48);
+  box-shadow: 0 0 0 2px rgba(215, 182, 104, 0.14);
+}
+
+@media (max-width: 1240px) {
+  .training-hub__detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .training-hub__ai-feed {
+    max-height: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .training-hub__summary,
+  .training-hub__workflow-steps,
+  .training-hub__grid,
+  .training-hub__summary-cards,
+  .training-hub__lab-insights {
+    grid-template-columns: 1fr;
+  }
+
+  .training-hub__hero,
+  .training-hub__detail-header,
+  .training-hub__section-headline,
+  .training-hub__hint-header {
+    flex-direction: column;
+  }
+
+  .training-hub__list {
+    max-height: none;
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .training-hub__card-meta,
+  .training-hub__meta,
+  .training-hub__reference-list,
+  .training-hub__submission-meta,
+  .training-hub__submission-links,
+  .training-hub__highlight-list,
+  .training-hub__citations,
+  .training-hub__quiz-options,
+  .training-hub__ai-toolbar {
+    flex-direction: column;
+  }
+}

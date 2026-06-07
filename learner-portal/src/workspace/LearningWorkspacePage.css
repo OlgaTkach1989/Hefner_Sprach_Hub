@@ -1,0 +1,620 @@
+.learning-workspace {
+  display: grid;
+  gap: 1rem;
+  padding: 0 clamp(0.8rem, 1.6vw, 1.3rem) 1.3rem;
+  width: 100%;
+}
+
+.learning-workspace--loading {
+  align-items: center;
+  color: var(--text-secondary);
+  display: grid;
+  font-size: 1rem;
+  min-height: calc(100vh - 122px);
+  place-items: center;
+}
+
+.learning-workspace__hero {
+  background:
+    linear-gradient(135deg, rgba(20, 52, 70, 0.96) 0%, rgba(38, 76, 100, 0.92) 54%, rgba(62, 103, 129, 0.95) 100%),
+    radial-gradient(circle at top right, rgba(215, 182, 104, 0.16), transparent 26%);
+  border-radius: 28px;
+  box-shadow: var(--page-shadow);
+  color: #f7f2e9;
+  display: flex;
+  gap: 1.2rem;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 1.35rem 1.4rem;
+  position: relative;
+}
+
+.learning-workspace__hero::after {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(255, 255, 255, 0.12), transparent 18%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 42%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.learning-workspace__hero-copy,
+.learning-workspace__hero-controls {
+  position: relative;
+  z-index: 1;
+}
+
+.learning-workspace__hero-copy {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 760px;
+}
+
+.learning-workspace__eyebrow,
+.learning-workspace__rail-label,
+.learning-workspace__hub-label {
+  color: rgba(244, 230, 197, 0.8);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.learning-workspace__hero h1 {
+  font-size: clamp(1.9rem, 3vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.learning-workspace__hero-subtitle,
+.learning-workspace__hero-warning,
+.learning-workspace__stage-subtitle,
+.learning-workspace__context-card p,
+.learning-workspace__context-card span,
+.learning-workspace__context-card small,
+.learning-workspace__note-card span,
+.learning-workspace__note-card strong,
+.learning-workspace__module-card small,
+.learning-workspace__program-card small,
+.learning-workspace__step-link small {
+  color: rgba(247, 242, 233, 0.9);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.learning-workspace__hero-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.learning-workspace__hero-metrics span,
+.learning-workspace__program-chip span,
+.learning-workspace__badge,
+.learning-workspace__context-tags span,
+.learning-workspace__resource-chip {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #f7f2e9;
+  display: inline-flex;
+  font-size: 0.84rem;
+  font-weight: 700;
+  min-height: 32px;
+  padding: 0.38rem 0.8rem;
+}
+
+.learning-workspace__hero-controls {
+  display: grid;
+  gap: 0.65rem;
+  justify-items: end;
+}
+
+.learning-workspace__program-chip {
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  color: #f7f2e9;
+  cursor: pointer;
+  display: grid;
+  gap: 0.25rem;
+  min-width: min(360px, 100%);
+  padding: 0.8rem 0.95rem;
+  text-align: left;
+}
+
+.learning-workspace__program-chip.is-active {
+  background: linear-gradient(180deg, rgba(215, 182, 104, 0.2), rgba(255, 255, 255, 0.1));
+  border-color: rgba(215, 182, 104, 0.45);
+}
+
+.learning-workspace__program-chip strong,
+.learning-workspace__program-card span,
+.learning-workspace__module-button span,
+.learning-workspace__step-link span,
+.learning-workspace__stage-header h2,
+.learning-workspace__context-card strong,
+.learning-workspace__context-card p,
+.learning-workspace__context-card a,
+.learning-workspace__owner-card strong,
+.learning-workspace__owner-card span,
+.learning-workspace__owner-card small,
+.learning-workspace__note-card strong {
+  color: #f7f2e9;
+  margin: 0;
+}
+
+.learning-workspace__shell {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(280px, 350px) minmax(0, 1fr) minmax(290px, 330px);
+  align-items: start;
+}
+
+.learning-workspace__rail,
+.learning-workspace__stage-card {
+  min-width: 0;
+}
+
+.learning-workspace__rail {
+  display: grid;
+  gap: 1rem;
+  position: sticky;
+  top: 1rem;
+}
+
+.learning-workspace__rail-card,
+.learning-workspace__stage-card,
+.learning-workspace__context-card,
+.learning-workspace__module-card,
+.learning-workspace__owner-card,
+.learning-workspace__formula-card,
+.learning-workspace__scenario-card,
+.learning-workspace__notebook-card,
+.learning-workspace__quiz-card,
+.learning-workspace__note-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 20px 40px rgba(16, 41, 58, 0.08);
+}
+
+.learning-workspace__rail-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.learning-workspace__rail-list,
+.learning-workspace__module-list,
+.learning-workspace__step-list,
+.learning-workspace__owner-list,
+.learning-workspace__step-body,
+.learning-workspace__navigation,
+.learning-workspace__resource-row,
+.learning-workspace__note-grid,
+.learning-workspace__context-tags {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.learning-workspace__module-list {
+  gap: 0.9rem;
+}
+
+.learning-workspace__program-card,
+.learning-workspace__module-button,
+.learning-workspace__step-link,
+.learning-workspace__nav-button,
+.learning-workspace__support-link,
+.learning-workspace__resource-chip {
+  font: inherit;
+}
+
+.learning-workspace__program-card,
+.learning-workspace__module-card,
+.learning-workspace__step-link,
+.learning-workspace__context-card,
+.learning-workspace__owner-card,
+.learning-workspace__nav-button,
+.learning-workspace__resource-chip {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.learning-workspace__program-card {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 18px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  text-align: left;
+}
+
+.learning-workspace__program-card.is-active {
+  border-color: rgba(215, 182, 104, 0.48);
+  box-shadow: 0 0 0 2px rgba(215, 182, 104, 0.12);
+}
+
+.learning-workspace__program-card span,
+.learning-workspace__program-card strong,
+.learning-workspace__program-card small,
+.learning-workspace__module-button span,
+.learning-workspace__module-button strong,
+.learning-workspace__module-button small,
+.learning-workspace__step-link span,
+.learning-workspace__step-link small {
+  color: var(--text-primary);
+}
+
+.learning-workspace__module-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.learning-workspace__module-card.is-active {
+  border-color: rgba(215, 182, 104, 0.45);
+  box-shadow: 0 0 0 2px rgba(215, 182, 104, 0.1);
+}
+
+.learning-workspace__module-button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 0.3rem;
+  text-align: left;
+}
+
+.learning-workspace__step-link {
+  background: rgba(247, 250, 253, 0.92);
+  border: 1px solid rgba(116, 145, 174, 0.14);
+  border-radius: 14px;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+}
+
+.learning-workspace__step-link.is-active {
+  border-color: rgba(22, 74, 97, 0.34);
+  box-shadow: inset 3px 0 0 var(--brand-deep);
+}
+
+.learning-workspace__stage {
+  min-width: 0;
+}
+
+.learning-workspace__stage-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem;
+}
+
+.learning-workspace__stage-header {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.learning-workspace__badge-stack {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: end;
+}
+
+.learning-workspace__badge {
+  border-color: rgba(116, 145, 174, 0.18);
+  color: var(--text-primary);
+}
+
+.learning-workspace__badge--video,
+.learning-workspace__badge--formula,
+.learning-workspace__badge--scenario,
+.learning-workspace__badge--notebook,
+.learning-workspace__badge--ai_quiz {
+  background: rgba(22, 74, 97, 0.08);
+  color: var(--brand-deep);
+}
+
+.learning-workspace__badge--available {
+  background: rgba(22, 74, 97, 0.08);
+  color: var(--brand-deep);
+}
+
+.learning-workspace__badge--in_progress {
+  background: rgba(215, 182, 104, 0.14);
+  color: #7e5d14;
+}
+
+.learning-workspace__badge--completed {
+  background: rgba(61, 107, 87, 0.14);
+  color: #2d6048;
+}
+
+.learning-workspace__badge--locked {
+  background: rgba(157, 42, 58, 0.1);
+  color: #8d2634;
+}
+
+.learning-workspace__badge--muted {
+  background: rgba(116, 145, 174, 0.08);
+  color: var(--text-secondary);
+}
+
+.learning-workspace__stage-subtitle {
+  color: var(--text-secondary);
+  margin-top: 0.35rem;
+  max-width: 70ch;
+}
+
+.learning-workspace__stage-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(290px, 0.8fr);
+}
+
+.learning-workspace__content-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.learning-workspace__step-body {
+  gap: 0.85rem;
+}
+
+.learning-workspace__media-shell {
+  background: linear-gradient(180deg, rgba(20, 52, 70, 0.94), rgba(38, 76, 100, 0.9));
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.learning-workspace__video {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.learning-workspace__formula-card,
+.learning-workspace__scenario-card,
+.learning-workspace__notebook-card,
+.learning-workspace__quiz-card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.learning-workspace__formula-label {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.learning-workspace__formula {
+  background: rgba(247, 242, 233, 0.94);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 18px;
+  color: var(--brand-deep);
+  font-size: 1.05rem;
+  overflow-x: auto;
+  padding: 1rem 1.1rem;
+}
+
+.learning-workspace__callout {
+  background: rgba(247, 242, 233, 0.7);
+  border-left: 3px solid rgba(215, 182, 104, 0.72);
+  border-radius: 0 16px 16px 0;
+  color: var(--text-secondary);
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem 1rem;
+}
+
+.learning-workspace__scenario-card h3,
+.learning-workspace__notebook-card h3,
+.learning-workspace__quiz-card h3 {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.learning-workspace__scenario-card p,
+.learning-workspace__notebook-card p,
+.learning-workspace__quiz-card p,
+.learning-workspace__callout p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.learning-workspace__checklist {
+  color: var(--text-secondary);
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.learning-workspace__note-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.learning-workspace__note-card {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.learning-workspace__note-card span {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.learning-workspace__note-card strong {
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.learning-workspace__resource-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.learning-workspace__resource-chip {
+  color: var(--brand-deep);
+  text-decoration: none;
+}
+
+.learning-workspace__navigation {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.learning-workspace__nav-button {
+  background: rgba(22, 74, 97, 0.08);
+  border: 1px solid rgba(22, 74, 97, 0.16);
+  border-radius: 999px;
+  color: var(--brand-deep);
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+}
+
+.learning-workspace__nav-button--primary {
+  background: linear-gradient(180deg, var(--brand-teal) 0%, var(--brand-deep) 100%);
+  color: #f7f2e9;
+}
+
+.learning-workspace__nav-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.learning-workspace__hub-host {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.learning-workspace__context-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.learning-workspace__context-card {
+  color: var(--text-primary);
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.learning-workspace__context-card .learning-workspace__rail-label {
+  color: var(--text-muted);
+}
+
+.learning-workspace__context-card strong,
+.learning-workspace__context-card p,
+.learning-workspace__context-card span,
+.learning-workspace__owner-card strong,
+.learning-workspace__owner-card span,
+.learning-workspace__owner-card small,
+.learning-workspace__support-link {
+  color: var(--text-primary);
+}
+
+.learning-workspace__context-tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.learning-workspace__owner-list {
+  gap: 0.7rem;
+}
+
+.learning-workspace__owner-card {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.learning-workspace__owner-card strong {
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  text-transform: capitalize;
+}
+
+.learning-workspace__support-link {
+  color: var(--brand-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 1200px) {
+  .learning-workspace__shell,
+  .learning-workspace__stage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-workspace__rail {
+    position: static;
+  }
+}
+
+@media (max-width: 900px) {
+  .learning-workspace__hero {
+    flex-direction: column;
+  }
+
+  .learning-workspace__hero-controls {
+    justify-items: stretch;
+  }
+
+  .learning-workspace__program-chip {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .learning-workspace {
+    padding: 0 0.75rem 0.9rem;
+  }
+
+  .learning-workspace__hero,
+  .learning-workspace__stage-card,
+  .learning-workspace__rail-card,
+  .learning-workspace__context-card {
+    border-radius: 20px;
+  }
+
+  .learning-workspace__stage-header {
+    flex-direction: column;
+  }
+
+  .learning-workspace__badge-stack {
+    justify-items: start;
+  }
+
+  .learning-workspace__note-grid,
+  .learning-workspace__navigation {
+    grid-template-columns: 1fr;
+  }
+}

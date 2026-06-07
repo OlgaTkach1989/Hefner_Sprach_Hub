@@ -1,0 +1,26 @@
+<svg width="46" height="44" viewBox="0 0 46 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="23" cy="22" r="20" fill="url(#paint0_linear_2026_1)" />
+  <circle cx="23" cy="22" r="19" stroke="url(#paint1_linear_2026_1)" stroke-width="2" />
+  <text
+    x="23"
+    y="27"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="15.5"
+    font-weight="700"
+    letter-spacing="-1.2"
+    fill="#FFF8EE"
+  >
+    LH
+  </text>
+  <defs>
+    <linearGradient id="paint0_linear_2026_1" x1="9" y1="5" x2="36" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0381A9" />
+      <stop offset="1" stop-color="#013444" />
+    </linearGradient>
+    <linearGradient id="paint1_linear_2026_1" x1="10" y1="6" x2="37" y2="39" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7C66A" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#D5E5F7" stop-opacity="0.55" />
+    </linearGradient>
+  </defs>
+</svg>

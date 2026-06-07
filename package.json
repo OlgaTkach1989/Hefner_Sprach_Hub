@@ -1,0 +1,35 @@
+{
+  "name": "learning-hub",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Monorepo entrypoint for the Learning Hub backend and frontend apps.",
+  "author": "Serhii TK",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "npm run build:portal && npm run build:learner && npm run build:instructor && npm run build:admin",
+    "build:portal": "npm --prefix learning-portal run build",
+    "build:learner": "npm --prefix learner-portal run build",
+    "build:instructor": "npm --prefix instructor-workspace run build",
+    "build:admin": "npm --prefix admin-console run build",
+    "typecheck": "npm run typecheck:portal && npm run typecheck:learner && npm run typecheck:instructor && npm run typecheck:admin",
+    "typecheck:portal": "npm --prefix learning-portal run typecheck",
+    "typecheck:learner": "npm --prefix learner-portal run typecheck",
+    "typecheck:instructor": "npm --prefix instructor-workspace run typecheck",
+    "typecheck:admin": "npm --prefix admin-console run typecheck",
+    "backend:check": "python scripts/run_backend_manage.py check",
+    "backend:deploy-check": "python scripts/run_backend_manage.py check --deploy",
+    "backend:migrations:check": "python scripts/run_backend_manage.py makemigrations --check --dry-run",
+    "backend:test": "python scripts/run_backend_manage.py test Studentlist.tests apps.online.tests apps.training.tests",
+    "compose:config": "docker compose --env-file .env.example config --quiet",
+    "compose:config:infra": "docker compose -f deploy/infra/docker-compose.yml --env-file .env.example config --quiet",
+    "compose:config:infra-tls": "docker compose -f deploy/infra/docker-compose.yml -f deploy/infra/docker-compose.tls.yml --env-file .env.example config --quiet",
+    "compose:config:app": "docker compose -f deploy/app/docker-compose.yml --env-file .env.example config --quiet",
+    "compose:config:all": "npm run compose:config && npm run compose:config:infra && npm run compose:config:infra-tls && npm run compose:config:app",
+    "review:check": "python scripts/check_review_snapshot.py",
+    "review:check:staged": "python scripts/check_review_snapshot.py --staged",
+    "verify:local": "npm run review:check && npm run backend:check && npm run backend:migrations:check && npm run backend:test && npm run build && npm run compose:config:all"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

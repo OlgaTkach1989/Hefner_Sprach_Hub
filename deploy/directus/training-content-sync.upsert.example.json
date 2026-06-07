@@ -1,0 +1,43 @@
+{
+  "operation": "upsert",
+  "externalId": "directus-training-content-001",
+  "slug": "cva-primer",
+  "name": "CVA Primer",
+  "description": "Introductory article synced from Directus authoring.",
+  "bodyMarkdown": "## CVA\n\nCVA measures expected credit valuation adjustment over the life of a trade.",
+  "contentKind": "article",
+  "status": "published",
+  "accessScope": "entitled",
+  "difficulty": "intermediate",
+  "audienceMatchMode": "any",
+  "courseSlug": "investment-analysis-demo",
+  "ownerEmail": "owner@learning-hub.local",
+  "sourceUrl": "https://learning-hub.example.com/directus",
+  "searchKeywords": "cva, xva, counterparty risk",
+  "versionLabel": "2026.03",
+  "estimatedMinutes": 18,
+  "isRepeatableOnDemand": true,
+  "supportsInlineLab": true,
+  "publishedAt": "2026-03-27T10:00:00Z",
+  "assetClasses": [
+    {
+      "slug": "credit",
+      "name": "Credit"
+    }
+  ],
+  "topics": [
+    "cva",
+    "counterparty-risk"
+  ],
+  "audienceSlugs": [
+    "interns",
+    "traders"
+  ],
+  "crossReferences": [
+    {
+      "slug": "cva-faq",
+      "relationType": "related",
+      "note": "FAQ follow-up material"
+    }
+  ]
+}

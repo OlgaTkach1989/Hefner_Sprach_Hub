@@ -1,0 +1,824 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  background:
+    linear-gradient(180deg, rgba(11, 36, 49, 0.92), rgba(17, 53, 70, 0.88)),
+    linear-gradient(120deg, rgba(215, 182, 104, 0.12), transparent 34%);
+  color: #f8f3ea;
+  width: 100%;
+}
+
+.heroInner {
+  align-items: flex-end;
+  display: flex;
+  gap: 1.25rem;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1140px;
+  padding: 3rem 1rem 2.4rem;
+  width: min(1140px, calc(100% - 2rem));
+}
+
+.backLink {
+  color: rgba(244, 230, 197, 0.8);
+  display: inline-block;
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+
+.heroInner h1 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.heroSubtitle {
+  color: rgba(247, 241, 226, 0.82);
+  font-size: 1.05rem;
+  margin: 0.35rem 0 0;
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: flex-end;
+}
+
+.heroMeta span {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+}
+
+.shell {
+  display: grid;
+  gap: 1.4rem;
+  margin: 0 auto;
+  max-width: 1140px;
+  padding: 2rem 1rem 4rem;
+  width: min(1140px, calc(100% - 2rem));
+}
+
+.rolePanel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.2rem 1.3rem;
+  border-radius: 24px;
+  border: 1px solid rgba(116, 145, 174, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 250, 252, 0.94));
+  box-shadow: 0 18px 38px rgba(14, 39, 54, 0.08);
+}
+
+.rolePanelHeader {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.rolePanelTitle {
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  margin: 0.2rem 0 0;
+}
+
+.rolePanelCopy,
+.roleNotice {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.roleChipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.roleChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  background: rgba(18, 60, 90, 0.06);
+  border: 1px solid rgba(18, 60, 90, 0.12);
+  color: rgba(18, 60, 90, 0.5);
+  font-weight: 700;
+}
+
+.roleChipActive {
+  background: linear-gradient(135deg, rgba(18, 60, 90, 0.92), rgba(41, 88, 117, 0.96));
+  border-color: rgba(18, 60, 90, 0.28);
+  color: #f8f3ea;
+  box-shadow: 0 14px 28px rgba(18, 60, 90, 0.14);
+}
+
+.statusText,
+.statusError {
+  margin: 0;
+}
+
+.statusText {
+  color: var(--text-secondary);
+}
+
+.statusError {
+  color: #8f3129;
+}
+
+.sectionCards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sectionCard {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(116, 145, 174, 0.28);
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(14, 39, 54, 0.08);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  justify-content: center;
+  min-height: 214px;
+  padding: 1.4rem 1.2rem;
+  text-align: center;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.sectionCard:hover {
+  border-color: rgba(19, 82, 140, 0.45);
+  box-shadow: 0 24px 42px rgba(14, 39, 54, 0.11);
+  transform: translateY(-2px);
+}
+
+.sectionCardActive {
+  border-color: rgba(19, 82, 140, 0.7);
+  box-shadow: 0 24px 44px rgba(12, 48, 76, 0.14);
+}
+
+.sectionCard h2 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.sectionCard p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 23ch;
+}
+
+.sectionCardIconWrap {
+  align-items: center;
+  background: rgba(19, 82, 140, 0.08);
+  border-radius: 18px;
+  color: #0f4f79;
+  display: inline-flex;
+  height: 72px;
+  justify-content: center;
+  width: 72px;
+}
+
+.sectionCardIcon {
+  height: 38px;
+  width: 38px;
+}
+
+.contentPanel {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(116, 145, 174, 0.22);
+  border-radius: 26px;
+  box-shadow: 0 28px 52px rgba(17, 42, 58, 0.08);
+  padding: 1.6rem;
+}
+
+.accessNoticeBanner {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(164, 54, 46, 0.18);
+  background: rgba(255, 241, 239, 0.94);
+}
+
+.accessNoticeBanner p {
+  color: #8f3129;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.dismissButton {
+  appearance: none;
+  border: 1px solid rgba(18, 60, 90, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #123c5a;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.62rem 0.95rem;
+}
+
+.panelHeader {
+  align-items: end;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  margin-bottom: 1.5rem;
+}
+
+.panelHeader h2 {
+  font-size: clamp(1.65rem, 2vw, 2.2rem);
+  margin: 0.15rem 0 0;
+}
+
+.panelHeader p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.panelEyebrow {
+  color: #6d8298;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.contentGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.courseCard {
+  background: #fff;
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.restrictedCard {
+  border-color: rgba(164, 54, 46, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(164, 54, 46, 0.04);
+}
+
+.courseImage {
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.courseBody {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.coursePrimaryLink {
+  color: inherit;
+  display: grid;
+  gap: 0.8rem;
+  text-decoration: none;
+}
+
+.coursePrimaryLink:hover h3 {
+  color: #0f4f79;
+}
+
+.courseCopy {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.courseActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.accessBadgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.lockedBadge,
+.accessMeta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0.34rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.lockedBadge {
+  background: rgba(164, 54, 46, 0.1);
+  color: #8f3129;
+  gap: 0.4rem;
+}
+
+.lockedIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.accessMeta {
+  background: rgba(19, 82, 140, 0.08);
+  color: #0f4f79;
+}
+
+.joinButton {
+  background: linear-gradient(135deg, #123c5a, #285875);
+  border: 1px solid rgba(18, 60, 90, 0.3);
+  border-radius: 999px;
+  color: #f8f3ea;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.joinButton:hover:not(:disabled) {
+  box-shadow: 0 14px 28px rgba(18, 60, 90, 0.16);
+  transform: translateY(-1px);
+}
+
+.joinButton:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+
+.secondaryActionLink {
+  color: #0f4f79;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secondaryActionLink:hover {
+  text-decoration: underline;
+}
+
+.joinSuccessText,
+.joinErrorText {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.joinSuccessText {
+  color: #2f5f3c;
+}
+
+.joinErrorText {
+  color: #8f3129;
+}
+
+.courseBody h3,
+.mediaBody h3,
+.assignmentCard h3 {
+  margin: 0;
+}
+
+.courseBody p,
+.mediaBody p,
+.assignmentCard p {
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.courseStartMeta {
+  color: var(--brand-deep) !important;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.cardMetaLine {
+  color: #72869a;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.newsShell {
+  display: grid;
+  gap: 1rem;
+}
+
+.newsFeature,
+.newsCard {
+  background: #fff;
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 16px 32px rgba(14, 39, 54, 0.06);
+}
+
+.newsFeature {
+  display: grid;
+  gap: 1rem;
+  padding: 1.3rem;
+}
+
+.newsFeatureMeta,
+.newsCardMeta,
+.newsCardFooter {
+  color: #72869a;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.newsFeatureBody {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+}
+
+.newsFeatureCopy,
+.newsFeatureAside,
+.newsCard {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.newsFeatureCopy h3,
+.newsCard h3 {
+  color: var(--text-primary);
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.newsFeatureCopy p,
+.newsCard p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.newsStatus,
+.newsStatusMuted,
+.newsAudienceLabel {
+  align-items: center;
+  display: inline-flex;
+  justify-self: start;
+  min-height: 34px;
+  padding: 0.42rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.newsStatus {
+  background: rgba(18, 60, 90, 0.92);
+  color: #f8f3ea;
+}
+
+.newsStatusMuted {
+  background: rgba(19, 82, 140, 0.08);
+  color: #0f4f79;
+}
+
+.newsAudienceLabel {
+  background: rgba(215, 182, 104, 0.18);
+  color: #725421;
+}
+
+.newsFeatureAside {
+  background: linear-gradient(180deg, rgba(248, 251, 253, 0.98), rgba(242, 247, 251, 0.98));
+  border: 1px solid rgba(116, 145, 174, 0.14);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.newsFeatureAside strong {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.newsBulletList {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.newsBulletList li {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.newsGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.newsCard {
+  padding: 1.1rem;
+}
+
+.assignmentGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.assignmentCard {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 249, 252, 0.92));
+  border: 1px solid rgba(116, 145, 174, 0.22);
+  border-radius: 20px;
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.2rem;
+}
+
+.assignmentActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.assignmentBadge,
+.assignmentMeta {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  justify-self: start;
+  letter-spacing: 0.08em;
+  padding: 0.42rem 0.75rem;
+  text-transform: uppercase;
+}
+
+.assignmentBadge {
+  background: rgba(19, 82, 140, 0.08);
+  color: #0f4f79;
+}
+
+.assignmentMeta {
+  background: rgba(215, 182, 104, 0.18);
+  color: #725421;
+}
+
+.inlineActionButton {
+  appearance: none;
+  border: 1px solid rgba(18, 60, 90, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #123c5a;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.68rem 0.95rem;
+}
+
+.stackList {
+  display: grid;
+  gap: 1rem;
+}
+
+.mediaRow,
+.mediaRowStatic {
+  appearance: none;
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 20px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 210px minmax(0, 1fr);
+  padding: 0.95rem;
+  text-align: left;
+  width: 100%;
+}
+
+.mediaRow {
+  cursor: pointer;
+}
+
+.mediaThumbWrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.mediaThumbWrap,
+.mediaThumb,
+.documentPreview {
+  border-radius: 16px;
+}
+
+.mediaThumb,
+.documentPreview {
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.playBadge {
+  background: rgba(11, 36, 49, 0.78);
+  border-radius: 999px;
+  bottom: 0.8rem;
+  color: #f8f3ea;
+  font-size: 0.78rem;
+  font-weight: 700;
+  left: 0.8rem;
+  padding: 0.38rem 0.7rem;
+  position: absolute;
+}
+
+.mediaBody {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.documentPreview {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(18, 54, 80, 0.1), rgba(247, 249, 252, 0.92));
+  display: inline-flex;
+  justify-content: center;
+}
+
+.documentIcon {
+  color: #0f4f79;
+  height: 48px;
+  width: 48px;
+}
+
+.videoModal {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 60;
+}
+
+.videoModalOpen {
+  pointer-events: auto;
+}
+
+.videoBackdrop {
+  background: rgba(8, 19, 29, 0.64);
+  inset: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 0.2s ease;
+}
+
+.videoModalOpen .videoBackdrop {
+  opacity: 1;
+}
+
+.videoDialog {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 36px 72px rgba(8, 20, 30, 0.26);
+  left: 50%;
+  max-width: 960px;
+  padding: 1.2rem;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(960px, calc(100% - 2rem));
+}
+
+.videoDialogHeader {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.videoDialogHeader h3 {
+  margin: 0.2rem 0 0;
+}
+
+.closeButton {
+  background: rgba(19, 82, 140, 0.08);
+  border: 1px solid rgba(19, 82, 140, 0.18);
+  border-radius: 999px;
+  color: #0f4f79;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 0.65rem 1rem;
+}
+
+.videoPlayer {
+  background: #071621;
+  border-radius: 20px;
+  display: block;
+  max-height: 540px;
+  width: 100%;
+}
+
+.videoFrame {
+  aspect-ratio: 16 / 9;
+  background: #071621;
+  border: 0;
+  border-radius: 20px;
+  display: block;
+  width: 100%;
+}
+
+.videoDescription {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 1rem 0 0;
+}
+
+@media (max-width: 1080px) {
+  .rolePanelHeader,
+  .sectionCards,
+  .contentGrid,
+  .assignmentGrid,
+  .newsGrid,
+  .newsFeatureBody {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .panelHeader {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .heroInner {
+    align-items: start;
+    flex-direction: column;
+    padding: 2.5rem 1rem 2rem;
+  }
+
+  .heroMeta {
+    justify-content: flex-start;
+  }
+
+  .sectionCards,
+  .contentGrid,
+  .assignmentGrid,
+  .newsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .rolePanelHeader,
+  .mediaRow,
+  .mediaRowStatic,
+  .newsFeatureBody {
+    grid-template-columns: 1fr;
+  }
+
+  .contentPanel {
+    padding: 1.15rem;
+  }
+
+  .accessNoticeBanner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .videoDialog {
+    padding: 1rem;
+  }
+
+  .videoDialogHeader {
+    flex-direction: column;
+  }
+}

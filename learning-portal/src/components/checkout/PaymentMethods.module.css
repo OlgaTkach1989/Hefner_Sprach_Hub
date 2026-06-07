@@ -1,0 +1,40 @@
+.wrap {
+  display: grid;
+  gap: 10px;
+}
+
+.btn {
+  align-items: center;
+  background: #f9f6f3;
+  border: 1px solid #2f5f6f;
+  border-radius: 14px;
+  color: #08394a;
+  cursor: pointer;
+  display: flex;
+  font-size: clamp(20px, 1.6vw, 34px);
+  font-weight: 400;
+  gap: 14px;
+  justify-content: center;
+  min-height: 52px;
+  padding: 10px 14px;
+  width: 100%;
+}
+
+.icon {
+  align-items: center;
+  border: 1px solid rgba(8, 57, 74, 0.35);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.icon img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}

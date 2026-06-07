@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  hygiene:
+    name: Repository hygiene
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Check review snapshot hygiene
+        run: python scripts/check_review_snapshot.py
+
+  backend:
+    name: Backend checks and tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Django system check
+        working-directory: backend
+        run: python manage.py check
+
+      - name: Check migrations are committed
+        working-directory: backend
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run backend tests
+        working-directory: backend
+        run: python manage.py test Studentlist.tests apps.online.tests apps.training.tests
+
+  frontend:
+    name: Frontend build (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - learning-portal
+          - learner-portal
+          - instructor-workspace
+          - admin-console
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.app }}
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: ${{ matrix.app }}
+        run: npm run typecheck
+
+      - name: Build
+        working-directory: ${{ matrix.app }}
+        run: npm run build
+
+  compose:
+    name: Docker Compose config
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate root compose file
+        run: docker compose --env-file .env.example config --quiet
+
+      - name: Validate infra compose file
+        run: docker compose -f deploy/infra/docker-compose.yml --env-file .env.example config --quiet
+
+      - name: Validate infra TLS compose file
+        run: docker compose -f deploy/infra/docker-compose.yml -f deploy/infra/docker-compose.tls.yml --env-file .env.example config --quiet
+
+      - name: Validate app compose file
+        run: docker compose -f deploy/app/docker-compose.yml --env-file .env.example config --quiet
+
+      - name: Check compose secret defaults
+        run: |
+          if grep -RInE '\$\{(POSTGRES_SUPERPASSWORD|APP_DB_PASSWORD|DIRECTUS_DB_PASSWORD):-' docker-compose.yml deploy/infra/docker-compose.yml deploy/app/docker-compose.yml; then
+            echo "Compose files must not fall back to weak default secret values." >&2
+            exit 1
+          fi
+
+      - name: Check nginx TLS hardening
+        run: |
+          grep -q 'ssl_protocols TLSv1.2 TLSv1.3;' deploy/infra/nginx/templates/default.https.conf.template
+          grep -q 'Strict-Transport-Security' deploy/infra/nginx/templates/default.https.conf.template
+          grep -q 'X-Content-Type-Options' deploy/infra/nginx/templates/default.https.conf.template

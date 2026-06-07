@@ -1,0 +1,91 @@
+.student-header {
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background: var(--surface-elevated);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.student-header__brand-link {
+  align-items: center;
+  color: var(--text-primary);
+  display: inline-flex;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.student-header__logo {
+  display: block;
+  height: 42px;
+  object-fit: contain;
+  width: auto;
+}
+
+.student-header__brand {
+  color: var(--text-primary);
+  font-size: 1.28rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.student-header__meta {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.student-header__chip {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.87rem;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 0.4rem 0.75rem;
+}
+
+.student-header__chip--theme {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 42px;
+  padding: 0.35rem 0.5rem;
+}
+
+.student-header__chip--theme svg {
+  fill: currentColor;
+  height: 19px;
+  width: 19px;
+}
+
+.student-header__user {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .student-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .student-header__brand {
+    font-size: 1.14rem;
+  }
+
+  .student-header__logo {
+    height: 36px;
+  }
+
+  .student-header__meta {
+    flex-wrap: wrap;
+  }
+}

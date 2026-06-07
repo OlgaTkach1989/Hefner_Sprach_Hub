@@ -1,0 +1,294 @@
+
+.wrapper {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: auto;
+  background-image:
+    linear-gradient(180deg, rgba(7, 63, 83, 0.9) 0%, rgba(7, 63, 83, 0.88) 100%),
+    url("../../../public/images/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #f2f6fa;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.innerContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  will-change: transform, opacity, filter;
+  transform: translateZ(0);
+}
+
+.hero {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 38px;
+  align-items: center;
+  padding: 24px 18px 0;
+}
+
+.heroLeft {
+  display: grid;
+  gap: 12px;
+  max-width: 430px;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: "Salsa", cursive;
+  font-size: 40px;
+  line-height: 1.12;
+  margin-bottom: 1.5rem;
+}
+
+.heroMeta {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  align-items: baseline;
+  color: #dbe8ec;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.heroPrice {
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.orderBtn {
+  margin-top: 6px;
+  max-width: 460px;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.heroRight {
+  padding: 18px 22px;
+  min-width: 670px;
+}
+
+.heroBullets {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+  color: #f2f6fa;
+  line-height: 28px;
+  font-size: 18px;
+  letter-spacing: 0.14;
+}
+
+.tabs {
+  max-width: 1240px;
+  margin: 22px auto 0;
+  display: flex; /* Работает отлично */
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start; /* Лучше start, чтобы стрелки всегда были видны */
+  overflow-x: auto;
+  padding-bottom: 10px;
+  flex-wrap: nowrap; /* Важно: запрещаем перенос на вторую строку */
+}
+
+.tab {
+  min-width: 110px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #fff;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab, .tabArrow {
+  flex-shrink: 0; /* ОЧЕНЬ ВАЖНО: они не будут сжиматься */
+}
+
+.tabActive {
+  background: #fff;
+  color: #013444;
+}
+
+.tabArrow {
+  all: unset; /* Сброс, но потом переопределим */
+  display: flex !important; /* Принудительно возвращаем flex */
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px; /* Фиксированная ширина 44px, не растет и не сжимается */
+  height: 44px;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tabArrow:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #fff;
+  transform: translateY(-1px);
+}
+
+.tabArrow:active {
+  transform: translateY(0);
+}
+
+.lessonCardWrapper {
+  max-width: 1250px;
+  margin: 18px auto 0;
+}
+
+.lessonCard {
+  background: #F9F6F3;
+  color: #013444;
+  border-radius: 22px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(220px, 420px) 1fr;
+  gap: 15px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.14);
+}
+
+.preview {
+  position: relative;
+  overflow: hidden;
+  height: 310px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.preview img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.lessonContent {
+  display: grid;
+  gap: 8px;
+}
+
+.lessonEyebrow {
+  margin: 0;
+  color: #013444;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 20px;
+}
+
+.lessonTitle {
+  font-family: "Salsa", cursive;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.lessonText {
+  line-height: 1.5;
+  color: #1f3a45;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.lessonPdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+   padding: 0 !important;
+  color: #013444;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  width: fit-content;
+}
+@media (max-width: 1080px) {
+  .hero {
+    gap: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  
+.heroLeft, 
+  .heroRight {
+    flex: 1; 
+    min-width: 0;
+    max-width: 50%;
+  }
+
+  .heroRight {
+    padding: 0;
+    margin: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .heroTitle { font-size: 32px; }
+  .heroMeta { font-size: 16px; }
+  .lessonTitle { font-size: 24px; }
+  .lessonText { font-size: 16px; }
+  .lessonEyebrow { font-size: 18px; }
+  .lessonCard {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .lessonCard{ 
+    margin: 20px;
+  }
+  .preview img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 10px 10px 10px;
+    gap: 8px;
+  }
+
+  .tab {
+    flex: 0 0 auto; 
+    min-width: 70px;
+  }
+
+}
+
+@media (max-width: 600px) {
+  .heroTitle { font-size: 28px; }
+  
+  .heroBullets {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .lessonCard {
+    border-radius: 16px;
+  }
+  
+  .preview {
+    height: 180px;
+  }
+}

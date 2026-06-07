@@ -1,0 +1,208 @@
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+
+server {
+  listen 80;
+  server_name ${NGINX_SERVER_NAME};
+  server_tokens off;
+  resolver 127.0.0.11 ipv6=off valid=30s;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+  location /.well-known/acme-challenge/ {
+    root /var/www/certbot;
+  }
+
+  location / {
+    return 301 https://$host$request_uri;
+  }
+}
+
+server {
+  listen 443 ssl;
+  http2 on;
+  server_name ${NGINX_SERVER_NAME};
+  server_tokens off;
+  client_max_body_size 20M;
+  resolver 127.0.0.11 ipv6=off valid=30s;
+
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header X-Frame-Options "DENY" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
+  set $backend_upstream backend:1212;
+  set $student_upstream learner-portal:80;
+  set $teacher_upstream instructor-workspace:80;
+  set $office_upstream admin-console:80;
+  set $public_upstream learning-portal:80;
+  set $directus_upstream directus:8055;
+  set $jupyterhub_upstream jupyterhub:8000;
+
+  ssl_certificate /etc/nginx/ssl/live/${NGINX_SERVER_NAME}/fullchain.pem;
+  ssl_certificate_key /etc/nginx/ssl/live/${NGINX_SERVER_NAME}/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  ssl_session_cache shared:TLS:10m;
+  ssl_session_timeout 1d;
+  ssl_session_tickets off;
+
+  location /.well-known/acme-challenge/ {
+    root /var/www/certbot;
+  }
+
+  location = /healthz {
+    proxy_pass http://$backend_upstream/api/health/ready/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+
+  location = /student { return 301 /student/; }
+  location = /teacher { return 301 /teacher/; }
+  location = /office { return 301 /office/; }
+  location = /directus { return 301 /directus/; }
+  location = /lab { return 302 /student/dashboard; }
+  location = /lab/ { return 302 /student/dashboard; }
+
+  location = /lab/hub/login {
+    if ($arg_login_token = "") {
+      return 302 /student/dashboard;
+    }
+
+    proxy_pass http://$jupyterhub_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_buffering off;
+  }
+
+  location /static/ {
+    alias /srv/static/;
+    expires 30d;
+    add_header Cache-Control "public, immutable";
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+  }
+
+  location /media/ {
+    return 404;
+  }
+
+  location /admin/ {
+    proxy_pass http://$backend_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+
+  location /api/training/internal/ {
+    return 404;
+  }
+
+  location /api/ {
+    proxy_pass http://$backend_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+
+  location /student/ {
+    rewrite ^/student/(.*)$ /$1 break;
+    proxy_pass http://$student_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+
+  location /teacher/ {
+    rewrite ^/teacher/(.*)$ /$1 break;
+    proxy_pass http://$teacher_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+
+  location /office/ {
+    rewrite ^/office/(.*)$ /$1 break;
+    proxy_pass http://$office_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+
+  location /directus/ {
+    rewrite ^/directus/?(.*)$ /$1 break;
+    proxy_pass http://$directus_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-Prefix /directus;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+
+  location /lab/launch/ {
+    proxy_pass http://$backend_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+
+  location /lab/ {
+    proxy_pass http://$jupyterhub_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_buffering off;
+  }
+
+  location / {
+    proxy_pass http://$public_upstream;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+  }
+}

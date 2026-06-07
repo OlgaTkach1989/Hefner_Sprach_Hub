@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Salsa&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rochester&family=Salsa&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Salsa&display=swap");
+
+:root {
+  --font-main: "Roboto", "Segoe UI", "Trebuchet MS", sans-serif;
+  --font-accent: "Salsa", cursive;
+  --font-fancy: "Rochester", cursive;
+
+  --color-blue: #1666af;
+  --color-middle-blue: #c0d7ef;
+  --color-light-blue: #dce8f5;
+  --color-orange: #ff6b29;
+  --color-dark-gray: #1e222e;
+
+  --primary-color: #13528c;
+  --accent: #1666af;
+  --accent-soft: #dce8f5;
+  --dark-slate: #013444cc;
+}
+
+:root[data-theme="light"] {
+  --bg: #f9f6f3;
+  --surface-card: #ffffff;
+  --surface-elevated: #fff8ee;
+  --border-color: #c5d7ed;
+  --text-primary: #1e222e;
+  --text-secondary: #334e71;
+  --text-muted: #ffffff80;
+  --hero-gradient: rgba(1, 52, 68, 1);
+  --dark-slate-btn: #013444;
+  --bg-brand-gradient: linear-gradient(to bottom, #0381a9, #013444);
+  --link_active: #c39930;
+  --bg-course-card: #f9f6f3;
+  --bg-buy-button: linear-gradient(
+    3.62deg,
+    #e7c66a -178.08%,
+    #e7c66a -178.08%,
+    #e8c156 -105.35%,
+    #ece2c8 5.89%,
+    #e8c156 136.07%
+  );
+  --bg-support-section: linear-gradient(180deg, #043646 0%, #0d3d4b 100%);
+  --bg-feedback-card: #2a545e;
+  --bg-course-section: #244e5a;
+}
+
+:root[data-theme="dark"] {
+  --bg: #081426;
+  --surface-card: #0f1f34;
+  --surface-elevated: #142741;
+  --border-color: #2a4b70;
+  --text-primary: #f0f5ff;
+  --text-secondary: #c8d8ed;
+  --text-muted: #98abc6;
+  --hero-gradient: rgba(1, 52, 68, 1);
+  --dark-slate-btn: #c8d8ed;
+  --bg-brand-gradient: linear-gradient(to bottom, #0381a9, #013444);
+  --link_active: #c39930;
+  --icon-filter: invert(1) brightness(2);
+  --icon-color: #ffffff;
+  --bg-feedback-card: #2a545e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  background:
+    radial-gradient(circle at 2% 0%, rgba(22, 102, 175, 0.18), transparent 32%),
+    radial-gradient(
+      circle at 98% 2%,
+      rgba(255, 107, 41, 0.08),
+      transparent 28%
+    ),
+    var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  margin: 0;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}

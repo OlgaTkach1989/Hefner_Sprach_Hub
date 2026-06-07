@@ -1,0 +1,23 @@
+.not-found-page {
+  margin: 0 auto;
+  max-width: 900px;
+  padding: 1rem;
+}
+
+.not-found-page h1,
+.not-found-page p {
+  margin: 0;
+}
+
+.not-found-page p {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.not-found-page a {
+  color: var(--accent);
+  display: inline-block;
+  margin-top: 0.8rem;
+  text-decoration: none;
+}
+

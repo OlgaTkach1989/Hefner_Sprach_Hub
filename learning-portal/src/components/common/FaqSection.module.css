@@ -1,0 +1,121 @@
+.sectionTitle {
+  font-family: var(--font-accent);
+  font-weight: 400;
+  color: var(--dark-slate);
+  position: relative;
+  z-index: 2;
+  font-size: clamp(1.5rem, 2.65vw, 3rem);
+}
+.catalogHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.faq {
+  padding: 0 0 4rem 0;
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    #f9f6f3 10%,
+    #b4bcb4 35%,
+    #4a6d7c 60%,
+    #003344 100%
+  );
+  width: 100vw !important;
+}
+.bgImg {
+  position: absolute;
+  top: -23rem;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 22rem);
+  object-fit: fill;
+  z-index: 1;
+  pointer-events: none;
+  background-blend-mode: multiply;
+}
+.block {
+  background: transparent;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 auto;
+  width: min(1140px, calc(100% - 2rem));
+  padding: 2rem 0;
+}
+
+.item {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.7rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 400;
+  color: #003344;
+}
+
+.icon {
+  width: 1.6rem;
+  height: 1.6rem;
+  background: linear-gradient(
+    182.52deg,
+    rgba(232, 193, 86, 0.756863) -6.52%,
+    #fff1dd 80.22%,
+    #e8c156 153.64%
+  );
+  border: 1px solid #e8c156;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.icon::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #003344;
+  transition: transform 0.3s ease;
+}
+
+.item[open] .faq-block__icon::after {
+  transform: rotate(180deg);
+}
+.content {
+  padding: 0 24px 16px 24px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #4a6d7c;
+}
+@media (max-width: 1024px) {
+  .list {
+    width: min(976px, calc(100% - 2rem));
+  }
+}
+
+@media (max-width: 720px) {
+  .faq {
+    padding: 0;
+  }
+}

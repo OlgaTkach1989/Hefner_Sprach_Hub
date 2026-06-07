@@ -1,0 +1,190 @@
+.headerLinks,
+.selectionActions,
+.actionButtons,
+.rowActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.filterGrid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.filterField,
+.checkboxField {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.checkboxWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 49px;
+  padding: 0.84rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-input);
+  color: var(--text-main);
+}
+
+.checkboxCell {
+  width: 68px;
+}
+
+.checkboxOnly {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkboxOnly input {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.sideStack {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sideCard {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  background: rgba(22, 74, 97, 0.06);
+  border: 1px solid rgba(22, 74, 97, 0.12);
+}
+
+.metricList {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.metricList div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 16px;
+  border: 1px solid rgba(22, 74, 97, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.metricList div strong {
+  color: var(--text-main);
+  font-size: 0.92rem;
+}
+
+.metricList div span {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.noteInput {
+  resize: vertical;
+  min-height: 88px;
+  background: var(--surface-input);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  color: var(--text-main);
+  outline: none;
+  padding: 0.84rem 0.95rem;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.noteInput:focus {
+  border-color: var(--blue300);
+  box-shadow: 0 0 0 4px rgba(22, 102, 175, 0.14);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  appearance: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0.65rem 0.95rem;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.dangerButton:hover {
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.dangerButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  transform: none;
+}
+
+.primaryButton {
+  background: linear-gradient(180deg, rgba(24, 61, 80, 0.98) 0%, rgba(41, 84, 107, 0.98) 100%);
+  border: 1px solid rgba(24, 61, 80, 0.2);
+  box-shadow: 0 14px 24px rgba(11, 52, 90, 0.14);
+  color: var(--text-on-accent);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(22, 74, 97, 0.16);
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+.dangerButton {
+  background: #fff0ef;
+  border: 1px solid #f2c2bd;
+  color: #9b2823;
+}
+
+.successText {
+  margin: 0;
+  color: #24663b;
+  font-weight: 600;
+}
+
+@media (max-width: 1180px) {
+  .filterGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .filterGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .headerLinks,
+  .selectionActions,
+  .actionButtons,
+  .rowActions {
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .dangerButton {
+    width: 100%;
+  }
+}

@@ -1,0 +1,37 @@
+.student-footer {
+  align-items: center;
+  background: rgba(10, 35, 47, 0.96);
+  color: rgba(247, 242, 233, 0.86);
+  display: flex;
+  font-size: 0.9rem;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 1480px;
+  padding: 0.9rem 1.2rem 1.1rem;
+  width: calc(100% - 2rem);
+}
+
+.student-footer__left,
+.student-footer__right {
+  align-items: center;
+  display: flex;
+  gap: 0.8rem;
+}
+
+.student-footer a {
+  color: rgba(247, 242, 233, 0.94);
+  text-decoration: none;
+}
+
+.student-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .student-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: calc(100% - 1.5rem);
+  }
+}

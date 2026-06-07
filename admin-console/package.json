@@ -1,0 +1,36 @@
+{
+  "name": "admin-console",
+  "private": true,
+  "version": "0.0.1",
+  "author": "Serhii TK",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.ts --host",
+    "typecheck": "tsc -b",
+    "build": "npm run typecheck && vite build --config vite.config.ts",
+    "preview": "vite preview --config vite.config.ts"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.18",
+    "@fullcalendar/daygrid": "^6.1.18",
+    "@fullcalendar/interaction": "^6.1.18",
+    "@fullcalendar/react": "^6.1.18",
+    "@fullcalendar/timegrid": "^6.1.18",
+    "@reduxjs/toolkit": "^2.9.0",
+    "axios": "^1.15.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.11",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "sass-embedded": "^1.98.0",
+    "typescript": "~5.6.2",
+    "vite": "^6.4.2"
+  }
+}

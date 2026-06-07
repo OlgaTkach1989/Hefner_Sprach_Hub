@@ -1,0 +1,362 @@
+.shell {
+  min-height: 100vh;
+  padding: 0 clamp(1rem, 2vw, 1.4rem) 1.4rem;
+}
+
+.layout {
+  max-width: 1550px;
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 304px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  padding: 1.35rem 1.15rem 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(22, 52, 68, 0.98) 0%, rgba(36, 79, 101, 0.95) 100%),
+    radial-gradient(circle at top right, rgba(215, 182, 104, 0.08), transparent 30%);
+  color: var(--text-on-accent);
+}
+
+.brandBlock {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.brandCopy {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.brandEyebrow {
+  color: rgba(244, 230, 197, 0.76);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.brandTitle {
+  color: #f7f2e9;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.brandText {
+  color: rgba(247, 242, 233, 0.7);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.toggleButton {
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-on-accent);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.toggleButton:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(215, 182, 104, 0.3);
+  transform: translateX(-1px);
+}
+
+.toggleButton svg {
+  fill: currentColor;
+  width: 18px;
+  height: 18px;
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  padding: 0.95rem;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(215, 182, 104, 0.95), rgba(201, 158, 67, 0.95));
+  color: #0a2330;
+  font-size: 1.35rem;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+}
+
+.profileCopy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.profileCopy p,
+.profileCopy span {
+  margin: 0;
+}
+
+.profileCopy p {
+  color: #f7f2e9;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.profileCopy span {
+  color: rgba(247, 242, 233, 0.68);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.nav {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.navLink,
+.logoutButton {
+  width: 100%;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  justify-content: flex-start;
+  padding: 0.72rem 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: rgba(247, 242, 233, 0.78);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.navLink:hover,
+.navLinkActive,
+.logoutButton:hover {
+  background: linear-gradient(180deg, rgba(215, 182, 104, 0.16), rgba(255, 255, 255, 0.06));
+  border-color: rgba(215, 182, 104, 0.4);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+.navIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.navIcon svg {
+  fill: currentColor;
+  width: 18px;
+  height: 18px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 136px;
+  padding: 1.05rem 1.6rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(38, 72, 91, 0.94) 0%, rgba(63, 103, 126, 0.88) 100%),
+    radial-gradient(circle at 16% 24%, rgba(215, 182, 104, 0.14), transparent 24%);
+  color: var(--text-on-accent);
+}
+
+.topbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.12), transparent 38%),
+    radial-gradient(circle at 82% 16%, rgba(215, 182, 104, 0.12), transparent 26%);
+  pointer-events: none;
+}
+
+.topbarCopy,
+.topbarActions {
+  position: relative;
+  z-index: 1;
+}
+
+.topbarCopy {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.topbarCopy h1,
+.topbarCopy p {
+  margin: 0;
+}
+
+.topbarCopy h1 {
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.03;
+}
+
+.topbarCopy p {
+  color: rgba(247, 242, 233, 0.92);
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+.kicker {
+  color: rgba(244, 230, 197, 0.76);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.topbarActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-on-accent);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.main {
+  flex: 1;
+  padding: 1.35rem;
+}
+
+.sidebarCollapsed {
+  width: 96px;
+  padding-inline: 0.8rem;
+}
+
+.sidebarCollapsed .brandCopy,
+.sidebarCollapsed .profileCopy,
+.sidebarCollapsed .navLabel,
+.sidebarCollapsed .logoutLabel {
+  display: none;
+}
+
+.sidebarCollapsed .brandBlock {
+  justify-content: center;
+}
+
+.sidebarCollapsed .profileCard {
+  justify-content: center;
+  padding-inline: 0.45rem;
+}
+
+.sidebarCollapsed .navLink,
+.sidebarCollapsed .logoutButton {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+@media (max-width: 1180px) {
+  .layout {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .sidebar,
+  .sidebarCollapsed {
+    width: min(100%, 440px);
+    padding-inline: 1.15rem;
+  }
+
+  .sidebarCollapsed .brandCopy,
+  .sidebarCollapsed .profileCopy,
+  .sidebarCollapsed .navLabel,
+  .sidebarCollapsed .logoutLabel {
+    display: initial;
+  }
+
+  .sidebarCollapsed .brandBlock {
+    justify-content: space-between;
+  }
+
+  .sidebarCollapsed .profileCard {
+    justify-content: flex-start;
+    padding-inline: 0.95rem;
+  }
+
+  .sidebarCollapsed .navLink,
+  .sidebarCollapsed .logoutButton {
+    justify-content: flex-start;
+    padding-inline: 0.95rem;
+  }
+}
+
+@media (max-width: 820px) {
+  .shell {
+    padding-inline: 0.75rem;
+  }
+
+  .topbar {
+    flex-direction: column;
+    min-height: 0;
+    padding: 1rem 1.1rem 0.95rem;
+  }
+
+  .main {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,183 @@
+.apps-tab {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.apps-tab__hero {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.apps-tab__eyebrow {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.55rem;
+  text-transform: uppercase;
+}
+
+.apps-tab__hero h2 {
+  color: var(--text-primary);
+  font-size: clamp(1.7rem, 2.4vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.apps-tab__lead {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0.7rem 0 0;
+  max-width: 60ch;
+}
+
+.apps-tab__identity {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(248, 242, 232, 0.92));
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: 0 16px 32px rgba(14, 39, 54, 0.08);
+  display: grid;
+  gap: 0.3rem;
+  min-width: 240px;
+  padding: 1rem 1.15rem;
+}
+
+.apps-tab__identity span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.apps-tab__identity strong {
+  color: var(--text-primary);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.apps-tab__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.apps-tab__card,
+.apps-tab__note-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(247, 242, 233, 0.94));
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  box-shadow: 0 18px 38px rgba(14, 39, 54, 0.08);
+}
+
+.apps-tab__card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.35rem;
+}
+
+.apps-tab__icon-wrap {
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(240, 245, 249, 0.96));
+  border: 1px solid rgba(116, 145, 174, 0.14);
+  border-radius: 16px;
+  display: inline-flex;
+  height: 68px;
+  justify-content: center;
+  width: 68px;
+}
+
+.apps-tab__icon-wrap svg {
+  display: block;
+  height: 40px;
+  width: 40px;
+}
+
+.apps-tab__card-copy {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.apps-tab__card-copy h3,
+.apps-tab__note-card h3 {
+  color: var(--text-primary);
+  font-size: 1.16rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.apps-tab__card-copy p,
+.apps-tab__card-copy span,
+.apps-tab__note-card p,
+.apps-tab__steps {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.apps-tab__card-copy span {
+  color: var(--text-muted);
+  font-size: 0.93rem;
+}
+
+.apps-tab__action {
+  align-items: center;
+  background: linear-gradient(180deg, var(--brand-teal) 0%, var(--brand-deep) 100%);
+  border-radius: 999px;
+  box-shadow: 0 12px 22px rgba(10, 35, 47, 0.2);
+  color: #f7f2e9;
+  display: inline-flex;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.7rem 1.1rem;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.apps-tab__action:hover {
+  background: linear-gradient(180deg, #1d6a86 0%, #0d2c3b 100%);
+}
+
+.apps-tab__notes {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.apps-tab__note-card {
+  padding: 1.25rem 1.3rem;
+}
+
+.apps-tab__steps {
+  display: grid;
+  gap: 0.6rem;
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 900px) {
+  .apps-tab__hero,
+  .apps-tab__notes {
+    grid-template-columns: 1fr;
+  }
+
+  .apps-tab__hero {
+    flex-direction: column;
+  }
+
+  .apps-tab__identity {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .apps-tab__card,
+  .apps-tab__note-card {
+    border-radius: 18px;
+    padding: 1.1rem;
+  }
+}

@@ -1,0 +1,122 @@
+.teacher-app {
+  min-height: 100vh;
+}
+
+.teacher-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0 36px;
+}
+
+.teacher-toolbar {
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border: 1px solid rgba(22, 102, 175, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 36px rgba(11, 52, 90, 0.08);
+}
+
+.teacher-toolbar-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.teacher-toolbar-kicker {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.teacher-toolbar-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.teacher-toolbar-meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.teacher-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teacher-toolbar-email {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.teacher-toolbar-logout {
+  appearance: none;
+  border: 1px solid rgba(22, 102, 175, 0.18);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text-main);
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 14px;
+  transition: transform 0.16s ease, border-color 0.2s ease;
+}
+
+.teacher-toolbar-logout:hover {
+  transform: translateY(-1px);
+  border-color: var(--blue300);
+}
+
+.teacher-guard-state {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.teacher-guard-card {
+  width: min(100%, 460px);
+  display: grid;
+  gap: 14px;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(116, 145, 174, 0.18);
+  border-radius: 24px;
+  box-shadow: 0 22px 48px rgba(14, 39, 54, 0.14);
+}
+
+.teacher-guard-card h2,
+.teacher-guard-card p {
+  margin: 0;
+}
+
+.teacher-guard-card p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .teacher-toolbar {
+    width: calc(100% - 24px);
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .teacher-toolbar-actions {
+    justify-content: space-between;
+  }
+}

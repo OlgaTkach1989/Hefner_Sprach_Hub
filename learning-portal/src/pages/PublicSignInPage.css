@@ -1,0 +1,197 @@
+.public-sign-in-page {
+  align-items: center;
+  display: grid;
+  min-height: calc(100vh - var(--public-header-height));
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.public-sign-in-page__box {
+  background:
+    linear-gradient(180deg, rgba(10, 35, 47, 0.96) 0%, rgba(18, 56, 74, 0.93) 100%),
+    radial-gradient(circle at 16% 24%, rgba(215, 182, 104, 0.16), transparent 28%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 30px;
+  box-shadow: 0 28px 55px rgba(10, 31, 43, 0.18);
+  color: #f7f2e9;
+  margin: 0 auto;
+  max-width: 560px;
+  overflow: hidden;
+  padding: 2rem;
+  position: relative;
+  width: min(560px, calc(100% - 1rem));
+}
+
+.public-sign-in-page__box::after {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(215, 182, 104, 0.14), transparent 30%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 46%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.public-sign-in-page__box > * {
+  position: relative;
+  z-index: 1;
+}
+
+.public-sign-in-page__eyebrow {
+  color: rgba(244, 230, 197, 0.76);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin: 0 0 0.7rem;
+  text-transform: uppercase;
+}
+
+.public-sign-in-page__box h1 {
+  color: #f7f2e9;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.public-sign-in-page__intro,
+.public-sign-in-page__meta {
+  color: rgba(244, 238, 229, 0.84);
+  line-height: 1.7;
+}
+
+.public-sign-in-page__intro {
+  margin: 0.8rem 0 1.4rem;
+}
+
+.public-sign-in-page__form {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.public-sign-in-page__field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.public-sign-in-page__field span {
+  color: rgba(244, 238, 229, 0.88);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.public-sign-in-page__field input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  color: #f7f2e9;
+  font-size: 1rem;
+  min-height: 52px;
+  outline: none;
+  padding: 0.9rem 1rem;
+}
+
+.public-sign-in-page__field input::placeholder {
+  color: rgba(244, 238, 229, 0.58);
+}
+
+.public-sign-in-page__form button[type="submit"] {
+  background: linear-gradient(180deg, #e2bb61 0%, #c59d3b 100%);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
+  color: #072638;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  min-height: 48px;
+  padding: 0.85rem 1rem;
+}
+
+.public-sign-in-page__form button[type="submit"]:disabled,
+.public-sign-in-page__sso-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.public-sign-in-page__divider {
+  align-items: center;
+  color: rgba(244, 238, 229, 0.62);
+  display: flex;
+  gap: 0.8rem;
+  font-size: 0.85rem;
+  margin: 1rem 0;
+}
+
+.public-sign-in-page__divider::before,
+.public-sign-in-page__divider::after {
+  background: rgba(255, 255, 255, 0.14);
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+.public-sign-in-page__sso-btn {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #f7f2e9;
+  display: inline-flex;
+  gap: 0.7rem;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.85rem 1rem;
+  width: 100%;
+}
+
+.public-sign-in-page__sso-icon {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  display: inline-flex;
+  font-weight: 700;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.public-sign-in-page__meta {
+  margin: 1rem 0 0;
+}
+
+.public-sign-in-page__info,
+.public-sign-in-page__error {
+  border-radius: 18px;
+  margin: 0.9rem 0 0;
+  padding: 0.9rem 1rem;
+}
+
+.public-sign-in-page__info {
+  background: rgba(215, 182, 104, 0.12);
+  color: #fff0cb;
+}
+
+.public-sign-in-page__error {
+  background: rgba(143, 49, 41, 0.16);
+  color: #ffd4d8;
+}
+
+.public-sign-in-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.public-sign-in-page__actions a {
+  color: #f6efe4;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .public-sign-in-page__box {
+    border-radius: 24px;
+    padding: 1.4rem;
+  }
+}

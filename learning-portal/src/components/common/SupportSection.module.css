@@ -1,0 +1,103 @@
+.support {
+  background: var(--bg-support-section);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0 13rem;
+  margin-top: -1px;
+  width: 100vw !important;
+}
+.sectionTitle {
+  font-family: var(--font-accent);
+  font-weight: 400;
+  color: var(--dark-slate);
+  position: relative;
+  z-index: 2;
+  font-size: clamp(1.5rem, 2.65vw, 3rem);
+}
+.colorGold {
+  color: #ffe3ba !important;
+}
+.supportInner {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  max-width: 1140px;
+  width: min(1140px, calc(100% - 2rem));
+  margin: 2rem auto;
+}
+.chat {
+  background: url("../../assets/bg_chat_support.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.2rem;
+  position: relative;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+.chat::before {
+  content: "";
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+  border: none;
+  border-radius: 1rem;
+}
+.chat h2,
+.chat p {
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+.chat h2 {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 400;
+}
+.chat img {
+  position: relative;
+  z-index: 2;
+}
+.chat p {
+  color: var(--text-secondary);
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.chat a {
+  color: var(--primary-color);
+  font-weight: 700;
+  text-decoration: none;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 1024px) {
+  .supportInner {
+    width: min(976px, calc(100% - 2rem));
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .support {
+    padding-bottom: 2rem;
+  }
+  .supportInner {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 3rem;
+  }
+  .chat {
+    padding: 4rem 1rem;
+  }
+}

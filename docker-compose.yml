@@ -1,0 +1,358 @@
+x-security-defaults: &security-defaults
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  database:
+    <<: *security-defaults
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERPASSWORD:?POSTGRES_SUPERPASSWORD is required}
+      POSTGRES_DB: postgres
+      APP_DB_NAME: ${APP_DB_NAME:-online_lessons}
+      APP_DB_USER: ${APP_DB_USER:-online_lessons}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD is required}
+      DIRECTUS_DB_NAME: ${DIRECTUS_DB_NAME:-directus}
+      DIRECTUS_DB_USER: ${DIRECTUS_DB_USER:-directus}
+      DIRECTUS_DB_PASSWORD: ${DIRECTUS_DB_PASSWORD:?DIRECTUS_DB_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deploy/postgres/init/01-init-multiple-dbs.sh:/docker-entrypoint-initdb.d/01-init-multiple-dbs.sh:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_SUPERUSER:-postgres} -d postgres"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  cache:
+    <<: *security-defaults
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    <<: *security-defaults
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_HTTP_BIND:-127.0.0.1}:${MAILPIT_HTTP_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1:8025/api/v1/info >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 8
+
+  directus:
+    <<: *security-defaults
+    image: directus/directus:11.3.5
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    ports:
+      - "${DIRECTUS_HTTP_BIND:-127.0.0.1}:${DIRECTUS_HTTP_PORT:-8055}:8055"
+    volumes:
+      - directus_uploads:/directus/uploads
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+      DB_CLIENT: pg
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${DIRECTUS_DB_NAME:-directus}
+      DB_USER: ${DIRECTUS_DB_USER:-directus}
+      DB_PASSWORD: ${DIRECTUS_DB_PASSWORD:?DIRECTUS_DB_PASSWORD is required}
+      CACHE_ENABLED: "true"
+      CACHE_STORE: redis
+      REDIS: redis://cache:6379
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL}
+      EMAIL_TRANSPORT: ${DIRECTUS_EMAIL_TRANSPORT:-smtp}
+      EMAIL_FROM: ${DIRECTUS_EMAIL_FROM:-no-reply@example.com}
+      EMAIL_FROM_NAME: ${DIRECTUS_EMAIL_FROM_NAME:-OnlineLessons}
+      EMAIL_SMTP_HOST: ${DIRECTUS_EMAIL_SMTP_HOST:-mailpit}
+      EMAIL_SMTP_PORT: ${DIRECTUS_EMAIL_SMTP_PORT:-1025}
+      EMAIL_SMTP_USER: ${DIRECTUS_EMAIL_SMTP_USER:-}
+      EMAIL_SMTP_PASSWORD: ${DIRECTUS_EMAIL_SMTP_PASSWORD:-}
+      EMAIL_SMTP_SECURE: ${DIRECTUS_EMAIL_SMTP_SECURE:-false}
+      EMAIL_VERIFY_SETUP: ${DIRECTUS_EMAIL_VERIFY_SETUP:-false}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:8055/').then(r => process.exit(r.status < 500 ? 0 : 1)).catch(() => process.exit(1))\""
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 8
+
+  backend:
+    <<: *security-defaults
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:1212/api/health/ready/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - online_media:/app/media
+      - online_static:/app/staticfiles
+    environment:
+      APP_RELEASE: ${APP_RELEASE:-}
+      SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DJANGO_DEBUG:-false}
+      TIME_ZONE: ${TIME_ZONE:-Europe/Berlin}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend,jupyterhub,directus,nginx}
+      POSTGRESQL: "true"
+      DB_NAME: ${APP_DB_NAME:-online_lessons}
+      DB_USER: ${APP_DB_USER:-online_lessons}
+      DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD is required}
+      DB_HOST: database
+      DB_PORT: 5432
+      CORS_ALLOW_ALL_ORIGINS: "false"
+      CORS_ALLOWED_ORIGINS: ${APP_BASE_URL}
+      CSRF_TRUSTED_ORIGINS: ${APP_BASE_URL}
+      ONLINE_AUTH_COOKIE_SECURE: "true"
+      ONLINE_AUTH_COOKIE_SAMESITE: "Lax"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+      ONLINE_FEEDBACK_RECEIVER_EMAIL: ${ONLINE_FEEDBACK_RECEIVER_EMAIL}
+      ONLINE_EMAIL_MODE: ${ONLINE_EMAIL_MODE:-console}
+      ONLINE_EMAIL_DIRECTUS_TOKEN: ${ONLINE_EMAIL_DIRECTUS_TOKEN}
+      ONLINE_EMAIL_DIRECTUS_FLOW_URL: ${ONLINE_EMAIL_DIRECTUS_FLOW_URL}
+      ONLINE_COURSE_ACCESS_DIRECTUS_FLOW_URL: ${ONLINE_COURSE_ACCESS_DIRECTUS_FLOW_URL}
+      ONLINE_STUDENT_PORTAL_URL: ${APP_BASE_URL}/student/login
+      ONLINE_PUBLIC_PORTAL_URL: ${APP_BASE_URL}/portal
+      ONLINE_PAYMENT_MODE: ${ONLINE_PAYMENT_MODE:-free}
+      ONLINE_ATTENDANCE_SYNC_MODE: ${ONLINE_ATTENDANCE_SYNC_MODE:-demo}
+      ONLINE_PUBLIC_CHECKOUT_SUCCESS_URL: ${APP_BASE_URL}/success
+      ONLINE_PUBLIC_CHECKOUT_CANCEL_URL: ${APP_BASE_URL}/checkout/{slug}
+      ONLINE_GOOGLE_CLIENT_ID: ${ONLINE_GOOGLE_CLIENT_ID}
+      ONLINE_GRAPH_TENANT_ID: ${ONLINE_GRAPH_TENANT_ID:-}
+      ONLINE_GRAPH_CLIENT_ID: ${ONLINE_GRAPH_CLIENT_ID:-}
+      ONLINE_GRAPH_CLIENT_SECRET: ${ONLINE_GRAPH_CLIENT_SECRET:-}
+      ONLINE_MICROSOFT_TENANT_ID: ${ONLINE_MICROSOFT_TENANT_ID:-}
+      ONLINE_MICROSOFT_CLIENT_ID: ${ONLINE_MICROSOFT_CLIENT_ID:-}
+      ONLINE_MICROSOFT_CLIENT_SECRET: ${ONLINE_MICROSOFT_CLIENT_SECRET:-}
+      ONLINE_MICROSOFT_SCOPES: ${ONLINE_MICROSOFT_SCOPES:-openid,profile,email}
+      ONLINE_MICROSOFT_AUTO_PROVISION_STUDENTS: ${ONLINE_MICROSOFT_AUTO_PROVISION_STUDENTS:-true}
+      ONLINE_MICROSOFT_STUDENT_EMAILS: ${ONLINE_MICROSOFT_STUDENT_EMAILS:-}
+      ONLINE_MICROSOFT_TEACHER_EMAILS: ${ONLINE_MICROSOFT_TEACHER_EMAILS:-}
+      ONLINE_MICROSOFT_ADMIN_EMAILS: ${ONLINE_MICROSOFT_ADMIN_EMAILS:-}
+      ONLINE_MICROSOFT_DEFAULT_STUDENT_LANGUAGE: ${ONLINE_MICROSOFT_DEFAULT_STUDENT_LANGUAGE:-en}
+      TRAINING_DIRECTUS_SYNC_TOKEN: ${TRAINING_DIRECTUS_SYNC_TOKEN}
+      TRAINING_NOTEBOOK_RUNTIME_ENABLED: ${TRAINING_NOTEBOOK_RUNTIME_ENABLED:-false}
+      TRAINING_JUPYTERHUB_BASE_URL: ${TRAINING_JUPYTERHUB_BASE_URL}
+      TRAINING_JUPYTERHUB_SERVICE_TOKEN: ${TRAINING_JUPYTERHUB_SERVICE_TOKEN}
+      TRAINING_JUPYTERHUB_API_TOKEN: ${TRAINING_JUPYTERHUB_API_TOKEN}
+      TRAINING_JUPYTERHUB_SHARED_SECRET: ${TRAINING_JUPYTERHUB_SHARED_SECRET}
+      TRAINING_JUPYTERHUB_EGRESS_ENABLED: ${TRAINING_JUPYTERHUB_EGRESS_ENABLED:-false}
+      TRAINING_JUPYTERHUB_GPU_RUNTIME_ENABLED: ${TRAINING_JUPYTERHUB_GPU_RUNTIME_ENABLED:-false}
+      TRAINING_MAX_LAB_SESSION_MINUTES_CAP: ${TRAINING_MAX_LAB_SESSION_MINUTES_CAP:-240}
+      TRAINING_JUPYTER_LOGIN_TTL_SECONDS: ${TRAINING_JUPYTER_LOGIN_TTL_SECONDS:-180}
+      TRAINING_GRADER_RUNTIME_ENABLED: ${TRAINING_GRADER_RUNTIME_ENABLED:-false}
+      TRAINING_GRADER_WEBHOOK_SECRET: ${TRAINING_GRADER_WEBHOOK_SECRET}
+      TRAINING_LAB_LAUNCH_TTL_SECONDS: ${TRAINING_LAB_LAUNCH_TTL_SECONDS:-300}
+      TRAINING_NBGRADER_BIN: ${TRAINING_NBGRADER_BIN:-nbgrader}
+      TRAINING_NBGRADER_COURSE_ROOT: ${TRAINING_NBGRADER_COURSE_ROOT:-}
+      TRAINING_SUBMISSION_STORAGE_PREFIX: ${TRAINING_SUBMISSION_STORAGE_PREFIX:-training/submissions}
+      TRAINING_SUBMISSION_MAX_UPLOAD_BYTES: ${TRAINING_SUBMISSION_MAX_UPLOAD_BYTES:-10485760}
+      TRAINING_GRADER_COMMAND_TIMEOUT_SECONDS: ${TRAINING_GRADER_COMMAND_TIMEOUT_SECONDS:-600}
+
+  learning-portal:
+    <<: *security-defaults
+    build:
+      context: ./learning-portal
+      args:
+        VITE_ONLINE_API_BASE_URL: /api/online
+        VITE_ONLINE_STUDENT_URL: /student/login
+        VITE_PUBLIC_SITE_URL: ${APP_BASE_URL}
+        VITE_PUBLIC_BASE_PATH: /
+        VITE_GOOGLE_CLIENT_ID: ${ONLINE_GOOGLE_CLIENT_ID:-}
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  learner-portal:
+    <<: *security-defaults
+    build:
+      context: ./learner-portal
+      args:
+        VITE_ONLINE_API_BASE_URL: /api/online
+        VITE_ONLINE_PUBLIC_URL: /
+        VITE_ONLINE_STUDENT_BASE_PATH: /student/
+        VITE_GOOGLE_CLIENT_ID: ${ONLINE_GOOGLE_CLIENT_ID:-}
+        VITE_SUPPORT_EMAIL: ${ONLINE_STUDENT_SUPPORT_EMAIL:-support@internal-academy.demo}
+        VITE_PRIVACY_URL: ${ONLINE_STUDENT_PRIVACY_URL:-/}
+        VITE_IMPRESSUM_URL: ${ONLINE_STUDENT_IMPRESSUM_URL:-/}
+        VITE_TEAMS_URL: ${ONLINE_STUDENT_TEAMS_URL:-https://teams.microsoft.com/v2/}
+        VITE_OUTLOOK_URL: ${ONLINE_STUDENT_OUTLOOK_URL:-https://outlook.office.com/mail/}
+        VITE_PLANNER_URL: ${ONLINE_STUDENT_PLANNER_URL:-https://tasks.office.com/}
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  instructor-workspace:
+    <<: *security-defaults
+    build:
+      context: ./instructor-workspace
+      args:
+        VITE_ONLINE_API_BASE_URL: /api/online
+        VITE_ONLINE_TEACHER_BASE_PATH: /teacher/
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  admin-console:
+    <<: *security-defaults
+    build:
+      context: ./admin-console
+      args:
+        VITE_ONLINE_API_BASE_URL: /api/online
+        VITE_ONLINE_ADMIN_BASE_PATH: /office/
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  traininggrader:
+    <<: *security-defaults
+    build:
+      context: .
+      dockerfile: ./deploy/grader-worker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    command: >
+      python manage.py process_training_grader_jobs --loop --sleep-seconds 15 --worker-name training-grader-worker
+    environment:
+      APP_RELEASE: ${APP_RELEASE:-}
+      SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DEBUG: ${DJANGO_DEBUG:-false}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend,jupyterhub,directus,nginx}
+      TIME_ZONE: ${TIME_ZONE:-Europe/Berlin}
+      POSTGRESQL: "true"
+      DB_NAME: ${APP_DB_NAME:-online_lessons}
+      DB_USER: ${APP_DB_USER:-online_lessons}
+      DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD is required}
+      DB_HOST: database
+      DB_PORT: 5432
+      TRAINING_GRADER_RUNTIME_ENABLED: ${TRAINING_GRADER_RUNTIME_ENABLED:-false}
+      TRAINING_GRADER_WEBHOOK_SECRET: ${TRAINING_GRADER_WEBHOOK_SECRET}
+      TRAINING_NBGRADER_BIN: ${TRAINING_NBGRADER_BIN:-nbgrader}
+      TRAINING_NBGRADER_COURSE_ROOT: ${TRAINING_NBGRADER_COURSE_ROOT:-}
+      TRAINING_SUBMISSION_STORAGE_PREFIX: ${TRAINING_SUBMISSION_STORAGE_PREFIX:-training/submissions}
+      TRAINING_SUBMISSION_MAX_UPLOAD_BYTES: ${TRAINING_SUBMISSION_MAX_UPLOAD_BYTES:-10485760}
+      TRAINING_GRADER_COMMAND_TIMEOUT_SECONDS: ${TRAINING_GRADER_COMMAND_TIMEOUT_SECONDS:-600}
+    volumes:
+      - online_media:/app/media
+
+  jupyterhub:
+    <<: *security-defaults
+    image: ${JUPYTERHUB_HUB_IMAGE:-learning-hub-jupyterhub:local}
+    build:
+      context: ./deploy/jupyterhub
+      dockerfile: hub/Dockerfile
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      JUPYTERHUB_BASE_URL: /lab/
+      JUPYTERHUB_DATA_DIR: /data
+      JUPYTERHUB_LOGIN_EXCHANGE_URL: http://backend:1212/api/training/internal/labs/exchange-jupyter-login/
+      JUPYTERHUB_CRYPT_KEY: ${JUPYTERHUB_CRYPT_KEY}
+      JUPYTERHUB_HUB_IMAGE: ${JUPYTERHUB_HUB_IMAGE:-learning-hub-jupyterhub:local}
+      JUPYTERHUB_SINGLEUSER_IMAGE: ${JUPYTERHUB_SINGLEUSER_IMAGE:-learning-hub-jupyterhub:local}
+      JUPYTERHUB_RUNTIME_NETWORK_NAME: ${JUPYTERHUB_RUNTIME_ISOLATED_NETWORK_NAME:-onlinelessons_lab}
+      JUPYTERHUB_RUNTIME_ISOLATED_NETWORK_NAME: ${JUPYTERHUB_RUNTIME_ISOLATED_NETWORK_NAME:-onlinelessons_lab}
+      JUPYTERHUB_RUNTIME_EGRESS_NETWORK_NAME: ${JUPYTERHUB_RUNTIME_EGRESS_NETWORK_NAME:-onlinelessons_lab_egress}
+      JUPYTERHUB_RUNTIME_NOTEBOOK_DIR: ${JUPYTERHUB_RUNTIME_NOTEBOOK_DIR:-/home/jovyan/work}
+      JUPYTERHUB_RUNTIME_CPU_LIMIT: ${JUPYTERHUB_RUNTIME_CPU_LIMIT:-1}
+      JUPYTERHUB_RUNTIME_CPU_GUARANTEE: ${JUPYTERHUB_RUNTIME_CPU_GUARANTEE:-0.5}
+      JUPYTERHUB_RUNTIME_MEM_LIMIT: ${JUPYTERHUB_RUNTIME_MEM_LIMIT:-2G}
+      JUPYTERHUB_RUNTIME_MEM_GUARANTEE: ${JUPYTERHUB_RUNTIME_MEM_GUARANTEE:-1G}
+      JUPYTERHUB_RUNTIME_PIDS_LIMIT: ${JUPYTERHUB_RUNTIME_PIDS_LIMIT:-256}
+      JUPYTERHUB_RUNTIME_MAX_SESSION_MINUTES_CAP: ${TRAINING_MAX_LAB_SESSION_MINUTES_CAP:-240}
+      JUPYTERHUB_GPU_RUNTIME_ENABLED: ${TRAINING_JUPYTERHUB_GPU_RUNTIME_ENABLED:-false}
+      JUPYTERHUB_GPU_RUNTIME_DEVICE_COUNT: ${JUPYTERHUB_GPU_RUNTIME_DEVICE_COUNT:-1}
+      JUPYTERHUB_SINGLEUSER_UID: ${JUPYTERHUB_SINGLEUSER_UID:-1000}
+      JUPYTERHUB_SINGLEUSER_GID: ${JUPYTERHUB_SINGLEUSER_GID:-100}
+      JUPYTERHUB_ALLOWED_RUNTIME_IMAGES: ${JUPYTERHUB_ALLOWED_RUNTIME_IMAGES:-learning-hub-jupyterhub:local}
+      JUPYTERHUB_LAUNCHER_SERVICE_NAME: learning-hub-launcher
+      TRAINING_JUPYTERHUB_SERVICE_TOKEN: ${TRAINING_JUPYTERHUB_SERVICE_TOKEN}
+      TRAINING_JUPYTERHUB_API_TOKEN: ${TRAINING_JUPYTERHUB_API_TOKEN}
+      TRAINING_JUPYTERHUB_SHARED_SECRET: ${TRAINING_JUPYTERHUB_SHARED_SECRET}
+      DOCKER_HOST: unix:///var/run/docker.sock
+      JUPYTERHUB_LOGIN_EXCHANGE_TIMEOUT_SECONDS: 10
+    volumes:
+      - jupyterhub_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import sys, urllib.request, urllib.error; code = 500; url = 'http://127.0.0.1:8000/lab/';\ntry:\n    code = urllib.request.urlopen(url).status\nexcept urllib.error.HTTPError as exc:\n    code = exc.code\nsys.exit(0 if code < 500 else 1)\""
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 8
+    networks:
+      - default
+      - lab_isolated
+      - lab_egress
+
+  nginx:
+    <<: *security-defaults
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - learning-portal
+      - learner-portal
+      - instructor-workspace
+      - admin-console
+      - jupyterhub
+      - directus
+    ports:
+      - "${APP_HTTP_BIND:-0.0.0.0}:${APP_HTTP_PORT:-80}:80"
+    environment:
+      NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:-_}
+    volumes:
+      - ./deploy/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+
+networks:
+  lab_isolated:
+    name: ${JUPYTERHUB_RUNTIME_ISOLATED_NETWORK_NAME:-onlinelessons_lab}
+    internal: true
+  lab_egress:
+    name: ${JUPYTERHUB_RUNTIME_EGRESS_NETWORK_NAME:-onlinelessons_lab_egress}
+
+volumes:
+  postgres_data:
+  directus_uploads:
+  online_media:
+  online_static:
+  jupyterhub_data:

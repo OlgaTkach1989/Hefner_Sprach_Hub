@@ -1,0 +1,26 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="32" cy="32" r="29" fill="url(#paint0_linear_favicon_lh)" />
+  <circle cx="32" cy="32" r="28" stroke="url(#paint1_linear_favicon_lh)" stroke-width="2" />
+  <text
+    x="32"
+    y="39"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="22"
+    font-weight="700"
+    letter-spacing="-1.4"
+    fill="#FFF8EE"
+  >
+    LH
+  </text>
+  <defs>
+    <linearGradient id="paint0_linear_favicon_lh" x1="13" y1="10" x2="50" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0381A9" />
+      <stop offset="1" stop-color="#013444" />
+    </linearGradient>
+    <linearGradient id="paint1_linear_favicon_lh" x1="14" y1="10" x2="50" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7C66A" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#D5E5F7" stop-opacity="0.55" />
+    </linearGradient>
+  </defs>
+</svg>

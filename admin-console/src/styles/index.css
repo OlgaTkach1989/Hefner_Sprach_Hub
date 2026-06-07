@@ -1,0 +1,60 @@
+:root {
+  color-scheme: light;
+  font-family: "Roboto", "Segoe UI", "Trebuchet MS", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  --font-family-primary: "Roboto", "Segoe UI", "Trebuchet MS", sans-serif;
+  --primary-color: #164a61;
+  --blue200: #6c95b3;
+  --blue300: #164a61;
+  --blue400: #143343;
+  --blue500: #0a2330;
+  --surface-main: rgba(255, 255, 255, 0.92);
+  --surface-elevated: rgba(247, 242, 233, 0.92);
+  --surface-soft: #eef3f5;
+  --surface-input: rgba(255, 255, 255, 0.96);
+  --text-main: #163040;
+  --text-muted: #708594;
+  --text-on-accent: #f7f2e9;
+  --border-color: rgba(116, 145, 174, 0.24);
+  --shadow-soft: 0 28px 60px rgba(14, 39, 54, 0.14);
+  --brand-gold: #d7b668;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(215, 182, 104, 0.18), transparent 24%),
+    radial-gradient(circle at 100% 10%, rgba(20, 77, 110, 0.12), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 24%),
+    #f7f2eb;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}

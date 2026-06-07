@@ -1,0 +1,438 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extrahead %}
+<style>
+    .online-manager {
+        display: grid;
+        gap: 18px;
+        margin-top: 18px;
+    }
+
+    .online-manager__header,
+    .online-manager__sidebar,
+    .online-manager__content,
+    .online-manager__panel {
+        background: #fff;
+        border: 1px solid #d9e2ef;
+        border-radius: 14px;
+        box-shadow: 0 10px 24px rgba(25, 46, 71, 0.06);
+    }
+
+    .online-manager__header {
+        align-items: flex-start;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        padding: 20px 22px;
+    }
+
+    .online-manager__header h1 {
+        margin: 0 0 6px;
+    }
+
+    .online-manager__header p {
+        color: #44556f;
+        margin: 0;
+    }
+
+    .online-manager__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .online-manager__layout {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+    }
+
+    .online-manager__sidebar {
+        display: grid;
+        gap: 10px;
+        max-height: calc(100vh - 220px);
+        overflow: auto;
+        padding: 16px;
+        position: sticky;
+        top: 82px;
+    }
+
+    .online-manager__sidebar h2,
+    .online-manager__content h2,
+    .online-manager__panel h3 {
+        margin: 0;
+    }
+
+    .online-manager__course-link {
+        border: 1px solid #dce6f4;
+        border-radius: 12px;
+        color: inherit;
+        display: grid;
+        gap: 6px;
+        padding: 12px;
+        text-decoration: none;
+    }
+
+    .online-manager__course-link:hover,
+    .online-manager__course-link.is-active {
+        background: #f6f9ff;
+        border-color: #7eabde;
+    }
+
+    .online-manager__course-title {
+        color: #18324f;
+        font-weight: 700;
+    }
+
+    .online-manager__chips,
+    .online-manager__stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .online-manager__chip,
+    .online-manager__stat {
+        background: #eef4fc;
+        border: 1px solid #d4e0f2;
+        border-radius: 999px;
+        color: #294d78;
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 10px;
+    }
+
+    .online-manager__content {
+        display: grid;
+        gap: 18px;
+        padding: 18px;
+    }
+
+    .online-manager__summary {
+        display: grid;
+        gap: 16px;
+    }
+
+    .online-manager__summary-head {
+        align-items: flex-start;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+    }
+
+    .online-manager__summary-head p {
+        color: #44556f;
+        margin: 6px 0 0;
+    }
+
+    .online-manager__grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .online-manager__metric {
+        background: linear-gradient(180deg, #f9fbff 0%, #f1f6ff 100%);
+        border: 1px solid #dae5f5;
+        border-radius: 12px;
+        display: grid;
+        gap: 6px;
+        min-height: 92px;
+        padding: 14px;
+    }
+
+    .online-manager__metric-label {
+        color: #52627a;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .online-manager__metric strong {
+        color: #16314d;
+        font-size: 20px;
+        line-height: 1.2;
+    }
+
+    .online-manager__panel {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .online-manager__panel-head {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .online-manager__cohort {
+        border: 1px solid #dce6f4;
+        border-radius: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .online-manager__cohort-head {
+        align-items: flex-start;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+    }
+
+    .online-manager__cohort p {
+        margin: 0;
+    }
+
+    .online-manager__cohort-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .online-manager__table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .online-manager__table th,
+    .online-manager__table td {
+        border-bottom: 1px solid #e0e7f1;
+        padding: 10px 8px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .online-manager__table th {
+        background: #f4f7fc;
+        color: #37506f;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .button-link {
+        align-items: center;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    @media (max-width: 1180px) {
+        .online-manager__layout {
+            grid-template-columns: 1fr;
+        }
+
+        .online-manager__sidebar {
+            max-height: none;
+            position: static;
+        }
+
+        .online-manager__grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 720px) {
+        .online-manager__header,
+        .online-manager__summary-head,
+        .online-manager__panel-head,
+        .online-manager__cohort-head {
+            flex-direction: column;
+        }
+
+        .online-manager__grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="online-manager">
+    <section class="online-manager__header">
+        <div>
+            <h1>{{ title }}</h1>
+            <p>{{ subtitle }}</p>
+        </div>
+        <div class="online-manager__actions">
+            <a href="{{ course_list_url }}" class="button">Course changelist</a>
+            <a href="{{ cohort_list_url }}" class="button">Cohort changelist</a>
+        </div>
+    </section>
+
+    <div class="online-manager__layout">
+        <aside class="online-manager__sidebar">
+            <h2>Courses</h2>
+            {% if courses %}
+                {% for course in courses %}
+                    <a
+                        href="{{ course_manager_url }}?course={{ course.id }}"
+                        class="online-manager__course-link{% if selected_course_id == course.id %} is-active{% endif %}"
+                    >
+                        <span class="online-manager__course-title">{{ course.titleDe }}</span>
+                        <span>{{ course.slug }}</span>
+                        <div class="online-manager__chips">
+                            <span class="online-manager__chip">{{ course.cohortsCount }} cohorts</span>
+                            <span class="online-manager__chip">{{ course.studentsCount }} students</span>
+                            <span class="online-manager__chip">{{ course.sessionsSummary.total }} sessions</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p>No online courses created yet.</p>
+            {% endif %}
+        </aside>
+
+        <main class="online-manager__content">
+            {% if selected_course %}
+                <section class="online-manager__summary">
+                    <div class="online-manager__summary-head">
+                        <div>
+                            <h2>{{ selected_course.titleDe }}</h2>
+                            <p>
+                                {{ selected_course.slug }}
+                                {% if selected_course.titleEn %}| {{ selected_course.titleEn }}{% endif %}
+                            </p>
+                            <p>{{ selected_course.descriptionDe|default:"No German description." }}</p>
+                        </div>
+                        <div class="online-manager__actions">
+                            <a href="{% url 'admin:online_onlinecourse_change' selected_course.id %}" class="button">Edit course</a>
+                        </div>
+                    </div>
+
+                    <div class="online-manager__stats">
+                        <span class="online-manager__stat">
+                            {% if selected_course.isPublished %}Published{% else %}Unpublished{% endif %}
+                        </span>
+                        <span class="online-manager__stat">
+                            {% if selected_course.trialAvailable %}Trial enabled{% else %}No trial{% endif %}
+                        </span>
+                        <span class="online-manager__stat">{{ selected_course.priceAmount }} {{ selected_course.currency }}</span>
+                        <span class="online-manager__stat">Teachers: {{ selected_course.teachers|join:", "|default:"-" }}</span>
+                    </div>
+
+                    <div class="online-manager__grid">
+                        <div class="online-manager__metric">
+                            <span class="online-manager__metric-label">Cohorts</span>
+                            <strong>{{ selected_course.cohortsCount }}</strong>
+                            <span>{{ selected_course.cohortsSummary.public }} public / {{ selected_course.cohortsSummary.total }} total</span>
+                        </div>
+                        <div class="online-manager__metric">
+                            <span class="online-manager__metric-label">Students</span>
+                            <strong>{{ selected_course.studentsCount }}</strong>
+                            <span>Attendance {{ selected_course.attendancePercent }}%</span>
+                        </div>
+                        <div class="online-manager__metric">
+                            <span class="online-manager__metric-label">Sessions</span>
+                            <strong>{{ selected_course.sessionsSummary.total }}</strong>
+                            <span>{{ selected_course.sessionsSummary.completed }} completed</span>
+                        </div>
+                        <div class="online-manager__metric">
+                            <span class="online-manager__metric-label">Next session</span>
+                            <strong>
+                                {% if selected_course.nearestSessionAt %}
+                                    {{ selected_course.nearestSessionAt|date:"d.m.Y H:i" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </strong>
+                            <span>{{ selected_course.sessionsSummary.live }} live / {{ selected_course.sessionsSummary.canceled }} canceled</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="online-manager__panel">
+                    <div class="online-manager__panel-head">
+                        <h3>Cohorts and session generation</h3>
+                        <span>Target sessions per cohort: {{ selected_course.lessonsCount }}</span>
+                    </div>
+
+                    {% if selected_course.cohorts %}
+                        {% for cohort in selected_course.cohorts %}
+                            <article class="online-manager__cohort">
+                                <div class="online-manager__cohort-head">
+                                    <div>
+                                        <p><strong>{{ cohort.groupCode }}</strong> - {{ cohort.groupName }}</p>
+                                        <p>
+                                            Teacher: {{ cohort.teacherName }} |
+                                            Status: {{ cohort.status }} |
+                                            {% if cohort.isPublic %}Public{% else %}Hidden{% endif %}
+                                        </p>
+                                        <p>
+                                            Sessions: {{ cohort.sessionsCount }} |
+                                            Students: {{ cohort.studentsCount }} |
+                                            Attendance: {{ cohort.attendancePercent }}%
+                                        </p>
+                                    </div>
+                                    <div class="online-manager__cohort-actions">
+                                        <a href="{% url 'admin:online_onlinecohort_change' cohort.id %}" class="button button-link">Edit cohort</a>
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="generate_sessions">
+                                            <input type="hidden" name="cohort_id" value="{{ cohort.id }}">
+                                            <button type="submit" class="button default">Generate missing sessions</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    {% else %}
+                        <p>No cohorts assigned to this course yet.</p>
+                    {% endif %}
+                </section>
+
+                <section class="online-manager__panel">
+                    <div class="online-manager__panel-head">
+                        <h3>Sessions across course</h3>
+                    </div>
+                    <div style="overflow:auto;">
+                        <table class="online-manager__table">
+                            <thead>
+                                <tr>
+                                    <th>Session</th>
+                                    <th>Cohort</th>
+                                    <th>Starts</th>
+                                    <th>Status</th>
+                                    <th>Attendance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if selected_course.sessions %}
+                                    {% for session in selected_course.sessions %}
+                                        <tr>
+                                            <td>{{ session.title }}</td>
+                                            <td>{{ session.groupCode }}</td>
+                                            <td>{{ session.startsAt|date:"d.m.Y H:i" }}</td>
+                                            <td>
+                                                {{ session.status }}
+                                                {% if session.isCompleted %}(completed){% endif %}
+                                            </td>
+                                            <td>
+                                                P {{ session.attendanceSummary.present }},
+                                                A {{ session.attendanceSummary.absent }},
+                                                E {{ session.attendanceSummary.excused }},
+                                                U {{ session.attendanceSummary.unknown }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5">No sessions yet.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            {% else %}
+                <p>Select a course to inspect cohorts, sessions and generation controls.</p>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+:root {
+  --font-main: "Roboto", "Segoe UI", "Trebuchet MS", sans-serif;
+  --brand-deep: #0a2330;
+  --brand-deep-2: #143343;
+  --brand-teal: #164a61;
+  --brand-teal-strong: #0f4f79;
+  --brand-gold: #d7b668;
+  --brand-gold-soft: rgba(215, 182, 104, 0.18);
+  --brand-cream: #f7f2e9;
+  --brand-shell: #eef3f5;
+  --brand-line: rgba(116, 145, 174, 0.28);
+
+  --accent: var(--brand-teal);
+  --fe-blue: var(--brand-teal);
+  --fe-middle-blue: #d6e1e7;
+  --fe-light-blue: var(--brand-shell);
+}
+
+:root[data-theme="light"] {
+  --bg: #f7f2eb;
+  --surface-card: rgba(255, 255, 255, 0.84);
+  --surface-elevated: rgba(255, 248, 238, 0.92);
+  --surface-muted: rgba(238, 243, 245, 0.84);
+  --border-color: var(--brand-line);
+  --text-primary: #163040;
+  --text-secondary: #486171;
+  --text-muted: #708594;
+  --page-shadow: 0 28px 60px rgba(14, 39, 54, 0.12);
+}
+
+:root[data-theme="dark"] {
+  --bg: #08141c;
+  --surface-card: rgba(12, 31, 42, 0.84);
+  --surface-elevated: rgba(15, 40, 54, 0.92);
+  --surface-muted: rgba(16, 39, 54, 0.9);
+  --border-color: rgba(93, 120, 140, 0.34);
+  --text-primary: #eef4f6;
+  --text-secondary: #c3d0d6;
+  --text-muted: #91a6b1;
+  --page-shadow: 0 28px 60px rgba(0, 0, 0, 0.34);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  overflow-x: hidden;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(215, 182, 104, 0.18), transparent 24%),
+    radial-gradient(circle at 100% 10%, rgba(20, 77, 110, 0.12), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 24%),
+    var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+}
+
+p,
+li,
+span,
+label,
+td,
+th,
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+a {
+  color: var(--brand-teal);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
