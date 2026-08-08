@@ -2,7 +2,7 @@
 
 ## Product
 
-`Learning Hub`
+`Hefner Sprach Hub`
 
 `Governed enterprise learning workspace for onboarding, upskilling, and internal knowledge transfer`
 

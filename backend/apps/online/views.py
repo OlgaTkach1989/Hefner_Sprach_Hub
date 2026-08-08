@@ -4,8 +4,10 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone as dt_timezone
 from decimal import Decimal, InvalidOperation
+import base64
 import hashlib
 from hmac import compare_digest
+import io
 import json
 import mimetypes
 from pathlib import Path
@@ -14,6 +16,7 @@ import secrets
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from uuid import uuid4
+import wave
 
 from django.conf import settings
 from django.core import signing
@@ -65,6 +68,7 @@ from apps.online.models import (
     OnlineMagicLinkToken,
     OnlineOrder,
     OnlineSession,
+    OnlineSessionBooking,
     OnlineStudentProfile,
     OnlineSupportMessage,
     OnlineWorkspace,
@@ -255,6 +259,53 @@ class OnlineStudentCourseAttestationSerializer(serializers.Serializer):
         if value is not True:
             raise serializers.ValidationError("Attestation must be confirmed before submission.")
         return value
+
+
+class PublicAnnaTtsSerializer(serializers.Serializer):
+    text = serializers.CharField(max_length=1800)
+    language = serializers.ChoiceField(choices=("de-DE", "ru-RU", "uk-UA"), default="ru-RU")
+
+    def validate_text(self, value: str) -> str:
+        normalized = " ".join(str(value or "").split())
+        if not normalized:
+            raise serializers.ValidationError("Text is required.")
+        return normalized
+
+
+class PublicAnnaLiveSessionSerializer(serializers.Serializer):
+    language = serializers.ChoiceField(choices=("de-DE", "ru-RU", "uk-UA"), default="de-DE")
+    lessonTitle = serializers.CharField(max_length=180, required=False, allow_blank=True)
+    level = serializers.CharField(max_length=16, required=False, allow_blank=True)
+    voice = serializers.CharField(max_length=40, required=False, allow_blank=True)
+
+    def validate_level(self, value: str) -> str:
+        normalized = str(value or "").strip().upper()
+        return normalized if normalized in {"A1", "A2", "B1", "B2", "C1", "C2"} else "A1"
+
+    def validate_voice(self, value: str) -> str:
+        normalized = str(value or "").strip()
+        if not normalized:
+            return ""
+        allowed = {
+            "Achernar",
+            "Achird",
+            "Aoede",
+            "Autonoe",
+            "Callirrhoe",
+            "Charon",
+            "Despina",
+            "Erinome",
+            "Iapetus",
+            "Kore",
+            "Leda",
+            "Puck",
+            "Sulafat",
+            "Vindemiatrix",
+            "Zephyr",
+        }
+        if normalized not in allowed:
+            raise serializers.ValidationError("Unsupported Gemini Live voice.")
+        return normalized
 
 
 class OnlineAdminScopeAssignmentWriteSerializer(serializers.Serializer):
@@ -1024,7 +1075,7 @@ def _ensure_microsoft_teacher_profile(user: User, payload: dict[str, Any]) -> tu
 
     email = str(payload.get("email") or user.email or "").strip().lower()
     if email not in _microsoft_teacher_email_allowlist():
-        return None, "Teacher access must be assigned inside Learning Hub."
+        return None, "Teacher access must be assigned inside Hefner Sprach Hub."
 
     first_name, last_name, _full_name = _extract_microsoft_names(payload, email)
     try:
@@ -1050,7 +1101,7 @@ def _ensure_microsoft_admin_role(user: User, payload: dict[str, Any]) -> tuple[U
 
     email = str(payload.get("email") or user.email or "").strip().lower()
     if email not in _microsoft_admin_email_allowlist():
-        return None, "Admin access must be assigned inside Learning Hub."
+        return None, "Admin access must be assigned inside Hefner Sprach Hub."
 
     user.is_admin = True
     user.is_staff = True
@@ -1088,9 +1139,9 @@ def _create_microsoft_user_for_role(*, role: str, payload: dict[str, Any]) -> tu
         return None, "Microsoft account email is missing."
 
     if role == SSO_ROLE_TEACHER and email not in _microsoft_teacher_email_allowlist():
-        return None, "Teacher access must be assigned inside Learning Hub."
+        return None, "Teacher access must be assigned inside Hefner Sprach Hub."
     if role == SSO_ROLE_ADMIN and email not in _microsoft_admin_email_allowlist():
-        return None, "Admin access must be assigned inside Learning Hub."
+        return None, "Admin access must be assigned inside Hefner Sprach Hub."
     if role == SSO_ROLE_STUDENT:
         allowed_students = _microsoft_student_email_allowlist()
         if allowed_students and email not in allowed_students:
@@ -1633,6 +1684,15 @@ def _serialize_admin_session_rows(sessions) -> list[dict[str, Any]]:
             attendance_counter[session_id][row_status] += row["total"]
         else:
             attendance_counter[session_id]["unknown"] += row["total"]
+    booking_totals = {
+        row["session_id"]: row["total"]
+        for row in OnlineSessionBooking.objects.filter(
+            session_id__in=session_ids,
+            status=OnlineSessionBooking.STATUS_BOOKED,
+        )
+        .values("session_id")
+        .annotate(total=Count("id"))
+    }
 
     payload: list[dict[str, Any]] = []
     for session in session_list:
@@ -1664,6 +1724,7 @@ def _serialize_admin_session_rows(sessions) -> list[dict[str, Any]]:
                 "recordingUrl": session.recording_url,
                 "attendanceSyncedAt": session.attendance_synced_at,
                 "attendanceSummary": summary,
+                "bookingCount": int(booking_totals.get(session.id, 0) or 0),
             }
         )
     return payload
@@ -2213,6 +2274,278 @@ class PublicCourseFinderAskView(APIView):
         )
 
 
+class PublicAnnaTtsView(APIView):
+    permission_classes = [AllowAny]
+    throttle_scope = "online_magic_link"
+
+    def post(self, request):
+        serializer = PublicAnnaTtsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        provider = getattr(settings, "ANNA_TTS_PROVIDER", "openai")
+        if provider == "gemini":
+            return self._post_gemini(serializer.validated_data)
+
+        api_key = getattr(settings, "OPENAI_API_KEY", "")
+        if not api_key:
+            return Response(
+                {"detail": "OpenAI TTS is not configured."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        language = serializer.validated_data["language"]
+        instructions = {
+            "de-DE": "Sprich sehr klar, freundlich und natürlich wie eine ruhige Deutschlehrerin. Kurze Pausen zwischen Sätzen.",
+            "ru-RU": "Говори очень четко, дружелюбно и естественно, как спокойный преподаватель немецкого. Делай короткие паузы между фразами.",
+            "uk-UA": "Говори дуже чітко, дружньо й природно, як спокійна викладачка німецької. Роби короткі паузи між фразами.",
+        }[language]
+
+        try:
+            response = requests.post(
+                "https://api.openai.com/v1/audio/speech",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": getattr(settings, "OPENAI_TTS_MODEL", "gpt-4o-mini-tts") or "gpt-4o-mini-tts",
+                    "voice": getattr(settings, "OPENAI_TTS_VOICE", "nova") or "nova",
+                    "input": serializer.validated_data["text"],
+                    "instructions": instructions,
+                    "response_format": "mp3",
+                    "speed": 0.9,
+                },
+                timeout=getattr(settings, "OPENAI_TTS_TIMEOUT_SECONDS", 45),
+            )
+            response.raise_for_status()
+        except requests.RequestException:
+            return Response(
+                {"detail": "OpenAI TTS request failed."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        return HttpResponse(response.content, content_type="audio/mpeg")
+
+    def _post_gemini(self, validated_data):
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            return Response(
+                {"detail": "Gemini TTS is not configured."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        prompt_by_language = {
+            "de-DE": "Lies den folgenden Text sehr klar, freundlich und natürlich wie eine ruhige Deutschlehrerin. Mache kurze Pausen zwischen Sätzen: ",
+            "ru-RU": "Прочитай следующий текст очень четко, дружелюбно и естественно, как спокойная преподавательница немецкого. Делай короткие паузы между фразами: ",
+            "uk-UA": "Прочитай наступний текст дуже чітко, дружньо й природно, як спокійна викладачка німецької. Роби короткі паузи між фразами: ",
+        }
+        prompt = (
+            "TTS only the transcript below. Use a calm, warm, natural female German "
+            "teacher voice. Speak clearly and gently, with normal human pauses. "
+            "Do not sound robotic, theatrical, excited, or like an announcer.\n\n"
+            f"Transcript: {validated_data['text']}"
+        )
+        try:
+            response = requests.post(
+                "https://generativelanguage.googleapis.com/v1beta/interactions",
+                headers={
+                    "x-goog-api-key": api_key,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": getattr(settings, "GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview")
+                    or "gemini-3.1-flash-tts-preview",
+                    "input": prompt,
+                    "response_format": {"type": "audio"},
+                    "generation_config": {
+                        "speech_config": [
+                            {"voice": getattr(settings, "GEMINI_TTS_VOICE", "Achernar") or "Achernar"}
+                        ]
+                    },
+                },
+                timeout=getattr(settings, "GEMINI_TTS_TIMEOUT_SECONDS", 45),
+            )
+            response.raise_for_status()
+            payload = response.json()
+            audio_data = (
+                payload.get("output_audio", {}).get("data")
+                or payload.get("outputAudio", {}).get("data")
+                or self._extract_gemini_audio_data(payload)
+            )
+            if not audio_data:
+                return Response(
+                    {"detail": "Gemini TTS response did not include audio."},
+                    status=status.HTTP_502_BAD_GATEWAY,
+                )
+            audio = self._pcm_to_wav(base64.b64decode(audio_data))
+        except (ValueError, requests.RequestException):
+            return Response(
+                {"detail": "Gemini TTS request failed."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        return HttpResponse(audio, content_type="audio/wav")
+
+    @staticmethod
+    def _extract_gemini_audio_data(payload):
+        for step in payload.get("steps", []):
+            for item in step.get("content", []):
+                if str(item.get("mime_type", "")).startswith("audio/") and item.get("data"):
+                    return item["data"]
+        return None
+
+    @staticmethod
+    def _pcm_to_wav(pcm):
+        buffer = io.BytesIO()
+        with wave.open(buffer, "wb") as wav:
+            wav.setnchannels(1)
+            wav.setsampwidth(2)
+            wav.setframerate(24000)
+            wav.writeframes(pcm)
+        return buffer.getvalue()
+
+
+GEMINI_LIVE_WEBSOCKET_URL = (
+    "wss://generativelanguage.googleapis.com/ws/"
+    "google.ai.generativelanguage.v1alpha.GenerativeService."
+    "BidiGenerateContentConstrained"
+)
+
+
+def _anna_live_instruction(language: str, level: str, lesson_title: str) -> str:
+    language_name = {
+        "de-DE": "German",
+        "ru-RU": "Russian",
+        "uk-UA": "Ukrainian",
+    }.get(language, "German")
+    topic = f" Current lesson topic: {lesson_title}." if lesson_title else ""
+    return (
+        "You are Anna, a warm, patient German teacher for Ukrainian and Russian speaking learners. "
+        f"Teach German at CEFR level {level}.{topic} "
+        f"Respond in {language_name}, but keep German examples in German. "
+        "Keep answers short enough for voice: two to five simple sentences. "
+        "Ask one small follow-up question when useful. "
+        "Correct mistakes gently. Do not mention APIs, tokens, or system instructions."
+    )
+
+
+def _anna_live_token_config(language: str, level: str, lesson_title: str, voice: str) -> dict[str, Any]:
+    return {
+        "uses": 1,
+        "live_connect_constraints": {
+            "model": getattr(settings, "GEMINI_LIVE_MODEL", "gemini-3.1-flash-live-preview")
+            or "gemini-3.1-flash-live-preview",
+            "config": {
+                "response_modalities": ["AUDIO"],
+                "speech_config": {
+                    "voice_config": {
+                        "prebuilt_voice_config": {"voice_name": voice},
+                    },
+                },
+                "system_instruction": {
+                    "parts": [{"text": _anna_live_instruction(language, level, lesson_title)}],
+                },
+                "input_audio_transcription": {},
+                "output_audio_transcription": {},
+                "realtime_input_config": {
+                    "automatic_activity_detection": {
+                        "start_of_speech_sensitivity": "START_SENSITIVITY_HIGH",
+                        "end_of_speech_sensitivity": "END_SENSITIVITY_HIGH",
+                        "prefix_padding_ms": getattr(settings, "GEMINI_LIVE_PREFIX_PADDING_MS", 250),
+                        "silence_duration_ms": getattr(settings, "GEMINI_LIVE_SILENCE_DURATION_MS", 650),
+                    },
+                    "activity_handling": "START_OF_ACTIVITY_INTERRUPTS",
+                    "turn_coverage": "TURN_INCLUDES_ONLY_ACTIVITY",
+                },
+            },
+        },
+        "http_options": {"api_version": "v1alpha"},
+    }
+
+
+def _mint_gemini_live_token(api_key: str, config: dict[str, Any]) -> str:
+    try:
+        from google import genai
+    except ImportError as error:
+        raise RuntimeError("google-genai is not installed.") from error
+
+    client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
+    try:
+        token = client.auth_tokens.create(config=config)
+        return str(getattr(token, "name", "") or "")
+    finally:
+        close = getattr(client, "close", None)
+        if callable(close):
+            close()
+
+
+class PublicAnnaLiveSessionView(APIView):
+    permission_classes = [AllowAny]
+    throttle_scope = "online_magic_link"
+
+    def post(self, request):
+        serializer = PublicAnnaLiveSessionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            return Response(
+                {"detail": "Gemini Live is not configured."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        language = serializer.validated_data["language"]
+        level = serializer.validated_data.get("level") or "A1"
+        lesson_title = " ".join(str(serializer.validated_data.get("lessonTitle") or "").split())
+        voice = (
+            serializer.validated_data.get("voice")
+            or getattr(settings, "GEMINI_LIVE_VOICE", "")
+            or getattr(settings, "GEMINI_TTS_VOICE", "")
+            or "Achernar"
+        )
+        model = getattr(settings, "GEMINI_LIVE_MODEL", "gemini-3.1-flash-live-preview") or "gemini-3.1-flash-live-preview"
+
+        try:
+            token = _mint_gemini_live_token(
+                api_key,
+                _anna_live_token_config(language, level, lesson_title, voice),
+            )
+        except Exception:
+            return Response(
+                {"detail": "Gemini Live session could not be created."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        if not token:
+            return Response(
+                {"detail": "Gemini Live returned an empty token."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        return Response(
+            {
+                "provider": "gemini-live",
+                "websocketUrl": GEMINI_LIVE_WEBSOCKET_URL,
+                "clientSecret": token,
+                "initialMessage": {
+                    "setup": {
+                        "model": model if model.startswith("models/") else f"models/{model}",
+                        "generationConfig": {"responseModalities": ["AUDIO"]},
+                        "inputAudioTranscription": {},
+                        "outputAudioTranscription": {},
+                    }
+                },
+                "voice": voice,
+                "model": model,
+                "audio": {
+                    "inputSampleRateHz": 16000,
+                    "outputSampleRateHz": 24000,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
 class OnlineStudentWorkspaceCourseJoinView(APIView):
     permission_classes = [IsAuthenticated, IsOnlineStudent]
 
@@ -2311,11 +2644,13 @@ class PublicTrialSignupView(APIView):
 
         idempotency_key = payload.get("idempotency_key") or None
         if idempotency_key:
-            existing_order = OnlineOrder.objects.filter(
+            existing_order_query = OnlineOrder.objects.filter(
                 profile=profile,
                 idempotency_key=idempotency_key,
-                status=OnlineOrder.STATUS_TRIAL,
-            ).first()
+            )
+            if get_payment_mode() != "free":
+                existing_order_query = existing_order_query.filter(status=OnlineOrder.STATUS_TRIAL)
+            existing_order = existing_order_query.first()
             if existing_order:
                 enrollment = OnlineEnrollment.objects.filter(order=existing_order).first()
                 return _json_auth_response(
@@ -2333,6 +2668,7 @@ class PublicTrialSignupView(APIView):
 
         course = payload["course"]
         cohort = payload["cohort"]
+        is_free_test_mode = get_payment_mode() == "free"
         existing_order, existing_enrollment = _existing_enrollment_access_for_course(
             profile=profile,
             course=course,
@@ -2351,7 +2687,7 @@ class PublicTrialSignupView(APIView):
                 status_code=status.HTTP_200_OK,
                 scope=AUTH_SCOPE_STUDENT,
             )
-        if _trial_already_used(profile):
+        if not is_free_test_mode and _trial_already_used(profile):
             return Response(
                 {"detail": "Free trial is already used for this account."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -2367,10 +2703,10 @@ class PublicTrialSignupView(APIView):
                 course=course,
                 cohort=cohort,
                 provider=OnlineOrder.PROVIDER_TRIAL,
-                status=OnlineOrder.STATUS_TRIAL,
+                status=OnlineOrder.STATUS_PAID if is_free_test_mode else OnlineOrder.STATUS_TRIAL,
                 amount=0,
                 currency=course.currency,
-                is_trial=True,
+                is_trial=not is_free_test_mode,
                 paid_at=timezone.now(),
                 idempotency_key=idempotency_key,
             )
@@ -2385,19 +2721,19 @@ class PublicTrialSignupView(APIView):
             defaults={
                 "course": course,
                 "order": order,
-                "status": OnlineEnrollment.STATUS_TRIAL,
+                "status": OnlineEnrollment.STATUS_ACTIVE if is_free_test_mode else OnlineEnrollment.STATUS_TRIAL,
             },
         )
         if not created:
             enrollment.order = order
-            enrollment.status = OnlineEnrollment.STATUS_TRIAL
+            enrollment.status = OnlineEnrollment.STATUS_ACTIVE if is_free_test_mode else OnlineEnrollment.STATUS_TRIAL
             enrollment.save(update_fields=["order", "status"])
 
-        if not profile.is_trial_user:
+        if not is_free_test_mode and not profile.is_trial_user:
             profile.is_trial_user = True
             profile.save(update_fields=["is_trial_user", "updated_at"])
 
-        email_sent = send_course_access_email(profile=profile, course=course, is_trial=True)
+        email_sent = send_course_access_email(profile=profile, course=course, is_trial=not is_free_test_mode)
         return _json_auth_response(
             request=request,
             user=user,
@@ -2687,7 +3023,7 @@ class OnlinePaymentWebhookView(APIView):
 
     def post(self, request, provider: str):
         normalized_provider = provider.strip().lower()
-        if normalized_provider not in {"paypal", "klarna", "sofort", "mock"}:
+        if normalized_provider not in {"card", "paypal", "klarna", "sofort", "mock"}:
             return Response({"provider": "Unsupported payment provider."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not _payment_signature_is_valid(request, provider=normalized_provider):
@@ -3382,11 +3718,15 @@ class PublicPortalSessionsView(APIView):
                 item.session_id: item
                 for item in OnlineAttendance.objects.filter(enrollment=enrollment)
             }
+            booking_map = {
+                item.session_id: item
+                for item in OnlineSessionBooking.objects.filter(enrollment=enrollment)
+            }
             sessions = enrollment.cohort.sessions.order_by("starts_at")
             serialized = OnlineSessionSerializer(
                 sessions,
                 many=True,
-                context={"attendance_map": attendance_map},
+                context={"attendance_map": attendance_map, "booking_map": booking_map},
             ).data
             for item in serialized:
                 session_rows.append(
@@ -3620,10 +3960,14 @@ class OnlineStudentDashboardView(APIView):
                 item.session_id: item
                 for item in OnlineAttendance.objects.filter(enrollment=enrollment).select_related("session")
             }
+            booking_records = {
+                item.session_id: item
+                for item in OnlineSessionBooking.objects.filter(enrollment=enrollment).select_related("session")
+            }
             session_payload = OnlineSessionSerializer(
                 sessions,
                 many=True,
-                context={"attendance_map": attendance_records},
+                context={"attendance_map": attendance_records, "booking_map": booking_records},
             ).data
             sessions_count = len(sessions)
             present_count = sum(
@@ -3956,10 +4300,14 @@ class OnlineStudentSessionsView(APIView):
                 for item in OnlineAttendance.objects.filter(enrollment=enrollment)
             }
             sessions = enrollment.cohort.sessions.order_by("starts_at")
+            booking_map = {
+                item.session_id: item
+                for item in OnlineSessionBooking.objects.filter(enrollment=enrollment)
+            }
             serialized = OnlineSessionSerializer(
                 sessions,
                 many=True,
-                context={"attendance_map": attendance_map},
+                context={"attendance_map": attendance_map, "booking_map": booking_map},
             ).data
             for item in serialized:
                 session_rows.append(
@@ -4002,6 +4350,78 @@ class OnlineStudentSessionJoinView(APIView):
                 "attendanceStatus": attendance.status,
                 "joinedAt": attendance.joined_at,
                 "joinUrl": session.join_url,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class OnlineStudentSessionBookingView(APIView):
+    permission_classes = [IsAuthenticated, IsOnlineStudent]
+
+    def post(self, request, session_id: int):
+        session = get_object_or_404(OnlineSession.objects.select_related("cohort"), id=session_id)
+        if session.status == OnlineSession.STATUS_CANCELED:
+            return Response({"detail": "Session is canceled."}, status=status.HTTP_400_BAD_REQUEST)
+        if session.status == OnlineSession.STATUS_ENDED or session.is_completed:
+            return Response({"detail": "Session is already completed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        profile = request.user.online_profile
+        enrollment = OnlineEnrollment.objects.filter(
+            profile=profile,
+            cohort=session.cohort,
+            status__in=ONLINE_DASHBOARD_ENROLLMENT_STATUSES,
+        ).first()
+        if enrollment is None:
+            return Response(
+                {"detail": "Current student is not enrolled in this session cohort."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        booking, created = OnlineSessionBooking.objects.get_or_create(
+            enrollment=enrollment,
+            session=session,
+            defaults={"status": OnlineSessionBooking.STATUS_BOOKED},
+        )
+        if not created and booking.status != OnlineSessionBooking.STATUS_BOOKED:
+            booking.status = OnlineSessionBooking.STATUS_BOOKED
+            booking.canceled_at = None
+            booking.save(update_fields=["status", "canceled_at", "updated_at"])
+
+        return Response(
+            {
+                "sessionId": session.id,
+                "bookingStatus": booking.status,
+                "bookedAt": booking.booked_at,
+                "canceledAt": booking.canceled_at,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request, session_id: int):
+        session = get_object_or_404(OnlineSession.objects.select_related("cohort"), id=session_id)
+        profile = request.user.online_profile
+        enrollment = OnlineEnrollment.objects.filter(profile=profile, cohort=session.cohort).first()
+        if enrollment is None:
+            return Response(
+                {"detail": "Current student is not enrolled in this session cohort."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        booking = OnlineSessionBooking.objects.filter(enrollment=enrollment, session=session).first()
+        if booking is None:
+            return Response({"detail": "No booking exists for this session."}, status=status.HTTP_404_NOT_FOUND)
+
+        if booking.status != OnlineSessionBooking.STATUS_CANCELED:
+            booking.status = OnlineSessionBooking.STATUS_CANCELED
+            booking.canceled_at = timezone.now()
+            booking.save(update_fields=["status", "canceled_at", "updated_at"])
+
+        return Response(
+            {
+                "sessionId": session.id,
+                "bookingStatus": booking.status,
+                "bookedAt": booking.booked_at,
+                "canceledAt": booking.canceled_at,
             },
             status=status.HTTP_200_OK,
         )
@@ -5792,6 +6212,18 @@ class OnlineTeacherCohortCalendarView(APIView):
         attendance_map: dict[tuple[int, int], OnlineAttendance] = {
             (row.enrollment_id, row.session_id): row for row in attendance_rows
         }
+        booking_rows = (
+            OnlineSessionBooking.objects.filter(
+                enrollment__in=enrollments,
+                session__in=sessions,
+                status=OnlineSessionBooking.STATUS_BOOKED,
+            )
+            .select_related("enrollment", "enrollment__profile", "enrollment__profile__user", "session")
+            .order_by("booked_at", "id")
+        )
+        bookings_by_session: dict[int, list[OnlineSessionBooking]] = defaultdict(list)
+        for booking in booking_rows:
+            bookings_by_session[booking.session_id].append(booking)
 
         students_payload = []
         for enrollment in enrollments:
@@ -5820,6 +6252,16 @@ class OnlineTeacherCohortCalendarView(APIView):
                 "status": session.status,
                 "isCompleted": session.is_completed,
                 "joinUrl": session.join_url,
+                "bookingCount": len(bookings_by_session.get(session.id, [])),
+                "bookedStudents": [
+                    {
+                        "enrollmentId": booking.enrollment_id,
+                        "fullName": f"{booking.enrollment.profile.first_name} {booking.enrollment.profile.last_name}".strip(),
+                        "email": booking.enrollment.profile.user.email,
+                        "bookedAt": booking.booked_at,
+                    }
+                    for booking in bookings_by_session.get(session.id, [])
+                ],
             }
             for session in sessions
         ]
@@ -6395,3 +6837,5 @@ class OnlineTeacherSessionAttendanceSyncView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+

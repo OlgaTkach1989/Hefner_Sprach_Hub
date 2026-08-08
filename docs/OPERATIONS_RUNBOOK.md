@@ -1,6 +1,6 @@
 # Operations Runbook
 
-This runbook is the operational source of truth for `Learning Hub` on Ubuntu 24.04 servers.
+This runbook is the operational source of truth for `Hefner Sprach Hub` on Ubuntu 24.04 servers.
 
 ## Stack
 

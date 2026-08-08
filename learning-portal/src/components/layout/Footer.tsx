@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { motion, AnimatePresence } from "framer-motion"
 
-import logo from "../../assets/logo-footer.svg"
-import bgImage from "../../assets/diagonal-footer.png"
+import logo from "../../assets/hefner-sprach-hub-logo.jpeg"
 import styles from "./Footer.module.css"
 
 export const Footer = () => {
-  const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -17,11 +14,9 @@ export const Footer = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  const siteUrl =
-    import.meta.env.VITE_PUBLIC_SITE_URL ?? "https://onlinelesson.serveftp.com/"
   const appBasePath = import.meta.env.BASE_URL ?? "/"
   const normalizedBasePath = appBasePath.endsWith("/") ? appBasePath.slice(0, -1) : appBasePath
-  const homePath = `${normalizedBasePath || ""}/home`
+  const homePath = `${normalizedBasePath || ""}/`
   const homeHashLink = (hash: string) => `${homePath}${hash}`
 
   return (
@@ -33,38 +28,27 @@ export const Footer = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <img src={bgImage} className={styles.bgImg} alt="background image" />
           <div className={styles.inner}>
             <div className={styles.logoWrap}>
-              <a href={`${siteUrl.replace(/\/+$/, "")}/home`} className={styles.brandLink}>
-                <img
-                  src={logo}
-                  className={styles.logo}
-                  alt={t("brand")}
-                />
-                <span>{t("brand")}</span>
+              <a href={homePath} className={styles.brandLink}>
+                <img src={logo} className={styles.logo} alt="Hefner Sprach Hub" />
+                <span>HEFNER SPRACH HUB</span>
               </a>
             </div>
             <nav className={styles.nav} aria-label="Main navigation">
-              <a
-                href={homeHashLink("#sections")}
-                className={styles.navLink}
-              >
-                {t("navOffices")}
-              </a>
-              <a href={homeHashLink("#resources")} className={styles.navLink}>
-                {t("navResources")}
-              </a>
-              <a href={homeHashLink("#faq")} className={styles.navLink}>
-                {t("navFaq")}
-              </a>
+              <a href={homeHashLink("#levels")} className={styles.navLink}>Kurse</a>
+              <a href="/course/deutsch-a1" className={styles.navLink}>A1</a>
+              <a href="/course/deutsch-a2" className={styles.navLink}>A2</a>
+              <a href="/course/deutsch-b1" className={styles.navLink}>B1</a>
+              <a href="/course/deutsch-b2" className={styles.navLink}>B2</a>
+              <a href="/course/deutsch-c1" className={styles.navLink}>C1</a>
+              <a href="/course/deutsch-c2" className={styles.navLink}>C2</a>
             </nav>
 
             <div className={styles.contacts}>
-              <p dangerouslySetInnerHTML={{ __html: t("footerAddress") }} />
-              <a href="mailto:contact@onlinelesson.serveftp.com">
-                contact@onlinelesson.serveftp.com
-              </a>
+              <p>Deutsch lernen · Вивчення німецької</p>
+              <a href="mailto:Annahefner79@yahoo.com">Annahefner79@yahoo.com</a>
+              <a href="tel:+4915785553934">0049 15785553934</a>
             </div>
           </div>
         </motion.footer>

@@ -2,7 +2,7 @@ FROM quay.io/jupyterhub/singleuser:5.4
 
 LABEL org.opencontainers.image.authors="Serhii TK" \
       org.opencontainers.image.vendor="Serhii TK" \
-      org.opencontainers.image.title="Learning Hub Jupyter Runtime" \
+      org.opencontainers.image.title="Hefner Sprach Hub Jupyter Runtime" \
       org.opencontainers.image.licenses="LicenseRef-Proprietary"
 
 USER root

@@ -1,13 +1,13 @@
 # DPA Template
 
-This is a working template for a Data Processing Addendum for `Learning Hub`. It is a product template and must be reviewed by legal counsel before signature.
+This is a working template for a Data Processing Addendum for `Hefner Sprach Hub`. It is a product template and must be reviewed by legal counsel before signature.
 
 ## 1. Parties
 
 This Data Processing Addendum is entered into by:
 
-- `Controller`: the customer organization using `Learning Hub`
-- `Processor`: the operator or vendor of `Learning Hub`
+- `Controller`: the customer organization using `Hefner Sprach Hub`
+- `Processor`: the operator or vendor of `Hefner Sprach Hub`
 
 ## 2. Subject matter
 

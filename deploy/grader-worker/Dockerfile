@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 LABEL org.opencontainers.image.authors="Serhii TK" \
       org.opencontainers.image.vendor="Serhii TK" \
-      org.opencontainers.image.title="Learning Hub Grader Worker" \
+      org.opencontainers.image.title="Hefner Sprach Hub Grader Worker" \
       org.opencontainers.image.licenses="LicenseRef-Proprietary"
 
 ENV PYTHONDONTWRITEBYTECODE=1

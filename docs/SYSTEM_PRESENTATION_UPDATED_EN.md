@@ -4,7 +4,7 @@
 
 ### 1. What the platform is
 
-`Learning Hub` is a governed enterprise learning platform for internal academies, onboarding, upskilling, role transition, knowledge transfer, and completion-ready training.
+`Hefner Sprach Hub` is a governed enterprise learning platform for internal academies, onboarding, upskilling, role transition, knowledge transfer, and completion-ready training.
 
 It combines five layers in one product:
 
@@ -130,7 +130,7 @@ The platform is suitable for:
 
 ### 8. Main value
 
-The key value of `Learning Hub` is that it turns learning from a loose set of files, videos, and quizzes into a governed operational environment where an organization can:
+The key value of `Hefner Sprach Hub` is that it turns learning from a loose set of files, videos, and quizzes into a governed operational environment where an organization can:
 
 - deliver training
 - track progress
@@ -150,11 +150,11 @@ The platform can be positioned as:
 
 Recommended positioning statement:
 
-> `Learning Hub` is a governed enterprise learning workspace for onboarding, upskilling, internal knowledge transfer, interactive practice, and completion-ready learning.
+> `Hefner Sprach Hub` is a governed enterprise learning workspace for onboarding, upskilling, internal knowledge transfer, interactive practice, and completion-ready learning.
 
 ### 10. Summary
 
-`Learning Hub` is no longer just a course website and no longer just a traditional LMS.
+`Hefner Sprach Hub` is no longer just a course website and no longer just a traditional LMS.
 
 It is an evolving enterprise learning platform that now connects:
 

@@ -64,10 +64,81 @@ export const renderLessonMarkdownBlocks = (body: string, baseClassName: string) 
       );
     }
 
+    const tableRows = block
+      .split("\n")
+      .map((row) => row.trim())
+      .filter(Boolean);
+
+    if (
+      tableRows.length > 1
+      && tableRows.every((row) => row.startsWith("|") && row.endsWith("|"))
+      && tableRows.some((row) => !/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(row))
+    ) {
+      const dataRows = tableRows
+        .filter((row) => !/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(row))
+        .map((row) => row.slice(1, -1).split("|").map((cell) => cell.trim()));
+
+      const isAlphabetGrid = dataRows.every((cells) => cells.length >= 3 && /^.{1,4}(\s.{1,4})?$/.test(cells[0]));
+
+      if (isAlphabetGrid) {
+        return (
+          <div key={`${block}_${index}`} className={`${baseClassName}__alphabet-grid`}>
+            {dataRows.map((cells) => (
+              <article key={cells.join("_")} className={`${baseClassName}__alphabet-card`}>
+                <strong>{cells[0]}</strong>
+                <span>{cells[1]}</span>
+                <b>{cells[2]}</b>
+                {cells[3] ? <small>{cells[3]}</small> : null}
+              </article>
+            ))}
+          </div>
+        );
+      }
+
+      return (
+        <div key={`${block}_${index}`} className={`${baseClassName}__table-wrap`}>
+          <table className={`${baseClassName}__table`}>
+            <tbody>
+              {dataRows.map((cells) => (
+                <tr key={cells.join("_")}>
+                  {cells.map((cell) => (
+                    <td key={cell}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
     const listRows = block
       .split("\n")
       .map((row) => row.trim())
       .filter(Boolean);
+
+    if (
+      listRows.length > 1
+      && listRows.every((row) => /^(Anna|Student|Teacher|Lehrer|Schueler|Schülerin|A|S):\s+/.test(row))
+    ) {
+      return (
+        <div key={`${block}_${index}`} className={`${baseClassName}__dialog`}>
+          {listRows.map((row, rowIndex) => {
+            const [, speaker = "", text = ""] = row.match(/^(Anna|Student|Teacher|Lehrer|Schueler|Schülerin|A|S):\s+(.+)$/) ?? [];
+            const isStudent = /^(Student|Schueler|Schülerin|S)$/.test(speaker);
+            return (
+              <article
+                key={`${row}_${rowIndex}`}
+                className={`${baseClassName}__dialog-row ${isStudent ? "is-student" : "is-teacher"}`}
+              >
+                <span>{speaker.charAt(0).toUpperCase()}</span>
+                <p>{text}</p>
+              </article>
+            );
+          })}
+        </div>
+      );
+    }
 
     if (listRows.length > 0 && listRows.every((row) => row.startsWith("- "))) {
       return (

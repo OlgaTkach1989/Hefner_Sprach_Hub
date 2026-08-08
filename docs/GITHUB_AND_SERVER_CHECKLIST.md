@@ -2,7 +2,7 @@
 
 ## 1. What I need from you for GitHub
 
-To push `Learning Hub` into your separate GitHub repository, send me:
+To push `Hefner Sprach Hub` into your separate GitHub repository, send me:
 
 1. Repository URL.
 Example: `https://github.com/<user-or-org>/learning-hub.git`
@@ -22,7 +22,7 @@ Tell me if the repository must stay `private`.
 
 ## 2. What I will do after you send that
 
-1. Initialize `Learning Hub` as a standalone Git repository.
+1. Initialize `Hefner Sprach Hub` as a standalone Git repository.
 2. Make sure ignored local files are not included.
 3. Create the first clean commit.
 4. Add your GitHub remote.

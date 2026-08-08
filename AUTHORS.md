@@ -1,6 +1,6 @@
 # Authors
 
-Learning Hub is authored and maintained by:
+Hefner Sprach Hub is authored and maintained by:
 
 - Serhii TK (`SerhiiTK-prod`)
 

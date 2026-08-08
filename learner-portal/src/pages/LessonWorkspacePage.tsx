@@ -17,6 +17,7 @@ import {
   resolveVideoEmbedUrl,
 } from "../components/course/courseDocumentUtils";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/hefner-sprach-hub-logo.jpeg";
 import type {
   CourseLessonPlanItem,
   CourseLessonSectionItem,
@@ -320,6 +321,8 @@ export const LessonWorkspacePage = () => {
   const showSidebarAiAssistant = !(activeStep?.kind === "practice" && activePracticeItem);
   const progressPercent = steps.length ? Math.round((completedStepIds.length / steps.length) * 100) : 0;
   const activeStepIndex = steps.findIndex((step) => step.id === activeStep.id);
+  const moduleDisplayNumber = Math.max(1, (lesson?.moduleSortOrder ?? 0) + 1);
+  const lessonDisplayNumber = Math.max(1, lesson?.sortOrder ?? activeStepIndex + 1);
   const courseTitle = preferredCourseTitle(payload, profile?.preferred_language);
   const sessionSchedule = lesson?.startsAt
     ? formatScheduleValue(lesson.startsAt, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -446,6 +449,14 @@ export const LessonWorkspacePage = () => {
       </div>
 
       <main className="lesson-workspace">
+        <header className="lesson-workspace__topbar">
+          <a href={dashboardHref} className="lesson-workspace__topbar-back">
+            ← Zurück · Назад
+          </a>
+          <img src={logo} alt="Hefner Sprach Hub" />
+          <span>Modul {moduleDisplayNumber} · Урок {lessonDisplayNumber}</span>
+        </header>
+
         <div ref={shellRef} className="lesson-workspace__shell">
           <a href={dashboardHref} className="lesson-workspace__back-link">
             Back to student workspace

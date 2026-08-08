@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/AuthContext";
 import { useUiPreferences } from "../../context/UiPreferencesContext";
-import logo from "../../assets/Logo_Farben-06.png";
+import logo from "../../assets/hefner-sprach-hub-logo.jpeg";
 import "./Header.css";
 
 type Props = {
@@ -20,8 +20,11 @@ export const Header = ({ onLogout }: Props) => {
   return (
     <header className="student-header">
       <a href={publicUrl} className="student-header__brand-link" rel="noreferrer">
-        <img src={logo} className="student-header__logo" alt="Internal Academy" />
-        <span className="student-header__brand">{t("brand")}</span>
+        <img src={logo} className="student-header__logo" alt="Hefner Sprach Hub" />
+        <span className="student-header__brand">
+          <strong>HEFNER SPRACH HUB</strong>
+          <small>Deutsch A1</small>
+        </span>
       </a>
 
       <div className="student-header__meta">

@@ -9,7 +9,7 @@ export const workspaceSectionMeta: Record<
   news: {
     title: "Updates",
     groupDescription: () => "Announcements, releases, and operational updates.",
-    sharedDescription: "Learning Hub announcements, release notes, and delivery updates.",
+    sharedDescription: "Hefner Sprach Hub announcements, release notes, and delivery updates.",
   },
   courses: {
     title: "Courses",

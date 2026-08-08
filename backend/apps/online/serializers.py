@@ -19,6 +19,7 @@ from apps.online.models import (
     OnlineFeedbackMessage,
     OnlineOrder,
     OnlineSession,
+    OnlineSessionBooking,
     OnlineStudentProfile,
     OnlineSupportMessage,
     OnlineWorkspace,
@@ -108,6 +109,8 @@ class PublicCourseFaqSerializer(serializers.ModelSerializer):
 class PublicCourseListSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
     short_description = serializers.SerializerMethodField()
+    trial_available = serializers.SerializerMethodField()
+    price_amount = serializers.SerializerMethodField()
 
     class Meta:
         model = OnlineCourse
@@ -134,6 +137,12 @@ class PublicCourseListSerializer(serializers.ModelSerializer):
 
     def get_short_description(self, obj: OnlineCourse) -> str:
         return obj.localized_short_description(self._locale())
+
+    def get_trial_available(self, obj: OnlineCourse) -> bool:
+        return True if get_payment_mode() == "free" else obj.trial_available
+
+    def get_price_amount(self, obj: OnlineCourse) -> str:
+        return "0.00" if get_payment_mode() == "free" else str(obj.price_amount)
 
 
 class PublicCourseDetailSerializer(PublicCourseListSerializer):
@@ -369,7 +378,7 @@ class BaseOnlineSignupSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=120)
     last_name = serializers.CharField(max_length=120)
     phone = serializers.CharField(max_length=50, required=False, allow_blank=True)
-    preferred_language = serializers.ChoiceField(choices=("de", "en"), default="de")
+    preferred_language = serializers.ChoiceField(choices=("de", "uk", "ru", "en"), default="de")
     idempotency_key = serializers.CharField(max_length=120, required=False, allow_blank=True)
 
     def validate_password(self, value: str) -> str:
@@ -405,18 +414,20 @@ class BaseOnlineSignupSerializer(serializers.Serializer):
 class TrialSignupSerializer(BaseOnlineSignupSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
+        if get_payment_mode() == "free":
+            return attrs
         if not attrs["course"].trial_available:
             raise serializers.ValidationError({"course_slug": "Trial is not available for this course."})
         return attrs
 
 
 class MockCheckoutSerializer(BaseOnlineSignupSerializer):
-    provider = serializers.ChoiceField(choices=("paypal", "klarna", "sofort"), required=False)
+    provider = serializers.ChoiceField(choices=("card", "paypal", "klarna", "sofort"), required=False)
     accept_terms = serializers.BooleanField()
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if attrs["course"].price_amount <= 0:
+        if attrs["course"].price_amount <= 0 and get_payment_mode() != "free":
             raise serializers.ValidationError({"course_slug": "Paid checkout is not available for this course."})
         if not attrs["accept_terms"]:
             raise serializers.ValidationError({"accept_terms": "Terms must be accepted."})
@@ -425,12 +436,12 @@ class MockCheckoutSerializer(BaseOnlineSignupSerializer):
 
 
 class CheckoutStartSerializer(BaseOnlineSignupSerializer):
-    provider = serializers.ChoiceField(choices=("paypal", "klarna", "sofort"), required=False)
+    provider = serializers.ChoiceField(choices=("card", "paypal", "klarna", "sofort"), required=False)
     accept_terms = serializers.BooleanField()
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if attrs["course"].price_amount <= 0:
+        if attrs["course"].price_amount <= 0 and get_payment_mode() != "free":
             raise serializers.ValidationError({"course_slug": "Paid checkout is not available for this course."})
         if not attrs["accept_terms"]:
             raise serializers.ValidationError({"accept_terms": "Terms must be accepted."})
@@ -447,10 +458,10 @@ class GoogleCheckoutSerializer(serializers.Serializer):
     mode = serializers.ChoiceField(choices=("trial", "paid"), default="trial")
     course_slug = serializers.SlugField()
     cohort_id = serializers.IntegerField(required=False)
-    provider = serializers.ChoiceField(choices=("paypal", "klarna", "sofort"), required=False)
+    provider = serializers.ChoiceField(choices=("card", "paypal", "klarna", "sofort"), required=False)
     accept_terms = serializers.BooleanField(required=False, default=False)
     phone = serializers.CharField(max_length=50, required=False, allow_blank=True)
-    preferred_language = serializers.ChoiceField(choices=("de", "en"), default="de")
+    preferred_language = serializers.ChoiceField(choices=("de", "uk", "ru", "en"), default="de")
     idempotency_key = serializers.CharField(max_length=120, required=False, allow_blank=True)
 
     def validate(self, attrs):
@@ -685,6 +696,8 @@ class OnlineTeacherFeedbackCreateSerializer(serializers.Serializer):
 class OnlineSessionSerializer(serializers.ModelSerializer):
     attendance_status = serializers.SerializerMethodField()
     attended_seconds = serializers.SerializerMethodField()
+    booking_status = serializers.SerializerMethodField()
+    booked_at = serializers.SerializerMethodField()
 
     class Meta:
         model = OnlineSession
@@ -700,6 +713,8 @@ class OnlineSessionSerializer(serializers.ModelSerializer):
             "is_completed",
             "attendance_status",
             "attended_seconds",
+            "booking_status",
+            "booked_at",
         )
 
     def get_attendance_status(self, obj: OnlineSession):
@@ -711,6 +726,16 @@ class OnlineSessionSerializer(serializers.ModelSerializer):
         attendance_map = self.context.get("attendance_map", {})
         record = attendance_map.get(obj.id)
         return record.attended_seconds if record else 0
+
+    def get_booking_status(self, obj: OnlineSession):
+        booking_map = self.context.get("booking_map", {})
+        record = booking_map.get(obj.id)
+        return record.status if record else None
+
+    def get_booked_at(self, obj: OnlineSession):
+        booking_map = self.context.get("booking_map", {})
+        record = booking_map.get(obj.id)
+        return record.booked_at if record and record.status == OnlineSessionBooking.STATUS_BOOKED else None
 
 
 class OnlineCourseMaterialSerializer(serializers.ModelSerializer):
@@ -742,7 +767,7 @@ class OnlineFeedbackCreateSerializer(serializers.Serializer):
     email = serializers.EmailField()
     subject = serializers.CharField(max_length=220)
     message = serializers.CharField(max_length=4000)
-    preferred_language = serializers.ChoiceField(choices=("de", "en"), default="de")
+    preferred_language = serializers.ChoiceField(choices=("de", "uk", "ru", "en"), default="de")
     source_page = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
     def validate(self, attrs):
@@ -1094,3 +1119,4 @@ class OnlineAdminWorkspaceContentItemUpsertSerializer(OnlineAdminWorkspaceConten
             raise serializers.ValidationError({"linkedCourseId": "Only published courses can be linked to public course cards."})
 
         return attrs
+

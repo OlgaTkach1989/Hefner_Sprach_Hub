@@ -1,6 +1,6 @@
 # Current VPS Migration
 
-This note captures the current state of the OVH VPS `51.195.117.210` and the migration path to the self-contained `Learning Hub` stack.
+This note captures the current state of the OVH VPS `51.195.117.210` and the migration path to the self-contained `Hefner Sprach Hub` stack.
 
 ## Current server state
 
@@ -45,7 +45,7 @@ That will:
 - bring up the repo-managed `infra` stack
 - issue the initial certificate if the repo copy is not present yet
 - switch the Docker `nginx` to TLS mode
-- build and start the `Learning Hub` app stack
+- build and start the `Hefner Sprach Hub` app stack
 
 ## What is preserved
 

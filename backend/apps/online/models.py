@@ -13,9 +13,13 @@ from apps.employees.models import Lehrer
 class OnlineCourse(models.Model):
     LOCALE_DE = "de"
     LOCALE_EN = "en"
+    LOCALE_UK = "uk"
+    LOCALE_RU = "ru"
     LOCALE_CHOICES = (
         (LOCALE_DE, "German"),
         (LOCALE_EN, "English"),
+        (LOCALE_UK, "Ukrainian"),
+        (LOCALE_RU, "Russian"),
     )
     LIFECYCLE_DRAFT = "draft"
     LIFECYCLE_IN_REVIEW = "in_review"
@@ -176,17 +180,17 @@ class OnlineCourse(models.Model):
         return self.title_de
 
     def localized_title(self, locale: str = LOCALE_DE) -> str:
-        if locale == self.LOCALE_EN:
+        if locale in (self.LOCALE_EN, self.LOCALE_UK, self.LOCALE_RU):
             return self.title_en
         return self.title_de
 
     def localized_short_description(self, locale: str = LOCALE_DE) -> str:
-        if locale == self.LOCALE_EN:
+        if locale in (self.LOCALE_EN, self.LOCALE_UK, self.LOCALE_RU):
             return self.short_description_en
         return self.short_description_de
 
     def localized_description(self, locale: str = LOCALE_DE) -> str:
-        if locale == self.LOCALE_EN:
+        if locale in (self.LOCALE_EN, self.LOCALE_UK, self.LOCALE_RU):
             return self.description_en
         return self.description_de
 
@@ -1474,11 +1478,13 @@ class OnlineKnowledgeDocument(models.Model):
 
 class OnlineOrder(models.Model):
     PROVIDER_PAYPAL = "paypal"
+    PROVIDER_CARD = "card"
     PROVIDER_KLARNA = "klarna"
     PROVIDER_SOFORT = "sofort"
     PROVIDER_TRIAL = "trial"
     PROVIDER_CHOICES = (
         (PROVIDER_PAYPAL, "PayPal"),
+        (PROVIDER_CARD, "Card"),
         (PROVIDER_KLARNA, "Klarna"),
         (PROVIDER_SOFORT, "Sofort"),
         (PROVIDER_TRIAL, "Trial"),
@@ -1687,6 +1693,39 @@ class OnlineAttendance(models.Model):
         db_table = "online_attendance"
         unique_together = (("enrollment", "session"),)
         ordering = ("session__starts_at",)
+
+    def __str__(self) -> str:
+        return f"{self.enrollment_id}/{self.session_id}: {self.status}"
+
+
+class OnlineSessionBooking(models.Model):
+    STATUS_BOOKED = "booked"
+    STATUS_CANCELED = "canceled"
+    STATUS_CHOICES = (
+        (STATUS_BOOKED, "Booked"),
+        (STATUS_CANCELED, "Canceled"),
+    )
+
+    enrollment = models.ForeignKey(OnlineEnrollment, on_delete=models.CASCADE, related_name="session_bookings")
+    session = models.ForeignKey(OnlineSession, on_delete=models.CASCADE, related_name="bookings")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_BOOKED)
+    booked_at = models.DateTimeField(auto_now_add=True)
+    canceled_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "online_session_booking"
+        ordering = ("session__starts_at", "id")
+        constraints = [
+            models.UniqueConstraint(
+                fields=("enrollment", "session"),
+                name="online_session_booking_unique_enrollment_session",
+            )
+        ]
+        indexes = [
+            models.Index(fields=("session", "status")),
+            models.Index(fields=("enrollment", "status")),
+        ]
 
     def __str__(self) -> str:
         return f"{self.enrollment_id}/{self.session_id}: {self.status}"

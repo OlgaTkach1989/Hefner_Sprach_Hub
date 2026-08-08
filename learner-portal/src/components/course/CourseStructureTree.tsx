@@ -282,21 +282,9 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
       };
     });
 
-    const activeModuleIndex = rawModules.findIndex((module) => module.hasStartedLesson)
-      >= 0
-      ? rawModules.findIndex((module) => module.hasStartedLesson)
-      : rawModules.findIndex((module) => !module.isCompleted && module.module.isActive)
-        >= 0
-        ? rawModules.findIndex((module) => !module.isCompleted && module.module.isActive)
-        : rawModules.findIndex((module) => !module.isCompleted);
-
     return rawModules.map((moduleEntry) => {
       const { module, moduleIndex, moduleHeading, nextLessonIndex, isCompleted, moduleMeta } = moduleEntry;
-      const moduleStatus: LessonUiStatus = isCompleted
-        ? "completed"
-        : moduleIndex === activeModuleIndex
-          ? "active"
-          : "locked";
+      const moduleStatus: LessonUiStatus = isCompleted ? "completed" : "active";
 
       const lessons = module.lessons.map((lesson, lessonIndex) => {
         const progressSnapshot = lessonProgressMap[lesson.id] ?? {
@@ -304,14 +292,10 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
           hasStarted: false,
           isCompleted: false,
         };
-        const isFutureLesson = Boolean(parseDateValue(lesson.startsAt)?.getTime() && parseDateValue(lesson.startsAt)!.getTime() > Date.now());
-
-        let status: LessonUiStatus = "locked";
+        let status: LessonUiStatus = "active";
         if (progressSnapshot.isCompleted || lessonIndex < nextLessonIndex) {
           status = "completed";
         } else if (progressSnapshot.hasStarted) {
-          status = "active";
-        } else if (moduleStatus === "active" && lessonIndex === nextLessonIndex && !isFutureLesson) {
           status = "active";
         }
 
@@ -353,13 +337,26 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
 
   return (
     <div className="dashboard-page__lesson-plan" aria-label={`${courseTitle} course structure`}>
-      <h4 className="dashboard-page__lesson-plan-title">Course structure</h4>
+      <section className="dashboard-page__course-progress-card" aria-label="Course progress">
+        <div>
+          <h4 className="dashboard-page__lesson-plan-title">{courseTitle || "Deutsch A1 — Мій курс"}</h4>
+          <p>
+            Автор: Anna Hefner · Hefner Sprach Hub · {modules.length} Модулi ·{" "}
+            {moduleModels.reduce((sum, moduleModel) => sum + moduleModel.lessons.length, 0)} Урокiв
+          </p>
+        </div>
+      </section>
       {moduleModels.map((moduleModel) => {
         const moduleKey = moduleKeyOf(moduleModel.module, moduleModel.moduleIndex);
         const isModuleOpen = expandedModules[moduleKey] ?? true;
+        const completedLessons = moduleModel.lessons.filter((lessonModel) => lessonModel.status === "completed").length;
+        const totalLessons = moduleModel.lessons.length;
 
         return (
-          <article key={moduleKey} className="dashboard-page__course-structure-card">
+          <article
+            key={moduleKey}
+            className={`dashboard-page__course-structure-card dashboard-page__course-structure-card--${moduleModel.moduleStatus}`}
+          >
             <button
               type="button"
               className="dashboard-page__course-structure-toggle"
@@ -367,16 +364,17 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
               aria-expanded={isModuleOpen}
             >
               <div className="dashboard-page__course-structure-header">
+                <span className="dashboard-page__course-structure-number" aria-hidden="true">
+                  {moduleModel.moduleStatus === "locked" ? "Lock" : moduleModel.moduleIndex + 1}
+                </span>
                 <div className="dashboard-page__course-structure-main">
                   <div className="dashboard-page__course-structure-topline">
-                    <span className="dashboard-page__course-structure-kicker">{moduleModel.moduleLabel}</span>
-                    {moduleModel.module.weekNumber ? (
-                      <span className="dashboard-page__course-structure-week">Week {moduleModel.module.weekNumber}</span>
-                    ) : null}
-                    <span className={`dashboard-page__course-structure-status dashboard-page__course-structure-status--${moduleModel.moduleStatus}`}>
-                      <span className="dashboard-page__course-structure-status-dot" aria-hidden="true" />
-                      {lessonStatusLabel(moduleModel.moduleStatus)}
+                    <span className="dashboard-page__course-structure-kicker">
+                      Modul {moduleModel.moduleIndex + 1} · Модуль {moduleModel.moduleIndex + 1}
                     </span>
+                    {moduleModel.moduleStatus === "locked" ? (
+                      <span className="dashboard-page__course-structure-week">Заблоковано</span>
+                    ) : null}
                   </div>
                   <strong className="dashboard-page__course-structure-title">{moduleModel.moduleTitle}</strong>
                   <p className="dashboard-page__course-structure-summary">
@@ -394,21 +392,13 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
                 </div>
 
                 <div className="dashboard-page__course-structure-side">
-                  <div className="dashboard-page__course-structure-progress-head">
-                    <span>{moduleModel.moduleLabel}</span>
-                    <strong>{moduleModel.moduleProgressPercent}% complete</strong>
-                  </div>
-                  <div className="dashboard-page__course-structure-progress-track" aria-hidden="true">
-                    <div
-                      className="dashboard-page__course-structure-progress-fill"
-                      style={{ width: `${moduleModel.moduleProgressPercent}%` }}
-                    />
-                  </div>
+                  <strong>{completedLessons}/{totalLessons}</strong>
+                  <span>урокiв</span>
                   <span
                     className={`dashboard-page__course-structure-chevron ${isModuleOpen ? "is-open" : ""}`}
                     aria-hidden="true"
                   >
-                    ▾
+                    v
                   </span>
                 </div>
               </div>
@@ -416,17 +406,14 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
 
             {isModuleOpen ? (
               <div className="dashboard-page__course-structure-lessons">
-                {moduleModel.lessons.map((lessonModel) => (
+                {moduleModel.lessons.map((lessonModel, lessonIndex) => (
                   <section key={lessonModel.lesson.id} className="dashboard-page__course-structure-lesson">
+                    <span className={`dashboard-page__course-structure-lesson-number dashboard-page__course-structure-lesson-number--${lessonModel.status}`}>
+                      {lessonModel.status === "locked" ? "Lock" : lessonIndex + 1}
+                    </span>
                     <div className="dashboard-page__course-structure-lesson-main">
                       <div className="dashboard-page__course-structure-lesson-topline">
-                        <span className="dashboard-page__course-structure-lesson-kicker">
-                          Lesson {lessonModel.lessonDisplayNumber}
-                        </span>
-                        <span className={`dashboard-page__course-structure-status dashboard-page__course-structure-status--${lessonModel.status}`}>
-                          <span className="dashboard-page__course-structure-status-dot" aria-hidden="true" />
-                          {lessonStatusLabel(lessonModel.status)}
-                        </span>
+                        <span className="dashboard-page__course-structure-lesson-kicker">{lessonStatusLabel(lessonModel.status)}</span>
                       </div>
                       <strong className="dashboard-page__course-structure-lesson-title">{lessonModel.lesson.title}</strong>
                       <div className="dashboard-page__course-structure-lesson-meta">
@@ -447,9 +434,6 @@ export const CourseStructureTree = ({ courseTitle, modules, emptyMessage }: Prop
                         status={lessonModel.status}
                         hasStarted={lessonModel.progressPercent > 0}
                       />
-                      <span className="dashboard-page__course-structure-open-copy">
-                        {lessonModel.status === "locked" ? "Available after unlock" : "Opens in new tab"}
-                      </span>
                     </div>
                   </section>
                 ))}

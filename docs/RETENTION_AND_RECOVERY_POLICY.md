@@ -1,6 +1,6 @@
 # Retention And Recovery Policy
 
-This document defines the default operational policy for backups, restore validation, and data retention for `Learning Hub`.
+This document defines the default operational policy for backups, restore validation, and data retention for `Hefner Sprach Hub`.
 
 ## 1. Recovery objectives
 

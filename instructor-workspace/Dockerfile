@@ -16,7 +16,7 @@ RUN npm run build
 FROM nginx:1.27-alpine
 LABEL org.opencontainers.image.authors="Serhii TK" \
       org.opencontainers.image.vendor="Serhii TK" \
-      org.opencontainers.image.title="Learning Hub Instructor Workspace" \
+      org.opencontainers.image.title="Hefner Sprach Hub Instructor Workspace" \
       org.opencontainers.image.licenses="LicenseRef-Proprietary"
 COPY --from=build /app/dist /usr/share/nginx/html
 RUN printf 'server {\n  listen 80;\n  server_name _;\n  root /usr/share/nginx/html;\n  index index.html;\n  location / { try_files $uri $uri/ /index.html; }\n}\n' > /etc/nginx/conf.d/default.conf

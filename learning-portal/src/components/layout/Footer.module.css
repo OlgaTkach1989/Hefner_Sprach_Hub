@@ -1,109 +1,83 @@
 .footer {
-  background: url("../../assets/futter.jpg");
-  color: #ffffff;
-  background-size: auto;
-  background-repeat: no-repeat;
-  height: 12rem;
-  background-color: rgba(5, 55, 71, 0.7);
-  background-blend-mode: multiply;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: #06101f;
+  border-top: 1px solid rgba(214, 173, 61, 0.3);
+  color: #f8f1e3;
 }
-.bgImg {
-  position: absolute;
-  top: -18rem;
-  left: 0;
-  width: 100%;
-  height: calc(100% + 18rem);
-  object-fit: fill;
-  z-index: 1;
-  pointer-events: none;
-  background-blend-mode: multiply;
-}
+
 .footer a,
 .footer p,
 .footer span {
-  color: #ffffff;
+  color: inherit;
   margin: 0;
   text-decoration: none;
 }
 
 .inner {
-  align-items: flex-end;
+  align-items: center;
   display: flex;
   gap: 1.2rem;
   justify-content: space-between;
+  margin: 0 auto;
   max-width: 1140px;
+  padding: 1.25rem 1rem;
   width: min(1140px, calc(100% - 2rem));
-  padding: 2rem 1rem 1rem;
-  position: relative;
-  z-index: 2;
 }
 
 .brandLink {
   align-items: center;
   display: inline-flex;
-  font-size: 1.2rem;
-  font-weight: 700;
-  gap: 0.55rem;
-  text-decoration: none;
-  background-clip: text;
+  gap: 0.7rem;
 }
+
 .logo {
-  display: block;
-  object-fit: contain;
-  width: auto;
+  border-radius: 10px;
+  height: 44px;
+  object-fit: cover;
+  width: 44px;
 }
+
+.brandLink span {
+  color: #d6ad3d;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
 .nav {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+  flex-wrap: wrap;
+  gap: 0.9rem;
 }
+
+.navLink {
+  color: #f8f1e3;
+  font-weight: 700;
+}
+
 .contacts {
-  text-align: left;
+  display: grid;
+  gap: 0.25rem;
+  text-align: right;
 }
 
 .contacts p {
-  line-height: 1.5;
-  margin-bottom: 0.45rem;
+  color: #d6ad3d;
+  font-weight: 700;
 }
 
 .contacts a {
-  font-weight: 600;
+  color: rgba(248, 241, 227, 0.88);
+  font-size: 0.92rem;
 }
 
-@media (max-width: 1024px) {
-  .inner {
-    width: min(976px, calc(100% - 2rem));
-  }
-}
 @media (max-width: 720px) {
-  .footer {
-    height: auto;
-    padding: 1rem 0;
-  }
   .inner {
-    flex-direction: column;
     align-items: center;
-    height: 100%;
-    gap: 1rem;
-    padding: 0.5rem 0.5rem;
-  }
-  .contacts {
+    flex-direction: column;
     text-align: center;
   }
-  .contacts p br {
-    display: none;
-  }
-  .contacts p br::after {
-    content: " ";
-  }
-  .nav {
-    gap: 1.5rem;
+
+  .contacts {
     text-align: center;
   }
 }

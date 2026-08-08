@@ -430,6 +430,7 @@ const OnlinePage = ({ embedded = false, calendarOnly = false, showExternalCalend
               <th>Session</th>
               <th>Time</th>
               <th>Status</th>
+              <th>Bookings</th>
               <th>Join link</th>
               <th>Actions</th>
             </tr>
@@ -461,6 +462,22 @@ const OnlinePage = ({ embedded = false, calendarOnly = false, showExternalCalend
                   >
                     {formatStatusLabel(session.status)}
                   </span>
+                </td>
+                <td>
+                  <div className={cl.bookingCell}>
+                    <strong>{session.bookingCount}</strong>
+                    {session.bookedStudents.length > 0 ? (
+                      <span>
+                        {session.bookedStudents
+                          .slice(0, 3)
+                          .map((student) => student.fullName || student.email)
+                          .join(", ")}
+                        {session.bookedStudents.length > 3 ? ` +${session.bookedStudents.length - 3}` : ""}
+                      </span>
+                    ) : (
+                      <span>No student bookings</span>
+                    )}
+                  </div>
                 </td>
                 <td>
                   {session.joinUrl ? (
@@ -516,7 +533,7 @@ const OnlinePage = ({ embedded = false, calendarOnly = false, showExternalCalend
             })}
             {calendarData.sessions.length === 0 ? (
               <tr>
-                <td colSpan={5}>No sessions in this group.</td>
+                <td colSpan={6}>No sessions in this group.</td>
               </tr>
             ) : null}
           </tbody>

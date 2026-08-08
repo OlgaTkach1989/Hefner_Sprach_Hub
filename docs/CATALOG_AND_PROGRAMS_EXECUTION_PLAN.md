@@ -1,6 +1,6 @@
 # Catalog, Profiles, Programs, and Knowledge Plan
 
-This plan translates the customer's requests into an additive roadmap on top of the current `Learning Hub` platform.
+This plan translates the customer's requests into an additive roadmap on top of the current `Hefner Sprach Hub` platform.
 
 ## Product Goal
 

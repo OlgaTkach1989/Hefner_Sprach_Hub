@@ -1,338 +1,279 @@
-import { useEffect, useMemo, useState } from "react"
+﻿import { useEffect, useMemo, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { Link, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { isAxiosError } from "axios"
 
-import {
-  fetchCourseBySlug,
-  fetchPublicWorkspaceBySlug,
-  fetchPublicWorkspaces,
-  joinWorkspaceCourse,
-} from "../api/onlineApi"
+import { fetchCourseBySlug } from "../api/onlineApi"
+import { AnnaAssistant } from "../components/anna/AnnaAssistant"
 import { decorateCourseDetail, resolveCourseApiSlug } from "../config/courseAliases"
 import { useUiPreferences } from "../context/UiPreferencesContext"
 import { buildCourseSchema, buildFaqSchema } from "../seo/schemas"
-import type { CourseCohort, CourseDetail } from "../types"
+import type { CourseDetail, Locale } from "../types"
+import { getCourseProgress, isLessonAccessible, isLessonCompleted } from "../utils/courseProgress"
 import "./CoursePage.css"
 
-type CourseBlueprint = {
-  label: string
-  audience: string
-  format: string
+type LessonPreview = {
   duration: string
-  level: string
-  overview: string
-  outcomes: string[]
-  modules: Array<{
-    title: string
-    summary: string
-  }>
-  supportBlocks: Array<{
-    title: string
-    description: string
-  }>
-  faqFallback: Array<{
-    question: string
-    answer: string
-  }>
-}
-
-const flowSteps = ["Theory", "Concept", "Video", "Quiz", "Practice", "Summary"]
-
-type CourseJoinTarget = {
-  itemId: number
+  icon: string
+  subtitle: string
   title: string
-  joinEnabled: boolean
-  isAccessible: boolean
-  accessMessage: string
 }
 
-const courseBlueprintFor = (course: CourseDetail): CourseBlueprint => {
-  const slug = `${course.route_slug ?? ""} ${course.slug} ${course.title}`.toLowerCase()
+type ModulePreview = {
+  lessons: LessonPreview[]
+  locked?: boolean
+  subtitle: string
+  title: string
+  week: string
+}
 
-  if (slug.includes("data")) {
-    return {
-      label: "Data workflows track",
-      audience: "Learners who already know Python basics and need reusable data handling patterns.",
-      format: "Interactive lessons, guided walkthroughs, and reusable coding practice.",
-      duration: "4-6 weeks",
-      level: "Intermediate",
-      overview:
-        "This course turns Python into a practical data toolchain. Learners move from reading structured data to shaping repeatable workflows, checking quality, and preparing final outputs for review.",
-      outcomes: [
-        "Read, clean, and transform tabular data with a repeatable workflow.",
-        "Build reusable scripts and functions for common data tasks.",
-        "Validate output before submission with guided checks and AI support.",
-      ],
-      modules: [
-        {
-          title: "Data intake and structure",
-          summary: "Open real datasets, inspect columns, and establish reliable input routines.",
-        },
-        {
-          title: "Cleaning and transformation",
-          summary: "Apply filtering, reshaping, and quality checks without breaking the workflow.",
-        },
-        {
-          title: "Reusable reporting workflow",
-          summary: "Package the final analysis into a delivery-ready script with checkpoints.",
-        },
-      ],
-      supportBlocks: [
-        {
-          title: "Interactive coding practice",
-          description: "Practice steps run inside the lesson flow with a code editor, checks, hints, and solution review.",
-        },
-        {
-          title: "AI guidance",
-          description: "Ask for debugging hints, clarification, and next-step guidance without leaving the course page.",
-        },
-        {
-          title: "Session recordings",
-          description: "Revisit walkthroughs and delivery checkpoints when learners need an asynchronous pass.",
-        },
-      ],
-      faqFallback: [
-        {
-          question: "Do I need prior pandas experience?",
-          answer: "No. The course assumes Python basics and introduces the data workflow step by step.",
-        },
-        {
-          question: "How is progress reviewed?",
-          answer: "Each lesson combines a short check, guided practice, and a final delivery checkpoint.",
-        },
-      ],
-    }
-  }
+const levelFromCourse = (course: CourseDetail) => {
+  const source = `${course.slug} ${course.title}`.toUpperCase()
+  return source.match(/\b(A0|A1|A2|B1|B2|C1|C2)\b/)?.[1] ?? "A1"
+}
 
-  if (slug.includes("web") || slug.includes("api")) {
-    return {
-      label: "Web and APIs track",
-      audience: "Learners who want to move from scripts to backend logic, requests, and service design.",
-      format: "Scenario-based lessons with API walkthroughs and applied coding tasks.",
-      duration: "4-6 weeks",
-      level: "Intermediate",
-      overview:
-        "This course introduces practical backend thinking: requests, routes, payloads, validation, and small service patterns. The flow stays hands-on so each theory block is tied to a concrete implementation step.",
-      outcomes: [
-        "Understand request-response patterns and API structure.",
-        "Build small backend features with validation and readable responses.",
-        "Use lesson practice to debug common integration errors before delivery.",
-      ],
-      modules: [
-        {
-          title: "HTTP and service basics",
-          summary: "Understand routes, parameters, and response payloads through short backend examples.",
-        },
-        {
-          title: "Validation and integration",
-          summary: "Handle bad input, structure responses, and connect external data safely.",
-        },
-        {
-          title: "Mini delivery workflow",
-          summary: "Package a small endpoint with checks, documentation notes, and practical review.",
-        },
-      ],
-      supportBlocks: [
-        {
-          title: "Code-first practice",
-          description: "Learners write and test focused backend snippets directly in the lesson practice step.",
-        },
-        {
-          title: "Walkthrough videos",
-          description: "Short implementation walkthroughs explain why each backend decision matters.",
-        },
-        {
-          title: "Review-ready output",
-          description: "The final step frames each lesson around clean output and reviewability.",
-        },
-      ],
-      faqFallback: [
-        {
-          question: "Is this a full framework course?",
-          answer: "No. It is a practical foundation course focused on API logic, structure, and implementation habits.",
-        },
-        {
-          question: "How much coding practice is included?",
-          answer: "Every lesson includes a dedicated practice step with checks, hints, and AI assistance.",
-        },
-      ],
-    }
-  }
+const levelFromSlug = (slug = "deutsch-a1") => slug.toUpperCase().match(/\b(A0|A1|A2|B1|B2|C1|C2)\b/)?.[1] ?? "A1"
 
-  if (slug.includes("testing") || slug.includes("automation")) {
-    return {
-      label: "Testing and automation track",
-      audience: "Learners who need reliable delivery habits, validation, and repeatable automation routines.",
-      format: "Compact lesson flow with checklists, validation tasks, and automation practice.",
-      duration: "4-5 weeks",
-      level: "Intermediate",
-      overview:
-        "The course focuses on dependable delivery: validating assumptions, writing checks, and creating automation steps that can be rerun without manual cleanup.",
-      outcomes: [
-        "Write tests and validation checks for common Python workflows.",
-        "Use automation patterns that reduce manual repetition and delivery risk.",
-        "Prepare clean, repeatable final output for review or handoff.",
-      ],
-      modules: [
-        {
-          title: "Validation mindset",
-          summary: "Turn requirements into checks, expected outputs, and visible acceptance criteria.",
-        },
-        {
-          title: "Testing workflow",
-          summary: "Apply focused tests, debug failures, and document assumptions before release.",
-        },
-        {
-          title: "Automation and repeatability",
-          summary: "Package the final workflow into scripts that remain safe to rerun and review.",
-        },
-      ],
-      supportBlocks: [
-        {
-          title: "Guided checkpoints",
-          description: "Quiz and practice steps reinforce verification before the final output is accepted.",
-        },
-        {
-          title: "AI debugging support",
-          description: "Learners can ask for targeted hints when tests fail or output does not match expectations.",
-        },
-        {
-          title: "Delivery discipline",
-          description: "Lessons reinforce cleanup, repeatability, and clear handoff standards.",
-        },
-      ],
-      faqFallback: [
-        {
-          question: "Is the focus manual testing or coding?",
-          answer: "The course is coding-focused and uses testing as part of an automation-oriented workflow.",
-        },
-        {
-          question: "Does each lesson include practice?",
-          answer: "Yes. The practical step is part of the lesson flow and uses interactive code checks.",
-        },
-      ],
-    }
-  }
+const lessonCountForLevel = (level: string) => (["B1", "B2", "C1", "C2"].includes(level) ? 16 : 12)
+
+const priceForLevel = (_level: string) => {
+  return "0.00"
+}
+
+const createFallbackCourse = (slug = "deutsch-a1"): CourseDetail => {
+  const level = levelFromSlug(slug)
 
   return {
-    label: "Core fundamentals track",
-    audience: "New learners who need a structured introduction to Python, lesson flow, and hands-on delivery.",
-    format: "Guided theory, concept walkthroughs, short quizzes, and interactive practice labs.",
-    duration: "3-5 weeks",
-    level: "Beginner",
-    overview:
-      "This course establishes the Python basics required for the rest of the academy catalog. Learners move through short theory blocks, concept examples, video walkthroughs, quick checks, and an interactive practice lab in every lesson.",
-    outcomes: [
-      "Read and write simple Python code with confidence.",
-      "Understand variables, control flow, and function basics in a structured lesson sequence.",
-      "Use AI-assisted practice to debug and complete delivery tasks independently.",
-    ],
-    modules: [
-      {
-        title: "Runtime setup and first syntax",
-        summary: "Set up the environment, run the first script, and understand the basic execution flow.",
-      },
-      {
-        title: "Core concepts and control flow",
-        summary: "Move from isolated commands into variables, conditions, loops, and small reusable patterns.",
-      },
-      {
-        title: "Applied practice and delivery",
-        summary: "Combine theory and coding into final tasks that mirror the expected course workflow.",
-      },
-    ],
-    supportBlocks: [
-      {
-        title: "Lesson-by-lesson flow",
-        description: "Every lesson follows one consistent structure so learners always know what comes next.",
-      },
-      {
-        title: "Interactive practice",
-        description: "The practice step includes code editing, checking, hints, solutions, and AI support.",
-      },
-      {
-        title: "Session recordings and materials",
-        description: "Learners can revisit video explanations and read supporting materials after each lesson.",
-      },
-    ],
-    faqFallback: [
-      {
-        question: "Do I need coding experience before starting?",
-        answer: "No. This course is designed as the foundation entry point for new learners.",
-      },
-      {
-        question: "How does each lesson work?",
-        answer: "Each lesson follows one flow: theory, concept, video, quiz, practice, and summary.",
-      },
-    ],
+    id: 0,
+    slug,
+    route_slug: slug,
+    title: `Deutsch ${level}`,
+    short_description: `Deutsch ${level} lernen - Schritt für Schritt.`,
+    lessons_count: lessonCountForLevel(level),
+    trial_available: true,
+    price_amount: priceForLevel(level),
+    currency: "EUR",
+    is_subscription: false,
+    hero_image_url: null,
+    geo_city: "",
+    geo_country: "DE",
+    description: `Deutsch ${level} - Deutsch-Ukrainischer Kurs.`,
+    faq_items: [],
+    cohorts: [],
+    seo_title: `Deutsch ${level} - Hefner Sprach Hub`,
+    seo_description: `Deutsch ${level} lernen mit Hefner Sprach Hub.`,
   }
 }
 
-const formatCohortDate = (value: string | null) => {
-  if (!value) return "Scheduling in progress"
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) return value
-  return parsed.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })
-}
+const getCourseCopy = (locale: Locale, level: string) => {
+  const isGerman = locale === "de"
+  const isRussian = locale === "ru"
 
-const findNextCohort = (cohorts: CourseCohort[]) =>
-  [...cohorts]
-    .filter((cohort) => !!cohort.start_date)
-    .sort((left, right) => {
-      const leftTime = left.start_date ? new Date(left.start_date).getTime() : Number.MAX_SAFE_INTEGER
-      const rightTime = right.start_date ? new Date(right.start_date).getTime() : Number.MAX_SAFE_INTEGER
-      return leftTime - rightTime
-    })[0] ?? null
-
-const resolveCourseJoinTarget = async (courseSlugs: string[]): Promise<CourseJoinTarget | null> => {
-  const normalizedSlugs = [...new Set(courseSlugs.map((slug) => slug.trim().toLowerCase()).filter(Boolean))]
-  if (normalizedSlugs.length === 0) {
-    return null
-  }
-
-  const summaries = await fetchPublicWorkspaces()
-  const groupWorkspaces = summaries
-    .filter((workspace) => workspace.kind === "group")
-    .sort((left, right) => left.sortOrder - right.sortOrder)
-
-  const details = await Promise.all(
-    groupWorkspaces.map(async (workspace) => {
-      try {
-        return await fetchPublicWorkspaceBySlug(workspace.slug)
-      } catch {
-        return null
-      }
-    }),
-  )
-
-  const matches = details
-    .flatMap((workspace) => workspace?.courses ?? [])
-    .filter((item) => normalizedSlugs.includes(String(item.linkedCourseSlug || "").trim().toLowerCase()))
-    .sort((left, right) => {
-      const leftScore = (left.isAccessible ? 4 : 0) + (left.joinEnabled ? 2 : 0)
-      const rightScore = (right.isAccessible ? 4 : 0) + (right.joinEnabled ? 2 : 0)
-      return rightScore - leftScore
-    })
-
-  if (matches.length === 0) {
-    return null
-  }
-
-  const best = matches[0]
   return {
-    itemId: best.id,
-    title: best.title,
-    joinEnabled: best.joinEnabled,
-    isAccessible: best.isAccessible,
-    accessMessage: best.accessMessage,
+    courseLabel: isGerman ? `Deutsch ${level} - Mein Kurs` : isRussian ? `Deutsch ${level} - мой курс` : `Deutsch ${level} - Мій курс`,
+    authorLine: isGerman ? "Autorin: Anna Hefner · Hefner Sprach Hub" : "Автор: Anna Hefner · Hefner Sprach Hub",
+    modulesLabel: isGerman ? "Module" : isRussian ? "Модули" : "Модулі",
+    moduleLabel: isGerman ? "Modul" : isRussian ? "Модуль" : "Модуль",
+    lessonsLabel: isGerman ? "Lektionen" : isRussian ? "Уроков" : "Уроків",
+    completedLabel: isGerman ? "abgeschlossen" : isRussian ? "завершено" : "завершено",
+    progressDone: isGerman ? "abgeschlossen" : isRussian ? "пройдено" : "виконано",
+    completedDuration: isGerman ? "Abgeschlossen" : isRussian ? "Пройдено" : "Пройдено",
+    goalEyebrow: isGerman ? `Deutsch ${level} · Deutsch-Ukrainischer Kurs` : isRussian ? `Deutsch ${level} · курс немецкого с русской поддержкой` : `Deutsch ${level} · німецько-український курс`,
+    goalTitle: isGerman ? `Deutsch ${level} - Kurs` : isRussian ? `Немецкий ${level} - курс` : `Німецька ${level} - курс`,
+    germanGoalTitle: isGerman ? "Kursziel" : isRussian ? "Цель курса на немецком" : "Мета курсу німецькою",
+    ukrainianGoalTitle: isGerman ? "Ukrainische Begleitung" : isRussian ? "Сопровождение на русском" : "Мета курсу українською",
+    germanGoalIntro: isGerman ? "Nach Abschluss dieses Kurses kann der Lernende:" : isRussian ? "После завершения курса ученик сможет:" : "Після завершення курсу учень зможе:",
+    ukrainianGoalIntro: isGerman ? "Die ukrainische Erklärung hilft beim sicheren Einstieg:" : isRussian ? "Русское объяснение помогает уверенно двигаться по курсу:" : "Українське пояснення допомагає впевнено рухатися в курсі:",
+    goalsDe: [
+      "sich vorstellen",
+      "über Familie, Arbeit und Alltag sprechen",
+      "einfache Gespräche führen",
+      "einkaufen und Essen bestellen",
+      "Termine vereinbaren",
+      "einfache Texte verstehen und schreiben",
+    ],
+    goalsUa: [
+      isRussian ? "представиться" : "представитися",
+      isRussian ? "рассказывать о семье, работе и повседневной жизни" : "розповідати про сім'ю, роботу та повсякденне життя",
+      isRussian ? "вести простые разговоры" : "вести прості розмови",
+      isRussian ? "делать покупки и заказывать еду" : "робити покупки та замовляти їжу",
+      isRussian ? "договариваться о встречах" : "домовлятися про зустрічі",
+      isRussian ? "читать и писать простые тексты" : "читати й писати прості тексти",
+    ],
+    locked: isGerman ? "Gesperrt" : isRussian ? "Заблокировано" : "Заблоковано",
+    readyTitle: isGerman ? "Bereit anzufangen?" : isRussian ? "Готовы начать?" : "Готові почати?",
+    readyText: isGerman
+      ? "In der Testversion können Sie sich kostenlos einschreiben und alle Module öffnen."
+      : isRussian
+        ? "В тестовой версии можно записаться бесплатно и открыть все модули."
+        : "У тестовій версії можна записатися безкоштовно й відкрити всі модулі.",
+    buy: isGerman ? "Kostenlos einschreiben" : isRussian ? "Записаться бесплатно" : "Записатися безкоштовно",
   }
 }
+
+const buildA1CourseModules = (locale: Locale): ModulePreview[] => {
+  const isGerman = locale === "de"
+
+  return [
+    {
+      week: isGerman ? "Woche 1" : "Тиждень 1",
+      title: isGerman ? "Begrüßung und erste Verben" : "Привітання та перші дієслова",
+      subtitle: isGerman ? "Vorstellung, Personalpronomen, sein und regelmäßige Verben" : "Знайомство, особові займенники, sein і правильні дієслова",
+      lessons: [
+        {
+          icon: "🎬",
+          title: "Unterricht 1: Video + Theorie",
+          subtitle: isGerman ? "Begrüßung, Vorstellung, Personalpronomen und sein" : "Відео, теорія, привітання, займенники та sein",
+          duration: "30-45 min",
+        },
+        {
+          icon: "✏️",
+          title: "Unterricht 2: Praktische Aufgabe",
+          subtitle: isGerman ? "Wörter interaktiv in Sätze einsetzen" : "Інтерактивно вставити слова в речення",
+          duration: "30-45 min",
+        },
+        {
+          icon: "✅",
+          title: "Unterricht 3: Prüfung",
+          subtitle: isGerman ? "Wissenstest wie ein kleiner A1-Test" : "Перевірка знань як маленький іспит",
+          duration: "30-45 min",
+        },
+      ],
+    },
+    {
+      week: isGerman ? "Woche 2" : "Тиждень 2",
+      title: isGerman ? "Artikel, Nomen und Akkusativ" : "Артиклі, іменники та Akkusativ",
+      subtitle: isGerman ? "Bestimmte und unbestimmte Artikel, Objekt im Satz" : "Означені й неозначені артиклі, об'єкт у реченні",
+      locked: true,
+      lessons: [
+        {
+          icon: "🎬",
+          title: "Unterricht 1: Video + Theorie",
+          subtitle: isGerman ? "Artikel, Nomen, Akkusativ und trennbare Verben" : "Відео, теорія, артиклі, Akkusativ і відокремлювані дієслова",
+          duration: "30-45 min",
+        },
+        {
+          icon: "📝",
+          title: "Unterricht 2: Praktische Aufgabe",
+          subtitle: isGerman ? "Artikel und Verben in Sätze einsetzen" : "Вставити артиклі та дієслова в речення",
+          duration: "30-45 min",
+        },
+        {
+          icon: "✅",
+          title: "Unterricht 3: Prüfung",
+          subtitle: isGerman ? "Test zu Artikel, Akkusativ und trennbaren Verben" : "Тест з артиклів, Akkusativ і відокремлюваних дієслів",
+          duration: "30-45 min",
+        },
+      ],
+    },
+    {
+      week: isGerman ? "Woche 3" : "Тиждень 3",
+      title: isGerman ? "Modalverben, Dativ und Alltag" : "Модальні дієслова, Dativ і повсякденне життя",
+      subtitle: isGerman ? "Können, wollen, müssen, Dativ und Zeitangaben" : "können, wollen, müssen, Dativ і позначення часу",
+      locked: true,
+      lessons: [
+        {
+          icon: "🎬",
+          title: "Unterricht 1: Video + Theorie",
+          subtitle: isGerman ? "Modalverben, Dativ, Zeit und Alltag" : "Відео, теорія, модальні дієслова, Dativ і час",
+          duration: "30-45 min",
+        },
+        {
+          icon: "✏️",
+          title: "Unterricht 2: Praktische Aufgabe",
+          subtitle: isGerman ? "Modalverb, Dativ und Zeitangabe einsetzen" : "Вставити модальне дієслово, Dativ і час",
+          duration: "30-45 min",
+        },
+        {
+          icon: "✅",
+          title: "Unterricht 3: Prüfung",
+          subtitle: isGerman ? "Test zu Modalverben, Dativ und Zeit" : "Тест з модальних дієслів, Dativ і часу",
+          duration: "30-45 min",
+        },
+      ],
+    },
+    {
+      week: isGerman ? "Woche 4" : "Тиждень 4",
+      title: isGerman ? "Perfekt, Verbindungen und Abschluss A1" : "Perfekt, поєднання речень і завершення A1",
+      subtitle: isGerman ? "Vergangenheit, Satzverbindungen, Selbstvorstellung und Lernrhythmus" : "Минулий час, поєднання речень, самопрезентація та темп навчання",
+      locked: true,
+      lessons: [
+        {
+          icon: "🎬",
+          title: "Unterricht 1: Video + Theorie",
+          subtitle: isGerman ? "Perfekt, Satzverbindungen und Selbstvorstellung" : "Відео, теорія, Perfekt, поєднання речень і самопрезентація",
+          duration: "30-45 min",
+        },
+        {
+          icon: "✏️",
+          title: "Unterricht 2: Praktische Aufgabe",
+          subtitle: isGerman ? "Perfekt und Satzverbindungen einsetzen" : "Вставити слова для Perfekt і поєднання речень",
+          duration: "30-45 min",
+        },
+        {
+          icon: "🎓",
+          title: "Unterricht 3: Abschlussprüfung A1",
+          subtitle: isGerman ? "Finaler Wissenstest für A1" : "Фінальна перевірка знань A1",
+          duration: "30-45 min",
+        },
+      ],
+    },
+  ]
+}
+
+const buildGenericCourseModules = (level: string, locale: Locale): ModulePreview[] => {
+  const isGerman = locale === "de"
+
+  return [
+    {
+      week: isGerman ? "Woche 1" : "Тиждень 1",
+      title: isGerman ? `Deutsch ${level}: Einstieg` : `Deutsch ${level}: старт`,
+      subtitle: isGerman ? "Grundlagen und erste Aufgaben" : "Основи та перші завдання",
+      lessons: [
+        { icon: "📘", title: "Lektion 1", subtitle: isGerman ? "Einstieg in den Kurs" : "Початок курсу", duration: "30-45 min" },
+        { icon: "✏️", title: "Lektion 2", subtitle: isGerman ? "Wortschatz und Struktur" : "Словник і структура", duration: "30-45 min" },
+        { icon: "💬", title: "Lektion 3", subtitle: isGerman ? "Sprechen und Übungen" : "Розмова та вправи", duration: "30-45 min" },
+      ],
+    },
+    {
+      week: isGerman ? "Woche 2" : "Тиждень 2",
+      title: isGerman ? `Deutsch ${level}: Aufbau` : `Deutsch ${level}: розвиток`,
+      subtitle: isGerman ? "Neue Grammatik und Alltagssprache" : "Нова граматика та повсякденна мова",
+      locked: true,
+      lessons: [
+        { icon: "📚", title: "Lektion 4", subtitle: isGerman ? "Grammatik" : "Граматика", duration: "30-45 min" },
+        { icon: "📝", title: "Lektion 5", subtitle: isGerman ? "Schreiben" : "Письмо", duration: "30-45 min" },
+        { icon: "🎧", title: "Lektion 6", subtitle: isGerman ? "Hören" : "Аудіювання", duration: "30-45 min" },
+      ],
+    },
+    {
+      week: isGerman ? "Woche 3" : "Тиждень 3",
+      title: isGerman ? `Deutsch ${level}: Praxis` : `Deutsch ${level}: практика`,
+      subtitle: isGerman ? "Dialoge, Lesen und Aufgaben" : "Діалоги, читання та завдання",
+      locked: true,
+      lessons: [
+        { icon: "💬", title: "Lektion 7", subtitle: isGerman ? "Dialoge" : "Діалоги", duration: "30-45 min" },
+        { icon: "📌", title: "Lektion 8", subtitle: isGerman ? "Alltagssituationen" : "Повсякденні ситуації", duration: "30-45 min" },
+        { icon: "🕘", title: "Lektion 9", subtitle: isGerman ? "Wiederholung" : "Повторення", duration: "30-45 min" },
+      ],
+    },
+    {
+      week: isGerman ? "Woche 4" : "Тиждень 4",
+      title: isGerman ? `Deutsch ${level}: Abschluss` : `Deutsch ${level}: завершення`,
+      subtitle: isGerman ? "Projekt, Test und nächste Schritte" : "Проєкт, тест і наступні кроки",
+      locked: true,
+      lessons: [
+        { icon: "⏳", title: "Lektion 10", subtitle: isGerman ? "Vertiefung" : "Закріплення", duration: "30-45 min" },
+        { icon: "🔀", title: "Lektion 11", subtitle: isGerman ? "Abschlussaufgaben" : "Фінальні завдання", duration: "30-45 min" },
+        { icon: "🎓", title: "Lektion 12", subtitle: isGerman ? "Abschluss" : "Завершення", duration: "30-45 min" },
+      ],
+    },
+  ]
+}
+
+const buildCourseModules = (level: string, locale: Locale): ModulePreview[] => (
+  level === "A1" ? buildA1CourseModules(locale) : buildGenericCourseModules(level, locale)
+)
 
 export const CoursePage = () => {
   const { slug } = useParams<{ slug: string }>()
@@ -340,117 +281,53 @@ export const CoursePage = () => {
   const { locale } = useUiPreferences()
   const [course, setCourse] = useState<CourseDetail | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isJoining, setIsJoining] = useState(false)
-  const [isJoined, setIsJoined] = useState(false)
-  const [joinFeedback, setJoinFeedback] = useState("")
-  const [joinFeedbackTone, setJoinFeedbackTone] = useState<"success" | "error" | null>(null)
+  const [progressVersion, setProgressVersion] = useState(0)
   const siteUrl = import.meta.env.VITE_PUBLIC_SITE_URL ?? "http://localhost:5182"
-  const routeSlug = course?.route_slug ?? slug
+  const routeSlug = course?.route_slug ?? slug ?? "deutsch-a1"
 
   useEffect(() => {
     if (!slug) return
     setLoading(true)
     fetchCourseBySlug(resolveCourseApiSlug(slug) ?? slug, locale)
       .then((data) => setCourse(decorateCourseDetail(data, slug)))
-      .catch(() => setCourse(null))
+      .catch(() => setCourse(createFallbackCourse(slug)))
       .finally(() => setLoading(false))
   }, [slug, locale])
 
-  const faqSchema = useMemo(() => {
-    if (!course) return null
-    return buildFaqSchema(course)
-  }, [course])
-
-  const courseSchema = useMemo(() => {
-    if (!course) return null
-    return buildCourseSchema(siteUrl, course, locale)
-  }, [siteUrl, course, locale])
-
-  const blueprint = useMemo(() => (course ? courseBlueprintFor(course) : null), [course])
-  const nextCohort = useMemo(() => (course ? findNextCohort(course.cohorts) : null), [course])
-  const joinSlugs = useMemo(
-    () => [...new Set([routeSlug, course?.slug].filter((value): value is string => Boolean(value)))],
-    [course?.slug, routeSlug],
-  )
-  const faqItems = useMemo(() => {
-    if (!course || !blueprint) return []
-    if (course.faq_items.length > 0) {
-      return course.faq_items.map((item) => ({
-        question: item.question,
-        answer: item.answer,
-      }))
-    }
-    return blueprint.faqFallback
-  }, [blueprint, course])
-
   useEffect(() => {
-    setIsJoining(false)
-    setIsJoined(false)
-    setJoinFeedback("")
-    setJoinFeedbackTone(null)
-  }, [slug])
-
-  const handleJoin = async () => {
-    if (!course || isJoining || isJoined) {
-      return
+    const refreshProgress = () => setProgressVersion((version) => version + 1)
+    window.addEventListener("focus", refreshProgress)
+    window.addEventListener("storage", refreshProgress)
+    return () => {
+      window.removeEventListener("focus", refreshProgress)
+      window.removeEventListener("storage", refreshProgress)
     }
+  }, [])
 
-    setIsJoining(true)
-    setJoinFeedback("")
-    setJoinFeedbackTone(null)
-
-    try {
-      const joinTarget = await resolveCourseJoinTarget(joinSlugs)
-      if (!joinTarget) {
-        setJoinFeedbackTone("error")
-        setJoinFeedback("This demo course is not linked to a joinable workspace item yet.")
-        return
-      }
-      if (!joinTarget.isAccessible) {
-        setJoinFeedbackTone("error")
-        setJoinFeedback(
-          joinTarget.accessMessage || "Your current role does not allow access to this course.",
-        )
-        return
-      }
-      if (!joinTarget.joinEnabled) {
-        setJoinFeedbackTone("error")
-        setJoinFeedback("This course is visible in the demo but not open for joining yet.")
-        return
-      }
-
-      const response = await joinWorkspaceCourse(joinTarget.itemId)
-      setIsJoined(true)
-      setJoinFeedbackTone("success")
-      setJoinFeedback(
-        response.alreadyJoined
-          ? `Already linked to ${response.courseTitle}. Open your student workspace to continue.`
-          : `Joined ${response.courseTitle}. It is now available in your student workspace.`,
-      )
-    } catch (error: unknown) {
-      if (isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0)) {
-        window.location.assign("/")
-        return
-      }
-      const detail = isAxiosError(error) ? error.response?.data?.detail : undefined
-      setJoinFeedbackTone("error")
-      setJoinFeedback(detail || "Unable to join this course right now.")
-    } finally {
-      setIsJoining(false)
-    }
-  }
+  const courseSchema = useMemo(() => (course ? buildCourseSchema(siteUrl, course, locale) : null), [course, locale, siteUrl])
+  const faqSchema = useMemo(() => (course ? buildFaqSchema(course) : null), [course])
+  const level = course ? levelFromCourse(course) : levelFromSlug(slug)
+  const copy = useMemo(() => getCourseCopy(locale, level), [locale, level])
+  const modules = useMemo(() => buildCourseModules(level, locale), [level, locale])
+  const totalLessons = modules.reduce((count, module) => count + module.lessons.length, 0)
+  const courseProgress = useMemo(() => getCourseProgress(routeSlug), [routeSlug, progressVersion])
+  const completedLessonsCount = Array.from({ length: totalLessons }, (_, index) => index + 1)
+    .filter((lessonNumber) => isLessonCompleted(courseProgress, lessonNumber))
+    .length
+  const progressPercent = totalLessons > 0 ? Math.round((completedLessonsCount / totalLessons) * 100) : 0
+  const progressText = `${completedLessonsCount} / ${totalLessons} ${copy.progressDone}`
 
   if (loading) {
     return (
-      <main className="course-page">
+      <main className="course-modules-page course-modules-page--state">
         <p>{t("loading")}</p>
       </main>
     )
   }
 
-  if (!course || !blueprint) {
+  if (!course) {
     return (
-      <main className="course-page">
+      <main className="course-modules-page course-modules-page--state">
         <p>{t("noCourse")}</p>
         <Link to="/">{t("backHome")}</Link>
       </main>
@@ -458,7 +335,7 @@ export const CoursePage = () => {
   }
 
   return (
-    <main className="course-page">
+    <main className="course-modules-page">
       <Helmet>
         <title>{course.seo_title}</title>
         <meta name="description" content={course.seo_description} />
@@ -467,199 +344,119 @@ export const CoursePage = () => {
         <meta property="og:url" content={`${siteUrl}/course/${routeSlug}`} />
         <meta property="og:type" content="article" />
         <link rel="canonical" href={`${siteUrl}/course/${routeSlug}`} />
-        <link rel="alternate" hrefLang="en" href={`${siteUrl}/course/${routeSlug}`} />
-        <link rel="alternate" hrefLang="x-default" href={`${siteUrl}/course/${routeSlug}`} />
         {courseSchema ? <script type="application/ld+json">{JSON.stringify(courseSchema)}</script> : null}
         {faqSchema ? <script type="application/ld+json">{JSON.stringify(faqSchema)}</script> : null}
       </Helmet>
 
-      <section className="course-page__hero">
-        <div className="course-page__hero-copy">
-          <p className="course-page__eyebrow">Course overview</p>
-          <h1>{course.title}</h1>
-          <p className="course-page__lead">{course.short_description}</p>
-          <p className="course-page__summary">{course.description || blueprint.overview}</p>
-
-          <div className="course-page__chip-row">
-            <span className="course-page__chip">{blueprint.label}</span>
-            <span className="course-page__chip">
-              {course.lessons_count} {t("lessonsLabel")}
-            </span>
-            <span className="course-page__chip">{course.geo_city || "Berlin"}</span>
-          </div>
-
-          <div className="course-page__actions">
-            <button
-              type="button"
-              className="course-page__action course-page__action--primary"
-              onClick={() => void handleJoin()}
-              disabled={isJoining || isJoined}
-            >
-              {isJoined ? "Joined" : isJoining ? "Joining..." : "Join"}
-            </button>
-            <Link to="/home#sections" className="course-page__action course-page__action--secondary">
-              Browse learning areas
-            </Link>
-          </div>
-          {joinFeedback ? (
-            <p
-              className={`course-page__join-feedback ${joinFeedbackTone === "success" ? "course-page__join-feedback--success" : "course-page__join-feedback--error"}`}
-            >
-              {joinFeedback}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="course-page__hero-rail">
-          {course.hero_image_url ? (
-            <div className="course-page__hero-visual">
-              <img src={course.hero_image_url} alt={course.title} className="course-page__hero-image" />
-              <div className="course-page__hero-visual-badge">
-                <span>Interactive lesson flow</span>
-                <strong>{blueprint.label}</strong>
-              </div>
-            </div>
-          ) : null}
-
-          <aside className="course-page__hero-card">
-            <div className="course-page__stat">
-              <span>Format</span>
-              <strong>{blueprint.format}</strong>
-            </div>
-            <div className="course-page__stat">
-              <span>Duration</span>
-              <strong>{blueprint.duration}</strong>
-            </div>
-            <div className="course-page__stat">
-              <span>Level</span>
-              <strong>{blueprint.level}</strong>
-            </div>
-            <div className="course-page__stat">
-              <span>Audience</span>
-              <strong>{blueprint.audience}</strong>
-            </div>
-            <div className="course-page__stat">
-              <span>Next cohort</span>
-              <strong>{nextCohort ? formatCohortDate(nextCohort.start_date) : "Starts after enrollment"}</strong>
-            </div>
-            <div className="course-page__stat">
-              <span>Access</span>
-              <strong>Demo join enabled</strong>
-            </div>
-          </aside>
+      <section className="course-goal-card">
+        <p className="course-goal-card__eyebrow">{copy.goalEyebrow}</p>
+        <h1>{copy.goalTitle}</h1>
+        <div className="course-goal-card__grid">
+          <article>
+            <h2>{copy.germanGoalTitle}</h2>
+            <p>{copy.germanGoalIntro}</p>
+            <ul>
+              {copy.goalsDe.map((goal) => <li key={goal}>{goal}</li>)}
+            </ul>
+          </article>
+          <article>
+            <h2>{copy.ukrainianGoalTitle}</h2>
+            <p>{copy.ukrainianGoalIntro}</p>
+            <ul>
+              {copy.goalsUa.map((goal) => <li key={goal}>{goal}</li>)}
+            </ul>
+          </article>
         </div>
       </section>
 
-      <section className="course-page__grid course-page__grid--two">
-        <article className="course-page__panel">
-          <div className="course-page__section-head">
-            <div>
-              <p className="course-page__eyebrow">Outcomes</p>
-              <h2>What learners will be able to do</h2>
-            </div>
-          </div>
-          <ul className="course-page__bullet-list">
-            {blueprint.outcomes.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="course-page__panel">
-          <div className="course-page__section-head">
-            <div>
-              <p className="course-page__eyebrow">Support</p>
-              <h2>How the course is delivered</h2>
-            </div>
-          </div>
-          <div className="course-page__support-grid">
-            {blueprint.supportBlocks.map((block) => (
-              <article key={block.title} className="course-page__support-card">
-                <strong>{block.title}</strong>
-                <p>{block.description}</p>
-              </article>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="course-page__panel">
-        <div className="course-page__section-head">
-          <div>
-            <p className="course-page__eyebrow">Course flow</p>
-            <h2>What each learner moves through</h2>
-          </div>
-          <span className="course-page__pill">Theory to practice</span>
+      <section className="course-progress-card" aria-label="Course progress">
+        <div>
+          <h2>{copy.courseLabel}</h2>
+          <p>{copy.authorLine} · 4 {copy.modulesLabel} · {totalLessons} {copy.lessonsLabel}</p>
         </div>
-
-        <div className="course-page__module-list">
-          {blueprint.modules.map((module) => (
-            <article key={module.title} className="course-page__module-card">
-              <div className="course-page__module-copy">
-                <strong>{module.title}</strong>
-                <p>{module.summary}</p>
-              </div>
-              <div className="course-page__step-grid">
-                {flowSteps.map((step) => (
-                  <span key={`${module.title}-${step}`} className="course-page__step-pill">
-                    {step}
-                  </span>
-                ))}
-              </div>
-            </article>
-          ))}
+        <strong>{progressPercent}%<span>{copy.completedLabel}</span></strong>
+        <div className="course-progress-card__bar" aria-hidden="true">
+          <span style={{ width: `${progressPercent}%` }} />
+        </div>
+        <div className="course-progress-card__legend">
+          <span>0%</span>
+          <span>{progressText}</span>
+          <span>100%</span>
         </div>
       </section>
 
-      <section className="course-page__grid course-page__grid--two">
-        <article className="course-page__panel">
-          <div className="course-page__section-head">
-            <div>
-              <p className="course-page__eyebrow">Cohorts and access</p>
-              <h2>Planning and enrollment</h2>
-            </div>
-          </div>
+      <AnnaAssistant level={level} mode="course" />
 
-          {course.cohorts.length > 0 ? (
-            <div className="course-page__cohort-list">
-              {course.cohorts.slice(0, 3).map((cohort) => (
-                <article key={cohort.id} className="course-page__cohort-card">
-                  <strong>{cohort.name}</strong>
-                  <span>{cohort.group_code}</span>
-                  <p>Starts: {formatCohortDate(cohort.start_date)}</p>
-                  <p>Status: {cohort.status}</p>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className="course-page__muted">
-              Cohort planning opens after the course is ordered. Learners receive access details and start timing with their enrollment confirmation.
-            </p>
-          )}
-        </article>
+      <section className="course-module-list" aria-label="Course modules">
+        {modules.map((module, moduleIndex) => {
+          const moduleLessonNumbers = module.lessons.map((_, lessonIndex) => moduleIndex * 3 + lessonIndex + 1)
+          const moduleCompletedCount = moduleLessonNumbers.filter((lessonNumber) => isLessonCompleted(courseProgress, lessonNumber)).length
+          const isModuleLocked = false
+          return (
+          <article
+            className={`course-module-card ${isModuleLocked ? "course-module-card--locked" : "course-module-card--active"}`}
+            key={module.title}
+          >
+            <header className="course-module-card__header">
+              <div className="course-module-card__number">{isModuleLocked ? "🔒" : moduleIndex + 1}</div>
+              <div>
+                <span>{`${copy.moduleLabel} ${moduleIndex + 1}`}</span>
+                {isModuleLocked ? <small>🔒 {copy.locked}</small> : null}
+                <h3>{module.title}</h3>
+                <p>{module.subtitle}</p>
+                <em>{module.week}</em>
+              </div>
+              <strong>{moduleCompletedCount}/3<span>{copy.lessonsLabel}</span></strong>
+            </header>
+            <div className="course-module-card__lessons">
+              {module.lessons.map((lesson, lessonIndex) => {
+                const lessonNumber = moduleIndex * 3 + lessonIndex + 1
+                const completed = isLessonCompleted(courseProgress, lessonNumber)
+                const accessible = isLessonAccessible(courseProgress, lessonNumber)
+                const rowContent = (
+                  <>
+                    <div className="course-lesson-row__number">{completed ? "✓" : accessible ? lessonIndex + 1 : "🔒"}</div>
+                    <div className="course-lesson-row__copy">
+                      <strong>
+                        <span aria-hidden="true">{lesson.icon}</span>
+                        {lesson.title}
+                      </strong>
+                      <p>{lesson.subtitle}</p>
+                    </div>
+                    <span className="course-lesson-row__duration">{completed ? copy.completedDuration : lesson.duration}</span>
+                    <span className="course-lesson-row__chevron" aria-hidden="true">›</span>
+                  </>
+                )
 
-        <article className="course-page__panel">
-          <div className="course-page__section-head">
-            <div>
-              <p className="course-page__eyebrow">FAQ</p>
-              <h2>Before you order the course</h2>
+                return accessible ? (
+                  <Link
+                    className={`course-lesson-row${completed ? " course-lesson-row--completed" : ""}`}
+                    key={lesson.title}
+                    to={`/course/${routeSlug}/lesson/${lessonNumber}`}
+                  >
+                    {rowContent}
+                  </Link>
+                ) : (
+                  <div className="course-lesson-row course-lesson-row--locked" key={lesson.title} aria-disabled="true">
+                    {rowContent}
+                  </div>
+                )
+              })}
             </div>
-          </div>
-          <div className="course-page__faq-list">
-            {faqItems.map((item) => (
-              <article key={item.question} className="course-page__faq-card">
-                <strong>{item.question}</strong>
-                <p>{item.answer}</p>
-              </article>
-            ))}
-          </div>
-          <div className="course-page__helper-links">
-            <Link to="/sign-in">Corporate sign in</Link>
-            <Link to="/home#sections">Browse teams and topics</Link>
-            <Link to="/spaces/academy-resources?section=recordings">Open session recordings</Link>
-          </div>
-        </article>
+          </article>
+          )
+        })}
+      </section>
+
+      <section className="course-purchase-card">
+        <div>
+          <h2>{copy.readyTitle}</h2>
+          <p>{copy.readyText}</p>
+        </div>
+        <Link to={`/checkout/${routeSlug}`}>{copy.buy}</Link>
       </section>
     </main>
   )
 }
+
+

@@ -1,6 +1,6 @@
 # Security Package
 
-This package positions `Learning Hub` as a universal enterprise learning platform with governed content, completion evidence, scoped accountability, and operational controls. It is written for technical buyers, security reviewers, and delivery owners across industries, not only for regulated financial teams.
+This package positions `Hefner Sprach Hub` as a universal enterprise learning platform with governed content, completion evidence, scoped accountability, and operational controls. It is written for technical buyers, security reviewers, and delivery owners across industries, not only for regulated financial teams.
 
 ## Package scope
 
@@ -25,7 +25,7 @@ Related documents:
 
 ## Product summary
 
-`Learning Hub` is an internal academy and enterprise learning workspace with:
+`Hefner Sprach Hub` is an internal academy and enterprise learning workspace with:
 
 - public catalog and learner access surfaces
 - guided lesson flow with theory, concept, video, quiz, practice, and summary
@@ -137,7 +137,7 @@ Status as of `April 4, 2026`:
 
 Use this positioning externally:
 
-`Learning Hub is a secure enterprise learning workspace that combines governed content operations, structured lesson flows, completion evidence, scoped accountability, and operational reporting in one deployable platform.`
+`Hefner Sprach Hub is a secure enterprise learning workspace that combines governed content operations, structured lesson flows, completion evidence, scoped accountability, and operational reporting in one deployable platform.`
 
 Avoid promising:
 

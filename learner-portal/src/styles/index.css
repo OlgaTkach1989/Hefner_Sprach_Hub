@@ -1,10 +1,10 @@
 :root {
   --font-main: "Roboto", "Segoe UI", "Trebuchet MS", sans-serif;
-  --brand-deep: #0a2330;
-  --brand-deep-2: #143343;
-  --brand-teal: #164a61;
-  --brand-teal-strong: #0f4f79;
-  --brand-gold: #d7b668;
+  --brand-deep: #111b46;
+  --brand-deep-2: #20294f;
+  --brand-teal: #1f376d;
+  --brand-teal-strong: #16306a;
+  --brand-gold: #d6ad3d;
   --brand-gold-soft: rgba(215, 182, 104, 0.18);
   --brand-cream: #f7f2e9;
   --brand-shell: #eef3f5;
@@ -17,7 +17,7 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f7f2eb;
+  --bg: #f7f3ec;
   --surface-card: rgba(255, 255, 255, 0.84);
   --surface-elevated: rgba(255, 248, 238, 0.92);
   --surface-muted: rgba(238, 243, 245, 0.84);
@@ -60,11 +60,7 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(circle at 10% 0%, rgba(215, 182, 104, 0.18), transparent 24%),
-    radial-gradient(circle at 100% 10%, rgba(20, 77, 110, 0.12), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.32), transparent 24%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-main);
   text-rendering: optimizeLegibility;

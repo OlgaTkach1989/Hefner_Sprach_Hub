@@ -12,6 +12,7 @@ type UiPreferencesContextValue = {
 };
 
 const STORAGE_THEME_KEY = "online_public_theme";
+const STORAGE_LOCALE_KEY = "online_public_locale";
 
 const UiPreferencesContext = createContext<UiPreferencesContextValue | null>(null);
 
@@ -21,7 +22,10 @@ export const UiPreferencesProvider = ({ children }: { children: ReactNode }) => 
     const raw = localStorage.getItem(STORAGE_THEME_KEY);
     return raw === "dark" ? "dark" : "light";
   });
-  const locale: Locale = "en";
+  const [locale, setLocale] = useState<Locale>(() => {
+    const raw = localStorage.getItem(STORAGE_LOCALE_KEY);
+    return raw === "de" || raw === "uk" || raw === "ru" ? raw : "uk";
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -31,13 +35,14 @@ export const UiPreferencesProvider = ({ children }: { children: ReactNode }) => 
   useEffect(() => {
     i18n.changeLanguage(locale);
     document.documentElement.setAttribute("lang", locale);
+    localStorage.setItem(STORAGE_LOCALE_KEY, locale);
   }, [i18n, locale]);
 
   const value = useMemo<UiPreferencesContextValue>(
     () => ({
       locale,
       theme,
-      setLocale: () => undefined,
+      setLocale,
       setTheme,
       toggleTheme: () => setTheme((prev) => (prev === "light" ? "dark" : "light"))
     }),

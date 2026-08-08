@@ -1,4 +1,4 @@
-from django.urls import path
+﻿from django.urls import path
 
 from apps.online.views import (
     OnlineAdminCourseDetailView,
@@ -41,6 +41,8 @@ from apps.online.views import (
     OnlineAdminCohortDetailView,
     OnlineAdminCohortListView,
     PublicMagicLinkRequestView,
+    PublicAnnaLiveSessionView,
+    PublicAnnaTtsView,
     OnlinePaymentWebhookView,
     OnlineStudentDashboardView,
     OnlineStudentLessonAiAskView,
@@ -52,6 +54,7 @@ from apps.online.views import (
     OnlineStudentProfileUpdateView,
     OnlineStudentWorkspaceCourseJoinView,
     OnlineStudentSessionJoinView,
+    OnlineStudentSessionBookingView,
     OnlineStudentSessionsView,
     OnlineStudentSupportMessagesView,
     PublicCheckoutStartView,
@@ -120,6 +123,8 @@ urlpatterns = [
     path("public/courses/", PublicCourseListView.as_view(), name="learning-portal-courses"),
     path("public/courses/<slug:slug>/", PublicCourseDetailView.as_view(), name="learning-portal-course-detail"),
     path("public/course-finder/ask/", PublicCourseFinderAskView.as_view(), name="learning-portal-course-finder-ask"),
+    path("public/anna/live/session/", PublicAnnaLiveSessionView.as_view(), name="learning-portal-anna-live-session"),
+    path("public/anna/tts/", PublicAnnaTtsView.as_view(), name="learning-portal-anna-tts"),
     path("public/trial-signup/", PublicTrialSignupView.as_view(), name="learning-portal-trial-signup"),
     path("public/checkout/start/", PublicCheckoutStartView.as_view(), name="learning-portal-checkout-start"),
     path("public/checkout/status/<int:order_id>/", PublicCheckoutStatusView.as_view(), name="learning-portal-checkout-status"),
@@ -174,6 +179,7 @@ urlpatterns = [
         name="learner-portal-workspace-course-join",
     ),
     path("student/sessions/<int:session_id>/join/", OnlineStudentSessionJoinView.as_view(), name="learner-portal-session-join"),
+    path("student/sessions/<int:session_id>/booking/", OnlineStudentSessionBookingView.as_view(), name="learner-portal-session-booking"),
     path("student/support-messages/", OnlineStudentSupportMessagesView.as_view(), name="learner-portal-support"),
     # Admin panel
     path("admin/courses/", OnlineAdminCourseListView.as_view(), name="admin-console-courses"),
@@ -391,3 +397,4 @@ urlpatterns = [
         name="instructor-workspace-session-attendance-sync",
     ),
 ]
+

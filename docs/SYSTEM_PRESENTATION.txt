@@ -3,7 +3,7 @@ ONLINE-LESSONS
 
 1. ЧТО ИЗ СЕБЯ ПРЕДСТАВЛЯЕТ СИСТЕМА
 
-Learning Hub - это современная enterprise learning platform, предназначенная для организации внутреннего обучения, онбординга, повышения квалификации, передачи экспертизы и управления учебным контентом внутри компании.
+Hefner Sprach Hub - это современная enterprise learning platform, предназначенная для организации внутреннего обучения, онбординга, повышения квалификации, передачи экспертизы и управления учебным контентом внутри компании.
 
 Система объединяет в одном продукте:
 - публичную витрину и каталог курсов
@@ -188,7 +188,7 @@ Enterprise-функции:
 
 8. ГЛАВНАЯ ЦЕННОСТЬ СИСТЕМЫ
 
-Главная ценность Learning Hub заключается в том, что она превращает обучение из набора файлов, видео и тестов в управляемую цифровую среду, где можно:
+Главная ценность Hefner Sprach Hub заключается в том, что она превращает обучение из набора файлов, видео и тестов в управляемую цифровую среду, где можно:
 - обучать сотрудников
 - видеть прогресс
 - контролировать качество контента
@@ -206,12 +206,12 @@ Enterprise-функции:
 
 Наиболее удачная формулировка:
 
-"Learning Hub is a governed enterprise learning workspace for onboarding, upskilling, internal knowledge transfer, and completion-ready learning."
+"Hefner Sprach Hub is a governed enterprise learning workspace for onboarding, upskilling, internal knowledge transfer, and completion-ready learning."
 
 
 10. ИТОГ
 
-Learning Hub - это уже не просто учебный сайт и не просто LMS.
+Hefner Sprach Hub - это уже не просто учебный сайт и не просто LMS.
 Это развивающаяся enterprise learning platform, которая соединяет:
 - современный learner experience
 - структурированный course flow

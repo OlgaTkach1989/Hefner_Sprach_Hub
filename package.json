@@ -1,8 +1,8 @@
 {
-  "name": "learning-hub",
+  "name": "hefner-sprach-hub",
   "private": true,
   "version": "0.0.0",
-  "description": "Monorepo entrypoint for the Learning Hub backend and frontend apps.",
+  "description": "Monorepo entrypoint for the Hefner Sprach Hub backend and frontend apps.",
   "author": "Serhii TK",
   "license": "UNLICENSED",
   "scripts": {

@@ -1,6 +1,6 @@
 # Architecture And Data Flow
 
-This document describes the platform architecture and the main operational data paths for `Learning Hub`.
+This document describes the platform architecture and the main operational data paths for `Hefner Sprach Hub`.
 
 ## 1. System architecture
 

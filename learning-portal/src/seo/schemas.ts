@@ -1,8 +1,13 @@
 import type { CourseDetail, CourseSummary, Locale } from "../types";
 
-const ORG_NAME = "Learning Hub";
+const ORG_NAME = "Hefner Sprach Hub";
 
 const buildLogoUrl = (siteUrl: string) => `${siteUrl.replace(/\/$/, "")}/logo.svg`;
+const schemaLanguage = (locale: Locale) => {
+  if (locale === "de") return "de-DE";
+  if (locale === "ru") return "ru-RU";
+  return "uk-UA";
+};
 
 export const buildOrganizationSchema = (siteUrl: string) => ({
   "@context": "https://schema.org",
@@ -36,7 +41,7 @@ export const buildCourseListSchema = (siteUrl: string, courses: CourseSummary[],
         "@type": "Organization",
         name: ORG_NAME
       },
-      inLanguage: locale === "de" ? "de-DE" : "en-US",
+      inLanguage: schemaLanguage(locale),
       offers: {
         "@type": "Offer",
         price: course.price_amount,
@@ -57,7 +62,7 @@ export const buildCourseSchema = (siteUrl: string, course: CourseDetail, locale:
     name: ORG_NAME,
     url: siteUrl
   },
-  inLanguage: locale === "de" ? "de-DE" : "en-US",
+  inLanguage: schemaLanguage(locale),
   offers: {
     "@type": "Offer",
     price: course.price_amount,

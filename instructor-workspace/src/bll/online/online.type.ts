@@ -24,6 +24,13 @@ export type TeacherOnlineSession = {
   status: "scheduled" | "live" | "ended" | "canceled";
   isCompleted: boolean;
   joinUrl?: string | null;
+  bookingCount: number;
+  bookedStudents: {
+    enrollmentId: number;
+    fullName: string;
+    email: string;
+    bookedAt: string;
+  }[];
 };
 
 export type TeacherAttendanceSummary = {

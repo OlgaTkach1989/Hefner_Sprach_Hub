@@ -1,6 +1,6 @@
 # Enterprise Sales Deck
 
-This document is a ready-to-present `12-slide` sales deck for `Learning Hub`.
+This document is a ready-to-present `12-slide` sales deck for `Hefner Sprach Hub`.
 
 Use it as:
 
@@ -12,7 +12,7 @@ Use it as:
 
 Title:
 
-`Learning Hub`
+`Hefner Sprach Hub`
 
 Subtitle:
 

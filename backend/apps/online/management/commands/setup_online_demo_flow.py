@@ -93,7 +93,7 @@ class Command(BaseCommand):
                 "title_en": "Trial Group Lesson with Instructor",
                 "short_description_de": "Kostenlose Probestunde in kleiner Gruppe mit Live-Feedback.",
                 "short_description_en": "Free trial lesson in a small group with live instructor feedback.",
-                "description_de": "Automatisch vorbereitete Probestunde fuer den End-to-End-Testlauf.",
+                "description_de": "Automatisch vorbereitete Probestunde für den End-to-End-Testlauf.",
                 "description_en": "Automatically prepared trial lesson for end-to-end demo flow.",
                 "lessons_count": 1,
                 "trial_available": True,

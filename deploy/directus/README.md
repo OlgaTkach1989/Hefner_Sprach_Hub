@@ -1,6 +1,6 @@
 # Directus Operational Wiring
 
-This folder documents the Directus-side contracts that `Learning Hub` expects in production.
+This folder documents the Directus-side contracts that `Hefner Sprach Hub` expects in production.
 
 Required Directus flows:
 - `online-email`

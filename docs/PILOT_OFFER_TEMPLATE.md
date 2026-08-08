@@ -8,7 +8,7 @@ Use this document as the baseline commercial structure for a paid pilot.
 
 ## Objective
 
-Validate that `Learning Hub` can improve:
+Validate that `Hefner Sprach Hub` can improve:
 
 - learner completion
 - time-to-readiness

@@ -9,7 +9,14 @@ export default defineConfig(({ mode }) => {
     base: basePath,
     plugins: [react()],
     server: {
-      port: 5180
+      port: 5180,
+      proxy: {
+        "/api": {
+          target: "http://127.0.0.1:1212",
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     }
   };
 });

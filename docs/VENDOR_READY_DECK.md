@@ -4,7 +4,7 @@ Use this outline for a `10-12` slide enterprise sales deck.
 
 ## Slide 1. Title
 
-`Learning Hub`
+`Hefner Sprach Hub`
 
 Subtitle:
 

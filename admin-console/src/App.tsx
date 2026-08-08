@@ -26,7 +26,7 @@ const AdminGuard = () => {
       <main className={styles.guardState}>
         <section className={styles.guardCard}>
           <h2>Loading admin workspace</h2>
-          <p>Checking your standalone Learning Hub session.</p>
+          <p>Checking your standalone Hefner Sprach Hub session.</p>
         </section>
       </main>
     );
@@ -41,7 +41,7 @@ const AdminGuard = () => {
       <main className={styles.guardState}>
         <section className={styles.guardCard}>
           <h2>Admin access required</h2>
-          <p>This cabinet is only available for admin users of the Learning Hub backend.</p>
+          <p>This cabinet is only available for admin users of the Hefner Sprach Hub backend.</p>
           <button type="button" className={styles.logoutButton} onClick={logout}>
             Sign out
           </button>

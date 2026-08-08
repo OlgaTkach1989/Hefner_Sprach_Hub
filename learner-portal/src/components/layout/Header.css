@@ -1,11 +1,12 @@
 .student-header {
   align-items: center;
   backdrop-filter: blur(8px);
-  background: var(--surface-elevated);
-  border-bottom: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #ded6c8;
+  box-shadow: 0 2px 8px rgba(25, 20, 12, 0.08);
   display: flex;
   justify-content: space-between;
-  padding: 0.7rem 1rem;
+  padding: 0.62rem max(1rem, calc((100% - 980px) / 2));
   position: sticky;
   top: 0;
   z-index: 10;
@@ -21,16 +22,27 @@
 
 .student-header__logo {
   display: block;
+  border-radius: 10px;
   height: 42px;
-  object-fit: contain;
-  width: auto;
+  object-fit: cover;
+  width: 42px;
 }
 
 .student-header__brand {
-  color: var(--text-primary);
-  font-size: 1.28rem;
-  font-weight: 700;
-  margin: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.student-header__brand strong {
+  color: #111b46;
+  font-size: 0.98rem;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.student-header__brand small {
+  color: #9b7222;
+  font-size: 0.76rem;
 }
 
 .student-header__meta {
@@ -41,9 +53,9 @@
 
 .student-header__chip {
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 0;
   border-radius: 999px;
-  color: var(--text-primary);
+  color: #9b7222;
   cursor: pointer;
   font-size: 0.87rem;
   font-weight: 600;
@@ -77,8 +89,8 @@
     gap: 0.6rem;
   }
 
-  .student-header__brand {
-    font-size: 1.14rem;
+  .student-header__brand strong {
+    font-size: 0.86rem;
   }
 
   .student-header__logo {

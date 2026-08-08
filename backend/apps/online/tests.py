@@ -5955,7 +5955,7 @@ class OnlineCourseBuilderTests(OnlineSprintOneTests):
         user, error = online_views._microsoft_user_lookup(role=online_views.SSO_ROLE_ADMIN, payload=payload)
 
         self.assertIsNone(user)
-        self.assertEqual(error, "Admin access must be assigned inside Learning Hub.")
+        self.assertEqual(error, "Admin access must be assigned inside Hefner Sprach Hub.")
 
     @override_settings(ONLINE_MICROSOFT_ADMIN_EMAILS=["admin.test@kunstschuleberlin.de"])
     def test_microsoft_admin_lookup_creates_admin_from_allowlist(self):

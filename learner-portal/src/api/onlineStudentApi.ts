@@ -129,6 +129,26 @@ export const markStudentSessionJoin = async (sessionId: number): Promise<{
   return response.data;
 };
 
+export const bookStudentSession = async (sessionId: number): Promise<{
+  sessionId: number;
+  bookingStatus: "booked" | "canceled";
+  bookedAt?: string | null;
+  canceledAt?: string | null;
+}> => {
+  const response = await apiClient.post(`/student/sessions/${sessionId}/booking/`);
+  return response.data;
+};
+
+export const cancelStudentSessionBooking = async (sessionId: number): Promise<{
+  sessionId: number;
+  bookingStatus: "booked" | "canceled";
+  bookedAt?: string | null;
+  canceledAt?: string | null;
+}> => {
+  const response = await apiClient.delete(`/student/sessions/${sessionId}/booking/`);
+  return response.data;
+};
+
 type UpdateProfilePayload = {
   phone?: string;
   gender?: Gender;

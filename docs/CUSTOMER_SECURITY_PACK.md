@@ -1,6 +1,6 @@
 # Customer Security Pack
 
-Prepared for enterprise customers evaluating `Learning Hub` as a secure internal academy and enterprise learning workspace.
+Prepared for enterprise customers evaluating `Hefner Sprach Hub` as a secure internal academy and enterprise learning workspace.
 
 Version:
 
@@ -8,7 +8,7 @@ Version:
 
 ## 1. Executive summary
 
-`Learning Hub` is a deployable enterprise learning platform built for:
+`Hefner Sprach Hub` is a deployable enterprise learning platform built for:
 
 - onboarding
 - role-based upskilling

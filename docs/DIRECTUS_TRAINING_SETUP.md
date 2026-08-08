@@ -1,6 +1,6 @@
 # Directus Training Setup
 
-This document defines the Directus-side production wiring for `Learning Hub`.
+This document defines the Directus-side production wiring for `Hefner Sprach Hub`.
 
 ## Required purpose
 

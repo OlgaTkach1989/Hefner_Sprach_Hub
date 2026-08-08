@@ -2,7 +2,7 @@
 
 ## Objective
 
-Extend `Learning Hub` from an online lessons platform into an enterprise training platform for quant and core-strats education without destabilizing existing production flows.
+Extend `Hefner Sprach Hub` from an online lessons platform into an enterprise training platform for quant and core-strats education without destabilizing existing production flows.
 
 ## Design Principles
 

@@ -1,4 +1,4 @@
-import { isAxiosError } from "axios";
+﻿import { isAxiosError } from "axios";
 
 import { apiClient } from "./client";
 import type {
@@ -26,14 +26,14 @@ import type {
 
 export const fetchCourses = async (locale: Locale): Promise<CourseSummary[]> => {
   const response = await apiClient.get<{ results: CourseSummary[] }>("/public/courses/", {
-    params: { lang: locale }
+    params: { lang: locale === "de" ? "de" : "en" }
   });
   return response.data.results;
 };
 
 export const fetchCourseBySlug = async (slug: string, locale: Locale): Promise<CourseDetail> => {
   const response = await apiClient.get<CourseDetail>(`/public/courses/${slug}/`, {
-    params: { lang: locale }
+    params: { lang: locale === "de" ? "de" : "en" }
   });
   return response.data;
 };
@@ -50,6 +50,42 @@ export const fetchPublicWorkspaceBySlug = async (slug: string): Promise<Workspac
 
 export const askPublicCourseFinder = async (query: string): Promise<PublicCourseFinderResponse> => {
   const response = await apiClient.post<PublicCourseFinderResponse>("/public/course-finder/ask/", { query });
+  return response.data;
+};
+
+export const createAnnaSpeech = async (payload: {
+  language: "de-DE" | "ru-RU" | "uk-UA";
+  text: string;
+}): Promise<Blob> => {
+  const response = await apiClient.post("/public/anna/tts/", payload, {
+    responseType: "blob",
+    headers: {
+      Accept: "audio/mpeg",
+    },
+  });
+  return response.data;
+};
+
+export type AnnaLiveSession = {
+  audio: {
+    inputSampleRateHz: number;
+    outputSampleRateHz: number;
+  };
+  clientSecret: string;
+  initialMessage: unknown;
+  model: string;
+  provider: "gemini-live";
+  voice: string;
+  websocketUrl: string;
+};
+
+export const createAnnaLiveSession = async (payload: {
+  language: "de-DE" | "ru-RU" | "uk-UA";
+  lessonTitle?: string;
+  level: string;
+  voice?: string;
+}): Promise<AnnaLiveSession> => {
+  const response = await apiClient.post<AnnaLiveSession>("/public/anna/live/session/", payload);
   return response.data;
 };
 
@@ -168,3 +204,5 @@ export const buildPublicPortalCalendarUrl = (token: string): string => {
   const base = (import.meta.env.VITE_ONLINE_API_BASE_URL ?? "http://localhost:1212/api/online").replace(/\/+$/, "");
   return `${base}/public/portal/calendar.ics/?token=${encodeURIComponent(token)}`;
 };
+
+

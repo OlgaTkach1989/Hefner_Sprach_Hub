@@ -1,9 +1,10 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 from datetime import timedelta
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -251,6 +252,9 @@ CORS_ALLOWED_ORIGINS = env_list(
         "http://127.0.0.1:5184",
     ],
 )
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "x-online-auth-scope",
+]
 if not DEBUG and CORS_ALLOW_ALL_ORIGINS and CORS_ALLOW_CREDENTIALS:
     raise ImproperlyConfigured("CORS_ALLOW_ALL_ORIGINS cannot be enabled with credentials in production.")
 CSRF_TRUSTED_ORIGINS = env_list(
@@ -349,6 +353,19 @@ TRAINING_AI_API_KEY = env_str("TRAINING_AI_API_KEY", "")
 TRAINING_AI_CHAT_MODEL = env_str("TRAINING_AI_CHAT_MODEL", "")
 TRAINING_AI_TIMEOUT_SECONDS = env_int("TRAINING_AI_TIMEOUT_SECONDS", 45)
 TRAINING_AI_TEMPERATURE = env_optional_float("TRAINING_AI_TEMPERATURE")
+OPENAI_API_KEY = env_str("OPENAI_API_KEY", "")
+OPENAI_TTS_MODEL = env_str("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")
+OPENAI_TTS_VOICE = env_str("OPENAI_TTS_VOICE", "nova")
+OPENAI_TTS_TIMEOUT_SECONDS = env_int("OPENAI_TTS_TIMEOUT_SECONDS", 45)
+ANNA_TTS_PROVIDER = env_str("ANNA_TTS_PROVIDER", env_str("MASHA_TTS_PROVIDER", "openai")).lower() or "openai"
+GEMINI_API_KEY = env_str("GEMINI_API_KEY", "")
+GEMINI_TTS_MODEL = env_str("GEMINI_TTS_MODEL", "gemini-3.1-flash-tts-preview")
+GEMINI_TTS_VOICE = env_str("GEMINI_TTS_VOICE", "Achernar")
+GEMINI_TTS_TIMEOUT_SECONDS = env_int("GEMINI_TTS_TIMEOUT_SECONDS", 45)
+GEMINI_LIVE_MODEL = env_str("GEMINI_LIVE_MODEL", "gemini-3.1-flash-live-preview")
+GEMINI_LIVE_VOICE = env_str("GEMINI_LIVE_VOICE", GEMINI_TTS_VOICE or "Achernar")
+GEMINI_LIVE_SILENCE_DURATION_MS = env_int("GEMINI_LIVE_SILENCE_DURATION_MS", 650)
+GEMINI_LIVE_PREFIX_PADDING_MS = env_int("GEMINI_LIVE_PREFIX_PADDING_MS", 250)
 COURSE_BUILDER_AI_ORCHESTRATOR = env_str("COURSE_BUILDER_AI_ORCHESTRATOR", "legacy")
 COURSE_BUILDER_AI_AGENTS_TRACING_ENABLED = env_bool("COURSE_BUILDER_AI_AGENTS_TRACING_ENABLED", False)
 TRAINING_AI_TRANSCRIPTION_MODEL = env_str("TRAINING_AI_TRANSCRIPTION_MODEL", "whisper-1")
@@ -360,3 +377,4 @@ TRAINING_AI_INDEX_CHUNK_OVERLAP = env_int("TRAINING_AI_INDEX_CHUNK_OVERLAP", 120
 TRAINING_AI_MAX_CONTEXT_CHUNKS = env_int("TRAINING_AI_MAX_CONTEXT_CHUNKS", 5)
 TRAINING_AI_QUESTION_MAX_CHARS = env_int("TRAINING_AI_QUESTION_MAX_CHARS", 1200)
 TRAINING_DIRECTUS_SYNC_TOKEN = env_str("TRAINING_DIRECTUS_SYNC_TOKEN", env_str("DIRECTUS_API_TOKEN", ""))
+

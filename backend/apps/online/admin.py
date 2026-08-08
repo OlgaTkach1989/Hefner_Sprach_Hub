@@ -19,6 +19,7 @@ from .models import (
     OnlinePaymentEvent,
     OnlineSessionReminder,
     OnlineSession,
+    OnlineSessionBooking,
     OnlineStudentProfile,
     OnlineSupportMessage,
     OnlineWorkspace,
@@ -606,6 +607,14 @@ class OnlineAttendanceAdmin(admin.ModelAdmin):
     list_display = ("id", "enrollment", "session", "status", "attended_seconds", "updated_at")
     search_fields = ("enrollment__profile__user__email", "session__title")
     list_filter = ("status",)
+
+
+@admin.register(OnlineSessionBooking)
+class OnlineSessionBookingAdmin(admin.ModelAdmin):
+    list_display = ("id", "enrollment", "session", "status", "booked_at", "canceled_at")
+    search_fields = ("enrollment__profile__user__email", "session__title", "session__cohort__group_code")
+    list_filter = ("status", "session__cohort__course")
+    readonly_fields = ("booked_at", "updated_at")
 
 
 @admin.register(OnlineFeedbackMessage)

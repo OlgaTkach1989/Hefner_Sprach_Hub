@@ -32,9 +32,9 @@ class Command(BaseCommand):
                 "short_description_en": "Free trial lesson in a small group with live instructor feedback.",
                 "description_de": (
                     "Diese Probestunde orientiert sich an modernen Online-Kursformaten mit klarem Ablauf: "
-                    "Warm-up, kurze Demonstration, gefuehrte Uebung und Feedbackrunde. "
-                    "Das Format entspricht gaengigen Einstiegssessions aus bekannten Lernplattformen: "
-                    "niedrige Einstiegshuerde, klarer Lernfokus, sofortige Interaktion."
+                    "Warm-up, kurze Demonstration, geführte Übung und Feedbackrunde. "
+                    "Das Format entspricht gängigen Einstiegssessions aus bekannten Lernplattformen: "
+                    "niedrige Einstiegshürde, klarer Lernfokus, sofortige Interaktion."
                 ),
                 "description_en": (
                     "This trial follows a modern online class flow: warm-up, short demonstration, "
@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 "short_description_de": "Intensivprogramm mit klaren Tageszielen und Abschlussprojekt.",
                 "short_description_en": "Intensive program with daily milestones and final project.",
                 "description_de": (
-                    "Projektbasierter Kurs nach bewaehrtem Bootcamp-Prinzip: jeden Tag ein klarer Schritt "
+                    "Projektbasierter Kurs nach bewährtem Bootcamp-Prinzip: jeden Tag ein klarer Schritt "
                     "von Komposition bis Farbharmonie. Inspiriert von erfolgreichen 'guided project' "
                     "Modellen aus internationalen E-Learning-Kursen. Enthalten sind Live-Unterricht, "
                     "Aufgabenplan, Peer-Kommentare und Abschlusskritik."
@@ -85,12 +85,12 @@ class Command(BaseCommand):
                 "slug": "webinar-masterclass-live-recording",
                 "title_de": "Online Masterclass: Live-Unterricht + Aufzeichnung",
                 "title_en": "Online Masterclass: Live Lesson + Recording",
-                "short_description_de": "Webinar-Format mit Live-Session und Replay fuer vertieftes Lernen.",
+                "short_description_de": "Webinar-Format mit Live-Session und Replay für vertieftes Lernen.",
                 "short_description_en": "Webinar format with live lesson and replay for deeper learning.",
                 "description_de": (
                     "Masterclass im Webinar-Stil mit praxisnahen Demos, Q&A und Aufzeichnung. "
-                    "Das Design folgt gaengigen Virtual-Classroom-Standards: klare Agenda, "
-                    "strukturierte Materialpakete, Nachbereitung ueber Replay und Lernnotizen."
+                    "Das Design folgt gängigen Virtual-Classroom-Standards: klare Agenda, "
+                    "strukturierte Materialpakete, Nachbereitung über Replay und Lernnotizen."
                 ),
                 "description_en": (
                     "Webinar-style masterclass with practical demos, Q&A, and full recording access. "
@@ -105,18 +105,18 @@ class Command(BaseCommand):
                 "hero_image_url": "https://images.unsplash.com/photo-1516321497487-e288fb19713f",
                 "seo_title_de": "Online Masterclass mit Aufzeichnung",
                 "seo_title_en": "Online Masterclass with Recording",
-                "seo_description_de": "Live-Webinar mit Q&A und Replay fuer flexible Nachbereitung.",
+                "seo_description_de": "Live-Webinar mit Q&A und Replay für flexible Nachbereitung.",
                 "seo_description_en": "Live webinar with Q&A and replay access for flexible review.",
             },
             {
                 "slug": "studio-club-subscription",
-                "title_de": "Studio-Club Abo: Bibliothek + woechentliche Treffen",
+                "title_de": "Studio-Club Abo: Bibliothek + wöchentliche Treffen",
                 "title_en": "Studio Club Subscription: Library + Weekly Meetups",
                 "short_description_de": "Abo-Modell mit On-Demand-Bibliothek und Live-Community-Treffen.",
                 "short_description_en": "Subscription model with on-demand library and live community meetups.",
                 "description_de": (
                     "Mitgliedschaft im Studio-Club mit Zugriff auf eine kuratierte Video-Bibliothek "
-                    "und regelmaessigen Live-Sessions. Das Modell orientiert sich an bewaehrten "
+                    "und regelmäßigen Live-Sessions. Das Modell orientiert sich an bewährten "
                     "Abo-Lernangeboten mit Community-Fokus, Fortschrittskontrolle und kontinuierlicher Praxis."
                 ),
                 "description_en": (
@@ -130,7 +130,7 @@ class Command(BaseCommand):
                 "currency": "EUR",
                 "is_subscription": True,
                 "hero_image_url": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
-                "seo_title_de": "Studio-Club Online Abo fuer Kunstkurse",
+                "seo_title_de": "Studio-Club Online Abo für Kunstkurse",
                 "seo_title_en": "Studio Club Online Art Subscription",
                 "seo_description_de": "Video-Bibliothek und Live-Treffen im flexiblen Online-Abo.",
                 "seo_description_en": "Lesson library and live meetups in a flexible online subscription.",
@@ -139,12 +139,12 @@ class Command(BaseCommand):
                 "slug": "kids-painting-course",
                 "title_de": "Kinder-Malkurs: Farben und Fantasie",
                 "title_en": "Kids Painting Course: Colors and Imagination",
-                "short_description_de": "Spielerischer Live-Kurs fuer Kinder mit kreativen Wochenprojekten.",
+                "short_description_de": "Spielerischer Live-Kurs für Kinder mit kreativen Wochenprojekten.",
                 "short_description_en": "Playful live course for kids with creative weekly projects.",
                 "description_de": (
                     "Dieser Kurs vermittelt Kindern die Grundlagen von Farbe, Form und Komposition "
-                    "in klaren, altersgerechten Schritten. Der Aufbau folgt bewaehrten Kreativmodellen "
-                    "fuer junge Lernende: kurze Inputs, praktische Uebungen und motivierendes Feedback."
+                    "in klaren, altersgerechten Schritten. Der Aufbau folgt bewährten Kreativmodellen "
+                    "für junge Lernende: kurze Inputs, praktische Übungen und motivierendes Feedback."
                 ),
                 "description_en": (
                     "This course teaches kids color, shape, and composition through structured, age-appropriate "
@@ -157,7 +157,7 @@ class Command(BaseCommand):
                 "currency": "EUR",
                 "is_subscription": False,
                 "hero_image_url": "https://images.unsplash.com/photo-1472162072942-cd5147eb3902",
-                "seo_title_de": "Online-Malkurs fuer Kinder",
+                "seo_title_de": "Online-Malkurs für Kinder",
                 "seo_title_en": "Online Painting Course for Kids",
                 "seo_description_de": "Kreativer Kinderkurs mit Live-Unterricht und spielerischen Projekten.",
                 "seo_description_en": "Creative kids course with live lessons and playful projects.",
@@ -166,12 +166,12 @@ class Command(BaseCommand):
                 "slug": "tattoo-design-course",
                 "title_de": "Tattoo Design Studio: Entwirf dein eigenes Tattoo",
                 "title_en": "Tattoo Design Studio: Create Your Own Tattoo",
-                "short_description_de": "Von Idee bis fertigem Entwurf: Linienfuehrung, Stil und Komposition.",
+                "short_description_de": "Von Idee bis fertigem Entwurf: Linienführung, Stil und Komposition.",
                 "short_description_en": "From idea to finished concept: linework, style, and composition.",
                 "description_de": (
                     "Der Kurs orientiert sich an professionellen Tattoo-Design-Workflows: "
-                    "Referenzrecherche, Thumbnail-Skizzen, saubere Linien, Schattenaufbau und finale Praesentation. "
-                    "Ideal fuer Einsteigerinnen und Einsteiger mit Interesse an Motiventwicklung."
+                    "Referenzrecherche, Thumbnail-Skizzen, saubere Linien, Schattenaufbau und finale Präsentation. "
+                    "Ideal für Einsteigerinnen und Einsteiger mit Interesse an Motiventwicklung."
                 ),
                 "description_en": (
                     "This course follows professional tattoo design workflows: reference research, thumbnail sketches, "
@@ -191,23 +191,64 @@ class Command(BaseCommand):
             },
         ]
 
+        german_levels = [
+            ("A1", "0.00", 12, "Kostenloser Probekurs für alle: Alphabet, Aussprache, Begrüßung und erste Sätze."),
+            ("A2", "119.00", 12, "Alltag sicher sprechen: Familie, Arbeit, Einkaufen und Termine."),
+            ("B1", "149.00", 16, "Gespräche führen, Meinung ausdrücken und einfache Texte schreiben."),
+            ("B2", "179.00", 16, "Komplexere Themen verstehen, argumentieren und beruflich kommunizieren."),
+            ("C1", "199.00", 16, "Präzise und flexible Sprache für Studium, Beruf und Alltag."),
+            ("C2", "229.00", 16, "Sehr fortgeschrittenes Deutsch: nuanciert verstehen und formulieren."),
+        ]
+        courses_data = [
+            {
+                "slug": f"deutsch-{level.lower()}",
+                "title_de": f"Deutsch {level}",
+                "title_en": f"Deutsch {level}",
+                "short_description_de": summary,
+                "short_description_en": summary,
+                "description_de": (
+                    f"Deutsch {level} im Hefner Sprach Hub: strukturierter Online-Kurs mit ukrainischer "
+                    "Begleitung, klaren Lektionen, Übungen und persönlichem Lernrhythmus."
+                ),
+                "description_en": (
+                    f"Deutsch {level} at Hefner Sprach Hub: a structured online German course with "
+                    "Ukrainian guidance, clear lessons, practice tasks, and personal learning rhythm."
+                ),
+                "lessons_count": lessons_count,
+                "trial_available": level == "A1",
+                "price_amount": price,
+                "currency": "EUR",
+                "is_subscription": False,
+                "hero_image_url": "",
+                "seo_title_de": f"Deutsch {level} online kaufen - Hefner Sprach Hub",
+                "seo_title_en": f"Buy Deutsch {level} online - Hefner Sprach Hub",
+                "seo_description_de": f"Deutsch {level} online buchen und Zugang zum Kurs erhalten.",
+                "seo_description_en": f"Book Deutsch {level} online and get access to the course.",
+                "knowledge_domain": "Deutsch als Fremdsprache",
+                "target_audience": "Ukrainischsprachige Lernende in Deutschland",
+                "tags": ["deutsch", level.lower(), "hefner-sprach-hub"],
+                "skills": ["sprechen", "hören", "lesen", "schreiben"],
+            }
+            for level, price, lessons_count, summary in german_levels
+        ]
+
         faq_template = [
             (
                 "Wie laufen die Online-Sitzungen ab?",
                 "How are the online sessions structured?",
-                "Jede Sitzung folgt einem klaren Ablauf mit Demo, Uebung und Feedback.",
+                "Jede Sitzung folgt einem klaren Ablauf mit Demo, Übung und Feedback.",
                 "Each session follows a clear structure with demo, practice, and feedback.",
             ),
             (
                 "Bekomme ich Zugriff auf Materialien?",
                 "Do I get access to materials?",
-                "Ja, Sie erhalten strukturierte Materialien und weiterfuehrende Uebungen.",
+                "Ja, Sie erhalten strukturierte Materialien und weiterführende Übungen.",
                 "Yes, you receive structured materials and follow-up exercises.",
             ),
             (
-                "Kann ich spaeter einsteigen?",
+                "Kann ich später einsteigen?",
                 "Can I join later?",
-                "Bei freien Plaetzen ist ein spaeter Einstieg moeglich. Kontaktieren Sie uns.",
+                "Bei freien Plätzen ist ein später Einstieg möglich. Kontaktieren Sie uns.",
                 "Late enrollment is possible if seats are available. Contact us.",
             ),
         ]
@@ -281,7 +322,7 @@ class Command(BaseCommand):
                     OnlineSession.objects.create(
                         cohort=cohort,
                         title=f"Lektion {idx}",
-                        description="Live-Unterricht mit Uebung und Feedback.",
+                        description="Live-Unterricht mit Übung und Feedback.",
                         starts_at=start_dt,
                         ends_at=end_dt,
                         status=OnlineSession.STATUS_SCHEDULED,

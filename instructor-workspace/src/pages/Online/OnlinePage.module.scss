@@ -988,6 +988,23 @@
   }
 }
 
+.bookingCell {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 160px;
+
+  strong {
+    color: var(--text-main);
+    font-size: 1rem;
+  }
+
+  span {
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+}
+
 .actionsCell {
   display: flex;
   flex-wrap: wrap;

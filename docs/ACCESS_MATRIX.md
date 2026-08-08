@@ -1,6 +1,6 @@
 # Access Matrix
 
-This matrix describes who can access which product surface and which scoped accountability assignments are available in `Learning Hub`.
+This matrix describes who can access which product surface and which scoped accountability assignments are available in `Hefner Sprach Hub`.
 
 ## 1. Product roles
 

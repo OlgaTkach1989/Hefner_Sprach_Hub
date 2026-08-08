@@ -1,0 +1,371 @@
+.assistant {
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid #e2d7c4;
+  border-radius: 8px;
+  box-shadow: 0 8px 18px rgba(31, 25, 12, 0.08);
+  color: #081540;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 210px minmax(0, 1fr);
+  margin: 0 auto;
+  overflow: hidden;
+  padding: clamp(1rem, 2vw, 1.35rem);
+  width: min(976px, 100%);
+}
+
+.lessonAssistant {
+  width: 100%;
+}
+
+.stage {
+  align-items: center;
+  background: #eef5ff;
+  border: 1px solid #d8e4fb;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  min-height: 248px;
+  overflow: hidden;
+  padding: 0.75rem;
+  position: relative;
+}
+
+.stage::after {
+  background: rgba(214, 173, 61, 0.24);
+  border-radius: 999px;
+  bottom: 18px;
+  content: "";
+  filter: blur(12px);
+  height: 22px;
+  position: absolute;
+  width: 136px;
+}
+
+.portraitRig {
+  aspect-ratio: 1;
+  border: 3px solid #d6ad3d;
+  border-radius: 18px;
+  box-shadow: 0 12px 24px rgba(17, 27, 70, 0.16);
+  height: auto;
+  max-width: 186px;
+  overflow: hidden;
+  position: relative;
+  transform-origin: 50% 82%;
+  width: 100%;
+  z-index: 1;
+}
+
+.portraitRig img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 31%;
+  transform: scale(1.34);
+  width: 100%;
+}
+
+.hello {
+  animation: helloWave 3.2s ease-in-out infinite;
+}
+
+.curious_lean {
+  transform: rotate(-4deg);
+}
+
+.nod_yes {
+  animation: nodYes 2.2s ease-in-out infinite;
+}
+
+.listening {
+  animation: listeningPulse 1.2s ease-in-out infinite;
+}
+
+.speaking {
+  animation: speakingBounce 0.9s ease-in-out infinite;
+}
+
+.voiceBadge {
+  background: #111b46;
+  border: 1px solid #d6ad3d;
+  border-radius: 999px;
+  bottom: 0.8rem;
+  color: #f7f3ec;
+  font-size: 0.76rem;
+  font-weight: 900;
+  left: 50%;
+  max-width: calc(100% - 1.5rem);
+  overflow: hidden;
+  padding: 0.35rem 0.65rem;
+  position: absolute;
+  text-overflow: ellipsis;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.copy {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.eyebrow {
+  color: #9b7222;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.copy h2 {
+  color: #111b46;
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  letter-spacing: 0;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.copy strong {
+  color: #274f99;
+  font-size: 0.92rem;
+}
+
+.copy p {
+  line-height: 1.55;
+  margin: 0;
+}
+
+.intro {
+  color: #6f5b35;
+  font-size: 0.94rem;
+}
+
+.actions,
+.voiceActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.actions button,
+.voiceActions button {
+  background: #f8f4ec;
+  border: 1px solid #dfc68b;
+  border-radius: 8px;
+  color: #111b46;
+  cursor: pointer;
+  font-weight: 900;
+  min-height: 38px;
+  padding: 0.55rem 0.85rem;
+}
+
+.actions button:hover,
+.actions button:focus-visible,
+.actions .activeAction,
+.voiceActions button:hover,
+.voiceActions button:focus-visible {
+  background: #111b46;
+  color: #f7f3ec;
+  outline: none;
+}
+
+.voiceChat {
+  background: #fbf8f1;
+  border: 1px solid #e2d7c4;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.8rem;
+}
+
+.micButton {
+  align-items: center;
+  background: #274f99;
+  border: 1px solid #1d3f7d;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 900;
+  gap: 0.55rem;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.65rem 0.9rem;
+  width: fit-content;
+}
+
+.micButton:disabled {
+  cursor: wait;
+  opacity: 0.78;
+}
+
+.micButton span {
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+  display: inline-block;
+  height: 0.72rem;
+  width: 0.72rem;
+}
+
+.languageSelect {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.languageSelect span {
+  color: #6f5b35;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.languageSelect select {
+  background: #fff;
+  border: 1px solid #dfc68b;
+  border-radius: 8px;
+  color: #111b46;
+  font-weight: 900;
+  min-height: 36px;
+  padding: 0.35rem 0.55rem;
+}
+
+.speechHint {
+  color: #8a6a30;
+  font-size: 0.84rem;
+}
+
+.voiceChat textarea {
+  background: #fff;
+  border: 1px solid #dfc68b;
+  border-radius: 8px;
+  color: #081540;
+  font: inherit;
+  line-height: 1.45;
+  min-height: 64px;
+  padding: 0.7rem;
+  resize: vertical;
+  width: 100%;
+}
+
+.voiceWarning {
+  color: #9b3a22;
+  font-size: 0.88rem;
+}
+
+.voiceStatus {
+  background: #fff;
+  border-left: 3px solid #d6ad3d;
+  color: #6f5b35;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.response {
+  background: #f7f3ec;
+  border: 1px solid #e2d7c4;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.8rem;
+}
+
+.response span {
+  color: #9b7222;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.chatHistory {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.chatHistory article {
+  background: #fff;
+  border: 1px solid #e2d7c4;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.7rem;
+}
+
+.chatHistory strong {
+  color: #274f99;
+  font-size: 0.86rem;
+}
+
+.chatHistory p {
+  color: #5f4d2e;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+@keyframes helloWave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  45% {
+    transform: rotate(3deg);
+  }
+
+  65% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes nodYes {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  45% {
+    transform: translateY(7px);
+  }
+}
+
+@keyframes listeningPulse {
+  0%,
+  100% {
+    box-shadow: 0 12px 24px rgba(17, 27, 70, 0.16), 0 0 0 0 rgba(39, 79, 153, 0.24);
+  }
+
+  50% {
+    box-shadow: 0 12px 24px rgba(17, 27, 70, 0.16), 0 0 0 12px rgba(39, 79, 153, 0);
+  }
+}
+
+@keyframes speakingBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (max-width: 700px) {
+  .assistant {
+    grid-template-columns: 1fr;
+  }
+
+  .stage {
+    min-height: 210px;
+  }
+
+  .portraitRig {
+    max-width: 168px;
+  }
+
+  .micButton,
+  .voiceActions button {
+    width: 100%;
+  }
+}

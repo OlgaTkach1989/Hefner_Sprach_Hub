@@ -18,7 +18,7 @@ const TeacherGuard = () => {
       <main className="teacher-guard-state">
         <section className="teacher-guard-card">
           <h2>Loading teacher workspace</h2>
-          <p>Checking your standalone Learning Hub session.</p>
+          <p>Checking your standalone Hefner Sprach Hub session.</p>
         </section>
       </main>
     );

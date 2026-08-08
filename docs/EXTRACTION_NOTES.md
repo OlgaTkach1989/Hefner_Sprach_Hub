@@ -1,10 +1,10 @@
 # Extraction Notes
 
-This project was created next to `studentlist` as an isolated copy of the Learning Hub domain.
+This project was created next to `studentlist` as an isolated copy of the Hefner Sprach Hub domain.
 
 Safety guarantees:
 - no files were edited inside `studentlist`
-- all copied code lives under `Learning Hub`
+- all copied code lives under `Hefner Sprach Hub`
 
 Current architecture:
 - backend keeps original app labels `users`, `employees`, `online` so that the extracted `apps.online` code remains close to source

@@ -28,6 +28,8 @@ export interface SessionItem {
   is_completed: boolean;
   attendance_status: string;
   attended_seconds: number;
+  booking_status?: "booked" | "canceled" | null;
+  booked_at?: string | null;
 }
 
 export interface CourseMaterialItem {

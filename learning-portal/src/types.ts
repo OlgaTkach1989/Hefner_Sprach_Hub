@@ -1,6 +1,6 @@
-export type Locale = "de" | "en"
+export type Locale = "de" | "uk" | "ru"
 export type ThemeMode = "light" | "dark"
-export type PaymentProvider = "paypal" | "klarna" | "sofort"
+export type PaymentProvider = "card" | "paypal" | "klarna" | "sofort"
 
 export interface CourseSummary {
   id: number

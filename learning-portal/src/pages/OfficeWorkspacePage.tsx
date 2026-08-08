@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+﻿import { useEffect, useMemo, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom"
 import { isAxiosError } from "axios"
@@ -18,6 +18,7 @@ import {
   workspaceHeroBadge,
   workspaceSectionMeta,
 } from "../data/workspaceDemo"
+import { useUiPreferences } from "../context/UiPreferencesContext"
 import type {
   WorkspaceOfficeDefinition,
   WorkspaceRecordingItem,
@@ -48,6 +49,75 @@ const sectionLabels: Record<WorkspaceSectionKey, string> = {
   recordings: "Recordings",
   materials: "Materials",
 }
+
+const workspaceCopy = {
+  de: {
+    back: "Zur Übersicht",
+    loading: "Workspace-Inhalte werden geladen...",
+    failed: "Dieser Workspace konnte nicht geladen werden. Bitte aktualisieren Sie die Seite.",
+    accessRole: "Zugriffsrolle",
+    noRole: "Dieses Konto hat aktuell keine Demo-Lernerrolle. Eingeschränkte Materialien bleiben gesperrt, bis ein Administrator Zugriff erteilt.",
+    restricted: "Gesperrt",
+    requires: "Erforderlich",
+    courseDetails: "Kursdetails",
+    studentWorkspace: "Studentenbereich",
+    openWorkspace: "Im Studentenbereich öffnen",
+    requestAccess: "Zugriff anfragen",
+    joined: "Beigetreten",
+    joining: "Beitritt...",
+    join: "Beitreten",
+    availableSoon: "Bald verfügbar",
+    dismiss: "Schließen",
+    close: "Schließen",
+    play: "Abspielen",
+    videoUnsupported: "Ihr Browser unterstützt das Video-Tag nicht.",
+    accessDenied: "Ihre aktuelle Rolle erlaubt keinen Zugriff auf diesen Inhalt. Kontaktieren Sie einen Administrator.",
+  },
+  uk: {
+    back: "До огляду",
+    loading: "Завантаження workspace...",
+    failed: "Не вдалося завантажити workspace. Оновіть сторінку.",
+    accessRole: "Роль доступу",
+    noRole: "Цей акаунт зараз не має demo-ролі учня. Обмежені матеріали залишаються закритими, доки адміністратор не надасть доступ.",
+    restricted: "Обмежено",
+    requires: "Потрібно",
+    courseDetails: "Деталі курсу",
+    studentWorkspace: "Кабінет учня",
+    openWorkspace: "Відкрити в кабінеті учня",
+    requestAccess: "Запросити доступ",
+    joined: "Приєднано",
+    joining: "Приєднання...",
+    join: "Приєднатися",
+    availableSoon: "Скоро доступно",
+    dismiss: "Закрити",
+    close: "Закрити",
+    play: "Відтворити",
+    videoUnsupported: "Ваш браузер не підтримує відео.",
+    accessDenied: "Поточна роль не дозволяє доступ до цього контенту. Зверніться до адміністратора.",
+  },
+  ru: {
+    back: "К обзору",
+    loading: "Загрузка workspace...",
+    failed: "Не удалось загрузить workspace. Обновите страницу.",
+    accessRole: "Роль доступа",
+    noRole: "У этого аккаунта сейчас нет demo-роли ученика. Ограниченные материалы останутся закрытыми, пока администратор не даст доступ.",
+    restricted: "Ограничено",
+    requires: "Требуется",
+    courseDetails: "Детали курса",
+    studentWorkspace: "Кабинет ученика",
+    openWorkspace: "Открыть в кабинете ученика",
+    requestAccess: "Запросить доступ",
+    joined: "Присоединено",
+    joining: "Присоединение...",
+    join: "Присоединиться",
+    availableSoon: "Скоро доступно",
+    dismiss: "Закрыть",
+    close: "Закрыть",
+    play: "Воспроизвести",
+    videoUnsupported: "Ваш браузер не поддерживает видео.",
+    accessDenied: "Текущая роль не разрешает доступ к этому контенту. Обратитесь к администратору.",
+  },
+} as const
 
 const formatDateLabel = (value: string) => {
   const parsed = new Date(value)
@@ -87,6 +157,8 @@ const resolveVideoEmbedUrl = (value: string) => {
 }
 
 export const OfficeWorkspacePage = () => {
+  const { locale } = useUiPreferences()
+  const copy = workspaceCopy[locale]
   const { workspaceSlug, officeSlug } = useParams<{
     workspaceSlug?: string
     officeSlug?: string
@@ -181,12 +253,12 @@ export const OfficeWorkspacePage = () => {
 
   const showAccessDenied = (message?: string) => {
     setAccessFeedback(
-      message || "Your current role does not allow access to this content. Contact an administrator.",
+      message || copy.accessDenied,
     )
   }
 
   const requirementLabel = (labels: string[]) =>
-    labels.length > 0 ? `Requires: ${labels.join(", ")}` : ""
+    labels.length > 0 ? `${copy.requires}: ${labels.join(", ")}` : ""
 
   if (notFound) {
     return <Navigate to="/404" replace />
@@ -271,7 +343,7 @@ export const OfficeWorkspacePage = () => {
                   <div className={styles.accessBadgeRow}>
                     <span className={styles.lockedBadge}>
                       <LockIcon className={styles.lockedIcon} />
-                      Restricted
+                      {copy.restricted}
                     </span>
                     {requirementLabel(course.requiredAudienceLabels) ? (
                       <span className={styles.accessMeta}>
@@ -325,7 +397,7 @@ export const OfficeWorkspacePage = () => {
                             ...current,
                             [course.id]:
                               course.accessMessage ||
-                              "Your current role does not allow access to this course.",
+                              copy.accessDenied,
                           }))
                           return
                         }
@@ -337,8 +409,8 @@ export const OfficeWorkspacePage = () => {
                           setJoinMessages((current) => ({
                             ...current,
                             [course.id]: response.alreadyJoined
-                              ? `Already linked to ${response.courseTitle}. Open your student workspace to continue.`
-                              : `Joined ${response.courseTitle}. It is now available in your student workspace.`,
+                              ? `${response.courseTitle}: ${copy.studentWorkspace}`
+                              : `${response.courseTitle}: ${copy.joined}`,
                           }))
                         } catch (error: unknown) {
                           if (isAxiosError(error) && [401, 403].includes(error.response?.status ?? 0)) {
@@ -348,7 +420,7 @@ export const OfficeWorkspacePage = () => {
                           const detail = isAxiosError(error) ? error.response?.data?.detail : undefined
                           setJoinMessages((current) => ({
                             ...current,
-                            [course.id]: detail || "Unable to join this course right now.",
+                            [course.id]: detail || copy.accessDenied,
                           }))
                         } finally {
                           setJoiningCourseId((current) => (current === course.id ? null : current))
@@ -356,22 +428,22 @@ export const OfficeWorkspacePage = () => {
                       }}
                     >
                       {joinedCourseIds[course.id]
-                        ? "Joined"
+                        ? copy.joined
                         : joiningCourseId === course.id
-                          ? "Joining..."
+                          ? copy.joining
                           : !course.isAccessible
-                            ? "Restricted"
+                            ? copy.restricted
                           : course.joinEnabled
-                            ? "Join"
-                            : "Available soon"}
+                            ? copy.join
+                            : copy.availableSoon}
                     </button>
                     {courseDetailHref ? (
                       <Link className={styles.secondaryActionLink} to={courseDetailHref}>
-                        Course details
+                        {copy.courseDetails}
                       </Link>
                     ) : (
                       <a className={styles.secondaryActionLink} href="/student/dashboard">
-                        Student workspace
+                        {copy.studentWorkspace}
                       </a>
                     )}
                   </div>
@@ -408,7 +480,7 @@ export const OfficeWorkspacePage = () => {
                 {!assignment.isAccessible ? (
                   <span className={styles.lockedBadge}>
                     <LockIcon className={styles.lockedIcon} />
-                    Restricted
+                    {copy.restricted}
                   </span>
                 ) : null}
                 {requirementLabel(assignment.requiredAudienceLabels) ? (
@@ -427,7 +499,7 @@ export const OfficeWorkspacePage = () => {
                     window.location.assign("/student/dashboard")
                   }}
                 >
-                  {assignment.isAccessible ? "Open in student workspace" : "Request access"}
+                  {assignment.isAccessible ? copy.openWorkspace : copy.requestAccess}
                 </button>
               </div>
             </article>
@@ -460,7 +532,7 @@ export const OfficeWorkspacePage = () => {
                     <VideoIcon className={styles.documentIcon} />
                   </div>
                 )}
-                <span className={styles.playBadge}>Play</span>
+                <span className={styles.playBadge}>{copy.play}</span>
               </div>
               <div className={styles.mediaBody}>
                 <div className={styles.cardMetaLine}>
@@ -474,7 +546,7 @@ export const OfficeWorkspacePage = () => {
                     {!recording.isAccessible ? (
                       <span className={styles.lockedBadge}>
                         <LockIcon className={styles.lockedIcon} />
-                        Restricted
+                        {copy.restricted}
                       </span>
                     ) : null}
                     {requirementLabel(recording.requiredAudienceLabels) ? (
@@ -523,7 +595,7 @@ export const OfficeWorkspacePage = () => {
                   {!material.isAccessible ? (
                     <span className={styles.lockedBadge}>
                       <LockIcon className={styles.lockedIcon} />
-                      Restricted
+                      {copy.restricted}
                     </span>
                   ) : null}
                   {requirementLabel(material.requiredAudienceLabels) ? (
@@ -543,13 +615,13 @@ export const OfficeWorkspacePage = () => {
   return (
     <main className={styles.page}>
       <Helmet>
-        <title>{workspace ? `${workspace.title} | Learning Hub` : "Learning Hub"}</title>
+        <title>{workspace ? `${workspace.title} | Hefner Sprach Hub` : "Hefner Sprach Hub"}</title>
         <meta
           name="description"
           content={
             workspace
               ? `${workspace.title} workspace with news, recordings, materials, and practical resources.`
-              : "Learning Hub workspace."
+              : "Hefner Sprach Hub workspace."
           }
         />
       </Helmet>
@@ -558,33 +630,32 @@ export const OfficeWorkspacePage = () => {
         <div className={styles.heroInner}>
           <div>
             <Link to="/" className={styles.backLink}>
-              ← Back to overview
+              ← {copy.back}
             </Link>
-            <h1>{workspace?.title ?? "Loading..."}</h1>
+            <h1>{workspace?.title ?? copy.loading}</h1>
             <p className={styles.heroSubtitle}>{workspace?.subtitle ?? "Section workspace"}</p>
           </div>
           <div className={styles.heroMeta}>
             <span>{workspace ? sectionLabels[activeSection] : "Workspace"}</span>
-            <span>{workspace ? workspaceHeroBadge(workspace.kind) : "Loading"}</span>
+            <span>{workspace ? workspaceHeroBadge(workspace.kind) : copy.loading}</span>
           </div>
         </div>
       </section>
 
       <section className={styles.shell}>
-        {isLoading ? <p className={styles.statusText}>Loading workspace content...</p> : null}
-        {isError ? <p className={styles.statusError}>Failed to load this workspace. Try refreshing the page.</p> : null}
+        {isLoading ? <p className={styles.statusText}>{copy.loading}</p> : null}
+        {isError ? <p className={styles.statusError}>{copy.failed}</p> : null}
 
         {workspace ? (
           <>
             <section className={styles.rolePanel}>
               <div className={styles.rolePanelHeader}>
                 <div>
-                  <span className={styles.panelEyebrow}>Access role</span>
+                  <span className={styles.panelEyebrow}>{copy.accessRole}</span>
                   <h2 className={styles.rolePanelTitle}>{activeRoleLabel}</h2>
                 </div>
                 <p className={styles.rolePanelCopy}>
-                  {workspace.activeRole?.description ||
-                    "This account does not currently carry a demo learner role. Restricted materials remain locked until an administrator grants access."}
+                  {workspace.activeRole?.description || copy.noRole}
                 </p>
               </div>
               <div className={styles.roleChipRow}>
@@ -648,7 +719,7 @@ export const OfficeWorkspacePage = () => {
                 <div className={styles.accessNoticeBanner}>
                   <p>{accessFeedback}</p>
                   <button type="button" className={styles.dismissButton} onClick={() => setAccessFeedback(null)}>
-                    Dismiss
+                    {copy.dismiss}
                   </button>
                 </div>
               ) : null}
@@ -683,7 +754,7 @@ export const OfficeWorkspacePage = () => {
                 className={styles.closeButton}
                 onClick={() => setActiveRecording(null)}
               >
-                Close
+                {copy.close}
               </button>
             </div>
             {isDirectVideoUrl(activeRecording.videoUrl) ? (
@@ -695,7 +766,7 @@ export const OfficeWorkspacePage = () => {
                 poster={activeRecording.thumbnailUrl}
               >
                 <source src={activeRecording.videoUrl} type="video/mp4" />
-                Your browser does not support the video tag.
+                {copy.videoUnsupported}
               </video>
             ) : (
               <iframe
@@ -716,3 +787,4 @@ export const OfficeWorkspacePage = () => {
     </main>
   )
 }
+

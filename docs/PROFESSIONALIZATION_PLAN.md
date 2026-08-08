@@ -1,6 +1,6 @@
 # Professionalization Plan
 
-This plan is the execution order for preparing `Learning Hub` for external technical review without changing application behavior.
+This plan is the execution order for preparing `Hefner Sprach Hub` for external technical review without changing application behavior.
 
 ## Guardrails
 

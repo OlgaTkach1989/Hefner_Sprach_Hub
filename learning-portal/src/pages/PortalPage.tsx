@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+﻿import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { isAxiosError } from "axios";
@@ -11,7 +11,7 @@ import {
   requestMagicLink,
 } from "../api/onlineApi";
 import { useUiPreferences } from "../context/UiPreferencesContext";
-import type { PortalSession, PublicPortalResponse, PublicPortalSessionsResponse } from "../types";
+import type { Locale, PortalSession, PublicPortalResponse, PublicPortalSessionsResponse } from "../types";
 import "./PortalPage.css";
 
 const extractApiError = (error: unknown, fallback: string) => {
@@ -32,25 +32,31 @@ const extractApiError = (error: unknown, fallback: string) => {
   return fallback;
 };
 
-const formatDateTime = (value: string, locale: "de" | "en") => {
+const dateLocale = (locale: Locale) => {
+  if (locale === "de") return "de-DE";
+  if (locale === "ru") return "ru-RU";
+  return "uk-UA";
+};
+
+const formatDateTime = (value: string, locale: Locale) => {
   if (!value) return "-";
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
-  return new Intl.DateTimeFormat(locale === "de" ? "de-DE" : "en-GB", {
+  return new Intl.DateTimeFormat(dateLocale(locale), {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(parsed);
 };
 
-const formatTokenExpiry = (value: string | undefined, locale: "de" | "en") => {
+const formatTokenExpiry = (value: string | undefined, locale: Locale) => {
   if (!value) return "";
   return formatDateTime(value, locale);
 };
 
 const selectCourseTitle = (
   session: PortalSession,
-  locale: "de" | "en",
-) => (locale === "en" ? session.courseTitleEn : session.courseTitleDe);
+  locale: Locale,
+) => (locale === "de" ? session.courseTitleDe : session.courseTitleEn);
 
 export const PortalPage = () => {
   const { t } = useTranslation();
@@ -220,7 +226,7 @@ export const PortalPage = () => {
                   <ul>
                     {portal.enrollments.map((item) => (
                       <li key={item.enrollmentId}>
-                        <strong>{locale === "en" ? item.course.titleEn : item.course.titleDe}</strong> ·{" "}
+                        <strong>{locale === "de" ? item.course.titleDe : item.course.titleEn}</strong> ·{" "}
                         {item.cohort.groupName} ({item.cohort.groupCode})
                       </li>
                     ))}
@@ -284,3 +290,4 @@ export const PortalPage = () => {
     </main>
   );
 };
+

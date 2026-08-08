@@ -8,6 +8,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
 import {
+  bookStudentSession,
+  cancelStudentSessionBooking,
   createSupportMessage,
   fetchStudentDashboard,
   fetchSupportMessages,
@@ -362,6 +364,7 @@ export const DashboardPage = () => {
   const [isProfileSaving, setIsProfileSaving] = useState(false);
   const [isAvatarUploading, setIsAvatarUploading] = useState(false);
   const [joiningSessionId, setJoiningSessionId] = useState<number | null>(null);
+  const [bookingSessionId, setBookingSessionId] = useState<number | null>(null);
   const [avatarPreview, setAvatarPreview] = useState(
     "/images/default-avatar.png"
   );
@@ -655,6 +658,63 @@ export const DashboardPage = () => {
     } finally {
       setJoiningSessionId(null);
       window.open(session.join_url, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const updateSessionBookingState = (
+    sessionId: number,
+    bookingStatus: "booked" | "canceled" | null,
+    bookedAt?: string | null,
+  ) => {
+    setDashboard((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        enrollments: prev.enrollments.map((enrollment) => ({
+          ...enrollment,
+          sessions: enrollment.sessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  booking_status: bookingStatus,
+                  booked_at: bookingStatus === "booked" ? (bookedAt ?? session.booked_at ?? new Date().toISOString()) : null,
+                }
+              : session,
+          ),
+        })),
+      };
+    });
+  };
+
+  const handleBookSession = async (sessionId: number) => {
+    setBookingSessionId(sessionId);
+    try {
+      const payload = await bookStudentSession(sessionId);
+      updateSessionBookingState(sessionId, payload.bookingStatus, payload.bookedAt);
+      setToast({ type: "success", message: t("sessionBookingSuccess") });
+    } catch (error) {
+      setToast({
+        type: "error",
+        message: extractErrorMessage(error, t("sessionBookingError")),
+      });
+    } finally {
+      setBookingSessionId(null);
+    }
+  };
+
+  const handleCancelSessionBooking = async (sessionId: number) => {
+    setBookingSessionId(sessionId);
+    try {
+      const payload = await cancelStudentSessionBooking(sessionId);
+      updateSessionBookingState(sessionId, payload.bookingStatus, payload.bookedAt);
+      setToast({ type: "success", message: t("sessionCancelSuccess") });
+    } catch (error) {
+      setToast({
+        type: "error",
+        message: extractErrorMessage(error, t("sessionCancelError")),
+      });
+    } finally {
+      setBookingSessionId(null);
     }
   };
 
@@ -1121,8 +1181,9 @@ export const DashboardPage = () => {
                         {!isSessionsExpanded && highlightedSession ? (() => {
                           const visualState = resolveStudentSessionVisualState(highlightedSession, enrollment.nextSessionAt);
                           const isCompletedForUi = isStudentSessionCompleted(highlightedSession);
+                          const isBooked = highlightedSession.booking_status === "booked";
                           const showRecordingLink = isCompletedForUi && !!highlightedSession.recording_url;
-                          const showJoinButton = !isCompletedForUi && !!highlightedSession.join_url;
+                          const showJoinButton = !isCompletedForUi && isBooked && !!highlightedSession.join_url;
 
                           return (
                             <article
@@ -1138,10 +1199,12 @@ export const DashboardPage = () => {
                                   className={`dashboard-page__status-chip ${
                                     isCompletedForUi
                                       ? "dashboard-page__status-chip--completed"
+                                      : isBooked
+                                        ? "dashboard-page__status-chip--booked"
                                       : "dashboard-page__status-chip--planned"
                                   }`}
                                 >
-                                  {isCompletedForUi ? t("sessionCompleted") : t("sessionPlanned")}
+                                  {isCompletedForUi ? t("sessionCompleted") : isBooked ? t("sessionBooked") : t("sessionPlanned")}
                                 </span>
                                 {showRecordingLink ? (
                                   <a
@@ -1162,6 +1225,26 @@ export const DashboardPage = () => {
                                     disabled={joiningSessionId === highlightedSession.id}
                                   >
                                     {joiningSessionId === highlightedSession.id ? t("loading") : t("openJoin")}
+                                  </button>
+                                ) : null}
+                                {!isCompletedForUi && !isBooked ? (
+                                  <button
+                                    type="button"
+                                    className="dashboard-page__table-link-button dashboard-page__table-link-button--next"
+                                    onClick={() => void handleBookSession(highlightedSession.id)}
+                                    disabled={bookingSessionId === highlightedSession.id}
+                                  >
+                                    {bookingSessionId === highlightedSession.id ? t("loading") : t("bookSession")}
+                                  </button>
+                                ) : null}
+                                {!isCompletedForUi && isBooked ? (
+                                  <button
+                                    type="button"
+                                    className="dashboard-page__table-link-button dashboard-page__table-link-button--muted"
+                                    onClick={() => void handleCancelSessionBooking(highlightedSession.id)}
+                                    disabled={bookingSessionId === highlightedSession.id}
+                                  >
+                                    {bookingSessionId === highlightedSession.id ? t("loading") : t("cancelBooking")}
                                   </button>
                                 ) : null}
                               </div>
@@ -1187,10 +1270,11 @@ export const DashboardPage = () => {
                                     enrollment.nextSessionAt
                                   );
                                   const isCompletedForUi = isStudentSessionCompleted(session);
+                                  const isBooked = session.booking_status === "booked";
                                   const showRecordingLink =
                                     isCompletedForUi && !!session.recording_url;
                                   const showJoinButton =
-                                    !isCompletedForUi && !!session.join_url;
+                                    !isCompletedForUi && isBooked && !!session.join_url;
 
                                   return (
                                   <tr
@@ -1204,11 +1288,15 @@ export const DashboardPage = () => {
                                         className={`dashboard-page__status-chip ${
                                           isCompletedForUi
                                             ? "dashboard-page__status-chip--completed"
+                                            : isBooked
+                                              ? "dashboard-page__status-chip--booked"
                                             : "dashboard-page__status-chip--planned"
                                         }`}
                                       >
                                         {isCompletedForUi
                                           ? t("sessionCompleted")
+                                          : isBooked
+                                            ? t("sessionBooked")
                                           : t("sessionPlanned")}
                                       </span>
                                     </td>
@@ -1238,9 +1326,29 @@ export const DashboardPage = () => {
                                             : t("openJoin")}
                                         </button>
                                       ) : null}
+                                      {!isCompletedForUi && !isBooked ? (
+                                        <button
+                                          type="button"
+                                          className="dashboard-page__table-link-button dashboard-page__table-link-button--next"
+                                          onClick={() => void handleBookSession(session.id)}
+                                          disabled={bookingSessionId === session.id}
+                                        >
+                                          {bookingSessionId === session.id ? t("loading") : t("bookSession")}
+                                        </button>
+                                      ) : null}
+                                      {!isCompletedForUi && isBooked ? (
+                                        <button
+                                          type="button"
+                                          className="dashboard-page__table-link-button dashboard-page__table-link-button--muted"
+                                          onClick={() => void handleCancelSessionBooking(session.id)}
+                                          disabled={bookingSessionId === session.id}
+                                        >
+                                          {bookingSessionId === session.id ? t("loading") : t("cancelBooking")}
+                                        </button>
+                                      ) : null}
                                       {(isCompletedForUi &&
                                         !session.recording_url) ||
-                                      (!isCompletedForUi && !session.join_url)
+                                      (!isCompletedForUi && isBooked && !session.join_url)
                                         ? "-"
                                         : null}
                                     </td>

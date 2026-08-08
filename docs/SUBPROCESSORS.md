@@ -1,6 +1,6 @@
 # Subprocessors
 
-This register is the default subprocessor list for `Learning Hub`. It must be adjusted per actual deployment model.
+This register is the default subprocessor list for `Hefner Sprach Hub`. It must be adjusted per actual deployment model.
 
 ## Default product-level subprocessors
 

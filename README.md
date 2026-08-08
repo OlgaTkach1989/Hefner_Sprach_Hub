@@ -1,6 +1,6 @@
-# Learning Hub
+# Hefner Sprach Hub
 
-Standalone Learning Hub platform extracted from the original `studentlist` project.
+Standalone Hefner Sprach Hub platform extracted from the original `studentlist` project.
 
 What is included:
 - `backend/`: Django backend with `users`, `employees`, and the stable `online` domain app
@@ -15,7 +15,7 @@ What is intentionally not touched:
 
 ## Ownership
 
-Learning Hub is a proprietary project authored and maintained by Serhii TK.
+Hefner Sprach Hub is a proprietary project authored and maintained by Serhii TK.
 See `AUTHORS.md`, `NOTICE.md`, and `LICENSE.md` for ownership and review-use
 terms.
 

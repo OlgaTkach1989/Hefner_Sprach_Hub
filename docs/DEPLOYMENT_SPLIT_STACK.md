@@ -1,6 +1,6 @@
 # Split Stack Deployment
 
-This is the recommended production layout for `Learning Hub`.
+This is the recommended production layout for `Hefner Sprach Hub`.
 
 It is the layout I chose as the main server strategy because it matches the original architecture most closely:
 - upper infra stack for `nginx + certbot + pgvector + redis + directus + backups`
