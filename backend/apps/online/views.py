@@ -2667,9 +2667,8 @@ class PublicTrialSignupView(APIView):
             existing_order_query = OnlineOrder.objects.filter(
                 profile=profile,
                 idempotency_key=idempotency_key,
+                status=OnlineOrder.STATUS_TRIAL,
             )
-            if get_payment_mode() != "free":
-                existing_order_query = existing_order_query.filter(status=OnlineOrder.STATUS_TRIAL)
             existing_order = existing_order_query.first()
             if existing_order:
                 enrollment = OnlineEnrollment.objects.filter(order=existing_order).first()
@@ -2688,7 +2687,6 @@ class PublicTrialSignupView(APIView):
 
         course = payload["course"]
         cohort = payload["cohort"]
-        is_free_test_mode = get_payment_mode() == "free"
         existing_order, existing_enrollment = _existing_enrollment_access_for_course(
             profile=profile,
             course=course,
@@ -2707,7 +2705,7 @@ class PublicTrialSignupView(APIView):
                 status_code=status.HTTP_200_OK,
                 scope=AUTH_SCOPE_STUDENT,
             )
-        if not is_free_test_mode and _trial_already_used(profile):
+        if _trial_already_used(profile):
             return Response(
                 {"detail": "Free trial is already used for this account."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -2723,10 +2721,10 @@ class PublicTrialSignupView(APIView):
                 course=course,
                 cohort=cohort,
                 provider=OnlineOrder.PROVIDER_TRIAL,
-                status=OnlineOrder.STATUS_PAID if is_free_test_mode else OnlineOrder.STATUS_TRIAL,
+                status=OnlineOrder.STATUS_TRIAL,
                 amount=0,
                 currency=course.currency,
-                is_trial=not is_free_test_mode,
+                is_trial=True,
                 paid_at=timezone.now(),
                 idempotency_key=idempotency_key,
             )
@@ -2741,19 +2739,19 @@ class PublicTrialSignupView(APIView):
             defaults={
                 "course": course,
                 "order": order,
-                "status": OnlineEnrollment.STATUS_ACTIVE if is_free_test_mode else OnlineEnrollment.STATUS_TRIAL,
+                "status": OnlineEnrollment.STATUS_TRIAL,
             },
         )
         if not created:
             enrollment.order = order
-            enrollment.status = OnlineEnrollment.STATUS_ACTIVE if is_free_test_mode else OnlineEnrollment.STATUS_TRIAL
+            enrollment.status = OnlineEnrollment.STATUS_TRIAL
             enrollment.save(update_fields=["order", "status"])
 
-        if not is_free_test_mode and not profile.is_trial_user:
+        if not profile.is_trial_user:
             profile.is_trial_user = True
             profile.save(update_fields=["is_trial_user", "updated_at"])
 
-        email_sent = send_course_access_email(profile=profile, course=course, is_trial=not is_free_test_mode)
+        email_sent = send_course_access_email(profile=profile, course=course, is_trial=True)
         return _json_auth_response(
             request=request,
             user=user,

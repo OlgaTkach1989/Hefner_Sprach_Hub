@@ -1193,6 +1193,15 @@ class TrainingJupyterGatewayTests(APITestCase):
             launch_path="/lab/tree/labs/cva/intro.ipynb",
         )
 
+    def _extract_jupyter_login_token(self, redirect_url):
+        parsed_redirect = urlparse(redirect_url)
+        redirect_query = parse_qs(parsed_redirect.query)
+        if "login_token" in redirect_query:
+            return redirect_query["login_token"][0]
+        login_path = redirect_query["next"][0]
+        parsed_login_path = urlparse(login_path)
+        return parse_qs(parsed_login_path.query)["login_token"][0]
+
     @override_settings(
         TRAINING_NOTEBOOK_RUNTIME_ENABLED=True,
         TRAINING_JUPYTERHUB_BASE_URL="https://labs.example.com/lab",
@@ -1223,10 +1232,7 @@ class TrainingJupyterGatewayTests(APITestCase):
         redirect_url = gateway_response["Location"]
         self.assertIn("/lab/hub/logout", redirect_url)
 
-        parsed_redirect = urlparse(redirect_url)
-        login_path = parse_qs(parsed_redirect.query)["next"][0]
-        parsed_login_path = urlparse(login_path)
-        login_token = parse_qs(parsed_login_path.query)["login_token"][0]
+        login_token = self._extract_jupyter_login_token(redirect_url)
 
         self.assertEqual(TrainingJupyterLoginToken.objects.filter(status=TrainingJupyterLoginToken.Status.ISSUED).count(), 1)
 
@@ -1304,8 +1310,7 @@ class TrainingJupyterGatewayTests(APITestCase):
         self.assertEqual(gateway_response.status_code, status.HTTP_302_FOUND)
 
         redirect_url = gateway_response["Location"]
-        parsed_redirect = urlparse(redirect_url)
-        login_token = parse_qs(parsed_redirect.query)["login_token"][0]
+        login_token = self._extract_jupyter_login_token(redirect_url)
 
         exchange_response = self.client.post(
             "/api/training/internal/labs/exchange-jupyter-login/",
