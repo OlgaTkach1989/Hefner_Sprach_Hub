@@ -58,6 +58,8 @@ const annaTtsProvider = (
   (import.meta.env.VITE_ANNA_TTS_PROVIDER as string | undefined)
   ?? "gemini-live"
 ).toLowerCase()
+const isGeminiLiveProvider = annaTtsProvider === "gemini-live"
+const cloudVoiceProviderName = annaTtsProvider === "openai" ? "OpenAI" : annaTtsProvider === "gemini" ? "Gemini" : "Gemini Live"
 const normalizeLevel = (level: string) => level.toUpperCase().match(/\b(A1|A2|B1|B2|C1|C2)\b/)?.[1] ?? "A1"
 
 const visemeForCharacter = (char: string): Viseme => {
@@ -175,7 +177,7 @@ const playOpenAiSpeech = async (text: string, language: ChatLanguage) => {
   })
 }
 
-const assistantCopy = (locale: Locale, level: string, lessonTitle?: string) => {
+const assistantCopy = (locale: Locale, level: string, providerName: string, lessonTitle?: string) => {
   const de = locale === "de"
   const levelText = normalizeLevel(level)
   const topic = lessonTitle ? `: ${lessonTitle}` : ""
@@ -231,7 +233,7 @@ const assistantCopy = (locale: Locale, level: string, lessonTitle?: string) => {
     answers,
     focus: focus[levelText] ?? focus.A1,
     intro: de
-      ? "Drücke auf das Mikrofon, stelle deine Frage und Anna antwortet mit natürlicher Gemini-Stimme."
+      ? `Drücke auf das Mikrofon, stelle deine Frage und Anna antwortet mit natürlicher ${providerName}-Stimme.`
       : "Натисни мікрофон, постав питання, і Anna відповість голосом.",
     micIdle: de ? "Mikrofon starten" : "Увімкнути мікрофон",
     micListening: de ? "Ich höre zu..." : "Я слухаю...",
@@ -242,7 +244,7 @@ const assistantCopy = (locale: Locale, level: string, lessonTitle?: string) => {
     placeholder: de ? "Oder schreibe deine Frage an Anna..." : "Або напиши своє питання Anna...",
     repeat: de ? "Antwort vorlesen" : "Озвучити відповідь",
     send: de ? "Anna fragen" : "Запитати Anna",
-    speechHint: de ? "Langsam und klar. Gemini Live antwortet mit natürlicher Stimme." : "Говори повільно й чітко. Gemini Live відповідає природним голосом.",
+    speechHint: de ? `Langsam und klar. ${providerName} antwortet mit natürlicher Stimme.` : `Говори повільно й чітко. ${providerName} відповідає природним голосом.`,
     stateLabel: de ? "Modus" : "Режим",
     subtitle: de ? "Deutsch-ukrainische Lernassistentin mit Stimme" : "Німецько-українська голосова асистентка",
     title: de ? `Anna für Deutsch ${levelText}` : `Anna для Deutsch ${levelText}`,
@@ -359,7 +361,7 @@ export const AnnaAssistant = ({ lessonTitle, level, mode = "course" }: AnnaAssis
   const [viseme, setViseme] = useState<Viseme>(0)
   const heardSpeechRef = useRef(false)
   const liveClientRef = useRef<AnnaGeminiLiveClient | null>(null)
-  const copy = useMemo(() => assistantCopy(locale, level, lessonTitle), [locale, level, lessonTitle])
+  const copy = useMemo(() => assistantCopy(locale, level, cloudVoiceProviderName, lessonTitle), [locale, level, lessonTitle])
   const stateName = voiceStatus === "listening" ? "listening" : voiceStatus === "speaking" ? "speaking" : action === "explain" ? "curious_lean" : action === "questions" ? "nod_yes" : "hello"
   const defaultAnswer = locale === "de" ? copy.answers[action].de : copy.answers[action].uk
   const displayedAnswer = answer || defaultAnswer
@@ -409,15 +411,15 @@ export const AnnaAssistant = ({ lessonTitle, level, mode = "course" }: AnnaAssis
       setVoiceStatus(getSpeechRecognition() ? "idle" : "unsupported")
       setVoiceMessage(
         locale === "de"
-          ? "Die natürliche Stimme ist gerade nicht verfügbar. Prüfe Gemini API und Mikrofonzugriff."
-          : "Натуральный голос сейчас недоступен. Проверь Gemini API и доступ к микрофону.",
+          ? `Die natürliche Stimme ist gerade nicht verfügbar. Prüfe ${cloudVoiceProviderName} API und Mikrofonzugriff.`
+          : `Натуральный голос сейчас недоступен. Проверь ${cloudVoiceProviderName} API и доступ к микрофону.`,
       )
     }
   }
 
   const answerWithVoice = async (nextQuestion = question) => {
     const cleanQuestion = nextQuestion.trim()
-    if (annaTtsProvider === "gemini-live") {
+    if (isGeminiLiveProvider) {
       let liveClient = liveClientRef.current
       if (!liveClient) {
         await startGeminiLiveChat({ keepOpen: true })
@@ -442,7 +444,7 @@ export const AnnaAssistant = ({ lessonTitle, level, mode = "course" }: AnnaAssis
   }
 
   const startVoiceChat = () => {
-    if (annaTtsProvider === "gemini-live") {
+    if (isGeminiLiveProvider) {
       startGeminiLiveChat()
       return
     }
@@ -569,9 +571,9 @@ export const AnnaAssistant = ({ lessonTitle, level, mode = "course" }: AnnaAssis
           ))}
         </div>
         <div className={styles.voiceChat}>
-          <button className={styles.micButton} type="button" onClick={startVoiceChat} disabled={annaTtsProvider !== "gemini-live" && (voiceStatus === "listening" || voiceStatus === "speaking")}>
+          <button className={styles.micButton} type="button" onClick={startVoiceChat} disabled={!isGeminiLiveProvider && (voiceStatus === "listening" || voiceStatus === "speaking")}>
             <span aria-hidden="true" />
-            {annaTtsProvider === "gemini-live" && liveClientRef.current ? (locale === "de" ? "Live stoppen" : "Остановить Live") : voiceStatus === "listening" ? copy.micListening : copy.micIdle}
+            {isGeminiLiveProvider && liveClientRef.current ? (locale === "de" ? "Live stoppen" : "Остановить Live") : voiceStatus === "listening" ? copy.micListening : copy.micIdle}
           </button>
           <label className={styles.languageSelect}>
             <span>{locale === "de" ? "Sprache für Mikrofon und Antwort" : "Мова мікрофона та відповіді"}</span>

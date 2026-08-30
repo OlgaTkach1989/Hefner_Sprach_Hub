@@ -80,6 +80,36 @@ class OnlineOperationsHealthTests(APITestCase):
         self.assertIn("timestamp", payload)
 
     @override_settings(
+        ANNA_TTS_PROVIDER="openai",
+        OPENAI_API_KEY="test-openai-key",
+        OPENAI_TTS_MODEL="gpt-4o-mini-tts",
+        OPENAI_TTS_VOICE="nova",
+    )
+    @patch("apps.online.views.requests.post")
+    def test_anna_tts_uses_openai_speech_provider(self, mock_post):
+        mock_response = Mock()
+        mock_response.content = b"mp3-audio"
+        mock_response.raise_for_status.return_value = None
+        mock_post.return_value = mock_response
+
+        response = self.client.post(
+            "/api/online/public/anna/tts/",
+            {"text": "Hallo Anna", "language": "de-DE"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response["Content-Type"], "audio/mpeg")
+        self.assertEqual(response.content, b"mp3-audio")
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        self.assertEqual(kwargs["headers"]["Authorization"], "Bearer test-openai-key")
+        self.assertEqual(kwargs["json"]["model"], "gpt-4o-mini-tts")
+        self.assertEqual(kwargs["json"]["voice"], "nova")
+        self.assertEqual(kwargs["json"]["input"], "Hallo Anna")
+        self.assertIn("natürlich", kwargs["json"]["instructions"])
+
+    @override_settings(
         TRAINING_NOTEBOOK_RUNTIME_ENABLED=True,
         TRAINING_GRADER_RUNTIME_ENABLED=True,
         TRAINING_AI_ENABLED=True,

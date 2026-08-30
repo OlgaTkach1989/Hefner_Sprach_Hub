@@ -2282,9 +2282,14 @@ class PublicAnnaTtsView(APIView):
         serializer = PublicAnnaTtsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        provider = getattr(settings, "ANNA_TTS_PROVIDER", "gemini-live")
+        provider = str(getattr(settings, "ANNA_TTS_PROVIDER", "gemini-live") or "gemini-live").lower()
         if provider in {"gemini", "gemini-live"}:
             return self._post_gemini(serializer.validated_data)
+        if provider != "openai":
+            return Response(
+                {"detail": "Anna TTS provider is not supported."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         api_key = getattr(settings, "OPENAI_API_KEY", "")
         if not api_key:
@@ -2296,7 +2301,7 @@ class PublicAnnaTtsView(APIView):
         language = serializer.validated_data["language"]
         instructions = {
             "de-DE": "Sprich sehr klar, freundlich und natürlich wie eine ruhige Deutschlehrerin. Mache kurze Pausen zwischen Sätzen.",
-            "ru-RU": "Говори очень четко, дружелюбно и естественно, как спокойная преподавательница немецкого. Делай короткие паузы между фразами.",
+            "ru-RU": "Говори очень чётко, дружелюбно и естественно, как спокойная преподавательница немецкого. Делай короткие паузы между фразами.",
             "uk-UA": "Говори дуже чітко, дружньо й природно, як спокійна викладачка німецької. Роби короткі паузи між фразами.",
         }[language]
         try:
