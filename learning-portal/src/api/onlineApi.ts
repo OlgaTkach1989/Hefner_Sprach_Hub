@@ -60,7 +60,7 @@ export const createAnnaSpeech = async (payload: {
   const response = await apiClient.post("/public/anna/tts/", payload, {
     responseType: "blob",
     headers: {
-      Accept: "audio/mpeg",
+      Accept: "audio/mpeg, audio/wav, audio/*, */*",
     },
   });
   return response.data;

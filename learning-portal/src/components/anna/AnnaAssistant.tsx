@@ -409,8 +409,8 @@ export const AnnaAssistant = ({ lessonTitle, level, mode = "course" }: AnnaAssis
       setVoiceStatus(getSpeechRecognition() ? "idle" : "unsupported")
       setVoiceMessage(
         locale === "de"
-          ? "Die natürliche Stimme ist gerade nicht verfügbar. Bitte versuche es gleich noch einmal."
-          : "Натуральный голос сейчас недоступен. Попробуй еще раз через минуту.",
+          ? "Die natürliche Stimme ist gerade nicht verfügbar. Prüfe Gemini API und Mikrofonzugriff."
+          : "Натуральный голос сейчас недоступен. Проверь Gemini API и доступ к микрофону.",
       )
     }
   }
