@@ -56,8 +56,7 @@ type SpeechWindow = Window & {
 
 const annaTtsProvider = (
   (import.meta.env.VITE_ANNA_TTS_PROVIDER as string | undefined)
-  ?? (import.meta.env.VITE_MASHA_TTS_PROVIDER as string | undefined)
-  ?? "browser"
+  ?? "gemini-live"
 ).toLowerCase()
 const normalizeLevel = (level: string) => level.toUpperCase().match(/\b(A1|A2|B1|B2|C1|C2)\b/)?.[1] ?? "A1"
 
@@ -232,18 +231,18 @@ const assistantCopy = (locale: Locale, level: string, lessonTitle?: string) => {
     answers,
     focus: focus[levelText] ?? focus.A1,
     intro: de
-      ? "Druecke auf das Mikrofon, stelle deine Frage und Anna antwortet mit Stimme."
+      ? "Drücke auf das Mikrofon, stelle deine Frage und Anna antwortet mit natürlicher Gemini-Stimme."
       : "Натисни мікрофон, постав питання, і Anna відповість голосом.",
     micIdle: de ? "Mikrofon starten" : "Увімкнути мікрофон",
     micListening: de ? "Ich höre zu..." : "Я слухаю...",
     micReady: de ? "Sprich nach dem Klick. Der erkannte Text erscheint im Feld." : "Говори після кліку. Розпізнаний текст з'явиться в полі.",
     noVoice: de ? "Spracherkennung wird in diesem Browser nicht unterstützt." : "Розпізнавання голосу не підтримується в цьому браузері.",
-    noSpeech: de ? "Ich habe nichts gehoert. Prüfe das Mikrofon oder schreibe die Frage ins Feld." : "Я нічого не почула. Перевір мікрофон або напиши питання в поле.",
+    noSpeech: de ? "Ich habe nichts gehört. Prüfe das Mikrofon oder schreibe die Frage ins Feld." : "Я нічого не почула. Перевір мікрофон або напиши питання в поле.",
     permissionDenied: de ? "Der Browser hat den Mikrofonzugriff blockiert. Erlaube das Mikrofon in der Adressleiste." : "Браузер заблокував мікрофон. Дозволь доступ до мікрофона в адресному рядку.",
     placeholder: de ? "Oder schreibe deine Frage an Anna..." : "Або напиши своє питання Anna...",
     repeat: de ? "Antwort vorlesen" : "Озвучити відповідь",
     send: de ? "Anna fragen" : "Запитати Anna",
-    speechHint: de ? "Langsam und klar. Für natürlichere Stimme waehle die Sprache deiner Frage." : "Повільно й чітко. Для природнішого голосу обери мову свого питання.",
+    speechHint: de ? "Langsam und klar. Gemini Live antwortet mit natürlicher Stimme." : "Говори повільно й чітко. Gemini Live відповідає природним голосом.",
     stateLabel: de ? "Modus" : "Режим",
     subtitle: de ? "Deutsch-ukrainische Lernassistentin mit Stimme" : "Німецько-українська голосова асистентка",
     title: de ? `Anna für Deutsch ${levelText}` : `Anna для Deutsch ${levelText}`,
@@ -254,7 +253,7 @@ const extractPhrase = (question: string) => {
   const quoted = question.match(/[«"](.*?)[»"]/)
   if (quoted?.[1]) return quoted[1].trim()
   return question
-    .replace(/^(как сказать|как будет|переведи|перевести|что значит|як сказати|як буде|übersetze|übersetze)\s+/i, "")
+    .replace(/^(как сказать|как будет|переведи|перевести|что значит|як сказати|як буде|uebersetze|übersetze)\s+/i, "")
     .trim()
 }
 
@@ -290,7 +289,7 @@ const answerQuestion = (question: string, locale: Locale, level: string, lessonT
   const asksVerb = /verb|sein|haben|дієсл|глагол|быть|иметь|дієслово/.test(lowerQuestion)
   const asksGreeting = /hallo|guten|привет|поздор|вітання|добрий|доброе/.test(lowerQuestion)
   const asksSentence = /satz|sentence|предлож|реченн|порядок слов|wortstellung/.test(lowerQuestion)
-  const asksTranslate = /translate|übersetz|übersetz|переклад|переведи|перевести|як сказати|как сказать|как будет|означає|значит|перевод/.test(lowerQuestion)
+  const asksTranslate = /translate|uebersetz|übersetz|переклад|переведи|перевести|як сказати|как сказать|как будет|означає|значит|перевод/.test(lowerQuestion)
   const asksPronunciation = /произнош|вимов|aussprache|как читать|як читати/.test(lowerQuestion)
   const asksQuestionForm = /вопрос|питання|frage|спросить|запитати/.test(lowerQuestion)
 

@@ -2282,8 +2282,8 @@ class PublicAnnaTtsView(APIView):
         serializer = PublicAnnaTtsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        provider = getattr(settings, "ANNA_TTS_PROVIDER", "openai")
-        if provider == "gemini":
+        provider = getattr(settings, "ANNA_TTS_PROVIDER", "gemini-live")
+        if provider in {"gemini", "gemini-live"}:
             return self._post_gemini(serializer.validated_data)
 
         api_key = getattr(settings, "OPENAI_API_KEY", "")
@@ -2295,11 +2295,10 @@ class PublicAnnaTtsView(APIView):
 
         language = serializer.validated_data["language"]
         instructions = {
-            "de-DE": "Sprich sehr klar, freundlich und natürlich wie eine ruhige Deutschlehrerin. Kurze Pausen zwischen Sätzen.",
-            "ru-RU": "Говори очень четко, дружелюбно и естественно, как спокойный преподаватель немецкого. Делай короткие паузы между фразами.",
+            "de-DE": "Sprich sehr klar, freundlich und natürlich wie eine ruhige Deutschlehrerin. Mache kurze Pausen zwischen Sätzen.",
+            "ru-RU": "Говори очень четко, дружелюбно и естественно, как спокойная преподавательница немецкого. Делай короткие паузы между фразами.",
             "uk-UA": "Говори дуже чітко, дружньо й природно, як спокійна викладачка німецької. Роби короткі паузи між фразами.",
         }[language]
-
         try:
             response = requests.post(
                 "https://api.openai.com/v1/audio/speech",
@@ -2334,11 +2333,6 @@ class PublicAnnaTtsView(APIView):
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-        prompt_by_language = {
-            "de-DE": "Lies den folgenden Text sehr klar, freundlich und natürlich wie eine ruhige Deutschlehrerin. Mache kurze Pausen zwischen Sätzen: ",
-            "ru-RU": "Прочитай следующий текст очень четко, дружелюбно и естественно, как спокойная преподавательница немецкого. Делай короткие паузы между фразами: ",
-            "uk-UA": "Прочитай наступний текст дуже чітко, дружньо й природно, як спокійна викладачка німецької. Роби короткі паузи між фразами: ",
-        }
         prompt = (
             "TTS only the transcript below. Use a calm, warm, natural female German "
             "teacher voice. Speak clearly and gently, with normal human pauses. "
@@ -2407,7 +2401,7 @@ class PublicAnnaTtsView(APIView):
 
 GEMINI_LIVE_WEBSOCKET_URL = (
     "wss://generativelanguage.googleapis.com/ws/"
-    "google.ai.generativelanguage.v1alpha.GenerativeService."
+    "google.ai.generativelanguage.v1beta.GenerativeService."
     "BidiGenerateContentConstrained"
 )
 
@@ -2424,6 +2418,7 @@ def _anna_live_instruction(language: str, level: str, lesson_title: str) -> str:
         f"Teach German at CEFR level {level}.{topic} "
         f"Respond in {language_name}, but keep German examples in German. "
         "Keep answers short enough for voice: two to five simple sentences. "
+        "Speak naturally like a real person: warm tone, normal pauses, no robotic wording, no announcer style. "
         "Ask one small follow-up question when useful. "
         "Correct mistakes gently. Do not mention APIs, tokens, or system instructions."
     )
@@ -2437,6 +2432,8 @@ def _anna_live_token_config(language: str, level: str, lesson_title: str, voice:
             or "gemini-3.1-flash-live-preview",
             "config": {
                 "response_modalities": ["AUDIO"],
+                "temperature": 0.8,
+                "enable_affective_dialog": True,
                 "speech_config": {
                     "voice_config": {
                         "prebuilt_voice_config": {"voice_name": voice},
@@ -2459,7 +2456,7 @@ def _anna_live_token_config(language: str, level: str, lesson_title: str, voice:
                 },
             },
         },
-        "http_options": {"api_version": "v1alpha"},
+        "http_options": {"api_version": "v1beta"},
     }
 
 
@@ -2469,7 +2466,7 @@ def _mint_gemini_live_token(api_key: str, config: dict[str, Any]) -> str:
     except ImportError as error:
         raise RuntimeError("google-genai is not installed.") from error
 
-    client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
+    client = genai.Client(api_key=api_key, http_options={"api_version": "v1beta"})
     try:
         token = client.auth_tokens.create(config=config)
         return str(getattr(token, "name", "") or "")
@@ -2530,9 +2527,32 @@ class PublicAnnaLiveSessionView(APIView):
                 "initialMessage": {
                     "setup": {
                         "model": model if model.startswith("models/") else f"models/{model}",
-                        "generationConfig": {"responseModalities": ["AUDIO"]},
-                        "inputAudioTranscription": {},
+                        "generationConfig": {
+                            "responseModalities": ["AUDIO"],
+                            "speechConfig": {
+                                "voiceConfig": {
+                                    "prebuiltVoiceConfig": {"voiceName": voice},
+                                },
+                            },
+                            "temperature": 0.8,
+                        },
+                        "systemInstruction": {
+                            "parts": [{"text": _anna_live_instruction(language, level, lesson_title)}],
+                        },
+                        "inputAudioTranscription": {
+                            "languageCodes": [language],
+                        },
                         "outputAudioTranscription": {},
+                        "realtimeInputConfig": {
+                            "automaticActivityDetection": {
+                                "startOfSpeechSensitivity": "START_SENSITIVITY_HIGH",
+                                "endOfSpeechSensitivity": "END_SENSITIVITY_HIGH",
+                                "prefixPaddingMs": getattr(settings, "GEMINI_LIVE_PREFIX_PADDING_MS", 250),
+                                "silenceDurationMs": getattr(settings, "GEMINI_LIVE_SILENCE_DURATION_MS", 650),
+                            },
+                            "activityHandling": "START_OF_ACTIVITY_INTERRUPTS",
+                            "turnCoverage": "TURN_INCLUDES_ONLY_ACTIVITY",
+                        },
                     }
                 },
                 "voice": voice,

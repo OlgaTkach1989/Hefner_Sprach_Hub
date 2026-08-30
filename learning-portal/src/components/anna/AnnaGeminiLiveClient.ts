@@ -27,6 +27,7 @@ type AudioWindow = Window & typeof globalThis & {
 const OUTPUT_SAMPLE_RATE = 24000
 const PLAYBACK_LEAD_SECONDS = 0.045
 const PLAYBACK_DRAIN_MS = 300
+const INPUT_MIME_TYPE = "audio/pcm;rate=16000"
 
 export class AnnaGeminiLiveClient {
   private audioContext: AudioContext | null = null
@@ -39,6 +40,7 @@ export class AnnaGeminiLiveClient {
   private nextPlaybackTime = 0
   private outputGain: GainNode | null = null
   private outputSources = new Set<AudioBufferSourceNode>()
+  private setupCompleteResolver: (() => void) | null = null
   private socket: WebSocket | null = null
   private turnCompleteTimer = 0
 
@@ -53,12 +55,38 @@ export class AnnaGeminiLiveClient {
   async connect(options: GeminiLiveOptions) {
     if (this.socket) return
     this.manualClose = false
-    this.callbacks.onStatus?.("Gemini Live wird verbunden")
+    this.callbacks.onStatus?.("Gemini Live verbindet sich")
     const session = await createAnnaLiveSession(options)
     await this.initializeAudio()
 
     const socket = new WebSocket(`${session.websocketUrl}?access_token=${encodeURIComponent(session.clientSecret)}`)
     this.socket = socket
+    const setupComplete = new Promise<void>((resolve, reject) => {
+      let timer = 0
+      const cleanup = () => {
+        window.clearTimeout(timer)
+        socket.removeEventListener("close", handleClose)
+        socket.removeEventListener("error", handleError)
+      }
+      const handleError = () => {
+        cleanup()
+        reject(new Error("Gemini Live setup failed"))
+      }
+      const handleClose = () => {
+        cleanup()
+        reject(new Error("Gemini Live disconnected during setup"))
+      }
+      timer = window.setTimeout(() => {
+        cleanup()
+        reject(new Error("Gemini Live setup timed out"))
+      }, 15000)
+      this.setupCompleteResolver = () => {
+        cleanup()
+        resolve()
+      }
+      socket.addEventListener("error", handleError)
+      socket.addEventListener("close", handleClose)
+    })
     socket.addEventListener("open", () => {
       socket.send(JSON.stringify(session.initialMessage))
       this.callbacks.onStatus?.(`${session.voice} · ${session.model}`)
@@ -91,6 +119,7 @@ export class AnnaGeminiLiveClient {
       socket.addEventListener("open", handleOpen)
       socket.addEventListener("error", handleError)
     })
+    await setupComplete
   }
 
   sendText(text: string) {
@@ -117,6 +146,7 @@ export class AnnaGeminiLiveClient {
     this.inputSource = null
     this.mediaStream = null
     this.outputGain = null
+    this.setupCompleteResolver = null
   }
 
   private async initializeAudio() {
@@ -155,7 +185,7 @@ export class AnnaGeminiLiveClient {
       realtimeInput: {
         audio: {
           data: bytesToBase64(bytes),
-          mimeType: "audio/pcm;rate=16000",
+          mimeType: INPUT_MIME_TYPE,
         },
       },
     }))
@@ -167,7 +197,11 @@ export class AnnaGeminiLiveClient {
     if (message.error) {
       throw new Error(String(message.error.message || message.error.status || "Gemini Live error"))
     }
-    if (message.setupComplete) this.callbacks.onStatus?.("Gemini Live bereit")
+    if (message.setupComplete) {
+      this.callbacks.onStatus?.("Gemini Live bereit")
+      this.setupCompleteResolver?.()
+      this.setupCompleteResolver = null
+    }
 
     const content = message.serverContent
     if (!content) return
