@@ -3,6 +3,7 @@ import { useMemo, useState } from "react"
 import { Link, Navigate, useParams } from "react-router-dom"
 
 import { AnnaAssistant } from "../components/anna/AnnaAssistant"
+import { useUiPreferences } from "../context/UiPreferencesContext"
 import logo from "../assets/hefner-sprach-hub-logo.jpeg"
 import { getCourseProgress, isLessonAccessible, isLessonCompleted, saveLessonProgress } from "../utils/courseProgress"
 import "./CourseLessonPage.css"
@@ -39,7 +40,110 @@ type LessonContent = {
 
 const videoUrls = {
   basics: "https://www.youtube-nocookie.com/embed/videoseries?list=PLF9mJC4RrjIhS4MMm0x72-qWEn1LRvPuW",
+  easyGermanB1Conflict: "https://www.youtube-nocookie.com/embed/lrrBNFqG1oI?start=28",
   grammar: "https://www.youtube-nocookie.com/embed/videoseries?list=PLF9mJC4RrjIgJFl418R-1xwz4KDX53XoN",
+}
+
+const lessonUiCopy = {
+  de: {
+    back: "Zurueck",
+    completed: "Ergebnis gespeichert",
+    completeLesson: "Lektion abschliessen",
+    completedLesson: "Lektion abgeschlossen",
+    completeTitle: "Lektion abschliessen",
+    completeText: "Sehen Sie das Video an, lesen Sie die Theorie und markieren Sie die Lektion als abgeschlossen.",
+    exam: "Prüfung",
+    fillAll: "Fuellen Sie alle Luecken aus",
+    finish: "Lektion abschliessen",
+    interactiveTask: "Interaktive Aufgabe",
+    lessonProgress: "Zum Kursfortschritt",
+    result: "Ergebnis",
+    selectAnswers: "Waehlen Sie die Antworten",
+    theory: "Video + Theorie",
+    practice: "Praktische Aufgabe",
+  },
+  uk: {
+    back: "Назад",
+    completed: "Результат збережено",
+    completeLesson: "Завершити урок",
+    completedLesson: "Урок пройдено",
+    completeTitle: "Завершення уроку",
+    completeText: "Після перегляду відео й теорії натисніть кнопку, щоб урок позначився як пройдений.",
+    exam: "Іспит",
+    fillAll: "Заповніть усі пропуски",
+    finish: "Завершити урок",
+    interactiveTask: "Інтерактивне завдання",
+    lessonProgress: "До шкали результату",
+    result: "Результат",
+    selectAnswers: "Виберіть відповіді",
+    theory: "Відео + теорія",
+    practice: "Практичне завдання",
+  },
+  ru: {
+    back: "Назад",
+    completed: "Результат сохранен",
+    completeLesson: "Завершить урок",
+    completedLesson: "Урок пройден",
+    completeTitle: "Завершение урока",
+    completeText: "После просмотра видео и теории нажмите кнопку, чтобы урок отметился как пройденный.",
+    exam: "Экзамен",
+    fillAll: "Заполните все пропуски",
+    finish: "Завершить урок",
+    interactiveTask: "Интерактивное задание",
+    lessonProgress: "К шкале результата",
+    result: "Результат",
+    selectAnswers: "Выберите ответы",
+    theory: "Видео + теория",
+    practice: "Практическое задание",
+  },
+} as const
+
+type LessonUiCopy = Record<keyof typeof lessonUiCopy.de, string>
+
+const localizedLessonUi = (locale: "de" | "uk" | "ru") => lessonUiCopy[locale] ?? lessonUiCopy.uk
+
+const ruStudyTranslations: Record<string, string> = {
+  "Українська": "Русский",
+  "Привітання, знайомство, займенники та sein": "Приветствие, знакомство, местоимения и sein",
+  "Вставте правильне слово в речення": "Вставьте правильное слово в предложение",
+  "Перевірка знань після першого модуля": "Проверка знаний после первого модуля",
+  "Відео, теорія, привітання, займенники та sein": "Видео, теория, приветствие, местоимения и sein",
+  "Добрий день, пані Хефнер!": "Добрый день, госпожа Хефнер!",
+  "Мене звати Олена.": "Меня зовут Олена.",
+  "Я з України.": "Я из Украины.",
+  "Я живу в Німеччині.": "Я живу в Германии.",
+  "Як сказати 'Добрий ранок' німецькою?": "Как сказать 'Доброе утро' по-немецки?",
+  "Яка форма sein підходить до ich?": "Какая форма sein подходит к ich?",
+  "Як перекласти 'Ich heiße Olena'?": "Как перевести 'Ich heiße Olena'?",
+  "Я живу в Олени": "Я живу у Олены",
+  "Мене звати Олена": "Меня зовут Олена",
+  "Я з України": "Я из Украины",
+}
+
+const deStudyTranslations: Record<string, string> = {
+  "Українська": "Bedeutung",
+  "Привітання, знайомство, займенники та sein": "Begrüßung, Vorstellung, Pronomen und sein",
+  "Вставте правильне слово в речення": "Setzen Sie das passende Wort in den Satz ein",
+  "Перевірка знань після першого модуля": "Wissenstest nach dem ersten Modul",
+  "Відео, теорія, привітання, займенники та sein": "Video, Theorie, Begrüßung, Pronomen und sein",
+  "Добрий день, пані Хефнер!": "Guten Tag, Frau Hefner!",
+  "Мене звати Олена.": "Mein Name ist Olena.",
+  "Я з України.": "Ich komme aus der Ukraine.",
+  "Я живу в Німеччині.": "Ich wohne in Deutschland.",
+  "Як сказати 'Добрий ранок' німецькою?": "Wie sagt man 'Guten Morgen' auf Deutsch?",
+  "Яка форма sein підходить до ich?": "Welche Form von sein passt zu ich?",
+  "Як перекласти 'Ich heiße Olena'?": "Was bedeutet 'Ich heisse Olena'?",
+  "Я живу в Олени": "Ich wohne bei Olena",
+  "Мене звати Олена": "Mein Name ist Olena",
+  "Я з України": "Ich komme aus der Ukraine",
+}
+
+const localizeStudyText = (value: string, locale: "de" | "uk" | "ru") => {
+  if (locale === "uk") return value
+  const [germanPart, translatedPart] = value.split("→").map((part) => part.trim())
+  if (locale === "de" && translatedPart) return germanPart
+  const dictionary = locale === "de" ? deStudyTranslations : ruStudyTranslations
+  return dictionary[value] ?? value
 }
 
 const getGermanSpeechText = (value: string) => {
@@ -316,6 +420,7 @@ const buildGenericLesson = (slug: string, lessonNumber: number): LessonContent =
   const level = levelFromSlug(slug)
   const moduleNumber = Math.max(1, Math.ceil(lessonNumber / 3))
   const lessonKindIndex = ((lessonNumber - 1) % 3) + 1
+  const isB1ConflictLesson = slug === "deutsch-b1" && lessonNumber === 7
   const moduleTopics: Record<number, string> = {
     1: "Einstieg und Wiederholung",
     2: "Grammatik und Satzbau",
@@ -330,9 +435,13 @@ const buildGenericLesson = (slug: string, lessonNumber: number): LessonContent =
     return {
       mode: "theory",
       moduleNumber,
-      title: `Deutsch ${level} · Modul ${moduleNumber} · Unterricht ${lessonNumber}: Video + Theorie`,
-      subtitle: `${topic}: Wortschatz, Beispiele und klare Erklärung`,
-      videoUrl: videoUrls.grammar,
+      title: isB1ConflictLesson
+        ? "Deutsch B1 · Unterricht 7: Konflikt im Alltag mit Easy German"
+        : `Deutsch ${level} · Modul ${moduleNumber} · Unterricht ${lessonNumber}: Video + Theorie`,
+      subtitle: isB1ConflictLesson
+        ? "Easy German: Alltagssituationen, kleine Konflikte und passende Reaktionen"
+        : `${topic}: Wortschatz, Beispiele und klare Erklärung`,
+      videoUrl: isB1ConflictLesson ? videoUrls.easyGermanB1Conflict : videoUrls.grammar,
       sections: [
         {
           kind: "list",
@@ -452,11 +561,15 @@ const FillPractice = ({
   lessonNumber,
   tasks,
   wordBank,
+  copy,
+  locale,
 }: {
   courseSlug: string
   lessonNumber: number
   tasks: FillTask[]
   wordBank: string[]
+  copy: LessonUiCopy
+  locale: "de" | "uk" | "ru"
 }) => {
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [saved, setSaved] = useState(false)
@@ -469,7 +582,7 @@ const FillPractice = ({
 
   return (
     <section className="course-lesson-section">
-      <h2>Interaktive Aufgabe · Інтерактивне завдання</h2>
+      <h2>{copy.interactiveTask}</h2>
       <div className="course-word-bank">
         {wordBank.map((word) => (
           <button key={word} type="button" onClick={() => speakGerman(word)}>
@@ -496,23 +609,35 @@ const FillPractice = ({
                   {task.sentenceAfter}
                 </SpeakableText>
               </span>
-              <small>{task.translation}</small>
+              <small>{localizeStudyText(task.translation, locale)}</small>
             </label>
           )
         })}
       </div>
       <div className="course-result-actions">
-        <strong className="course-score">{allAnswered ? `Результат: ${score}/${tasks.length}` : "Заполните все пропуски"}</strong>
+        <strong className="course-score">{allAnswered ? `${copy.result}: ${score}/${tasks.length}` : copy.fillAll}</strong>
         <button type="button" disabled={!allAnswered} onClick={saveResult}>
-          {saved ? "Результат сохранен" : "Завершить урок"}
+          {saved ? copy.completed : copy.finish}
         </button>
-        {saved ? <Link to={`/course/${courseSlug}`}>К шкале результата</Link> : null}
+        {saved ? <Link to={`/course/${courseSlug}`}>{copy.lessonProgress}</Link> : null}
       </div>
     </section>
   )
 }
 
-const ExamPractice = ({ courseSlug, lessonNumber, questions }: { courseSlug: string; lessonNumber: number; questions: ExamQuestion[] }) => {
+const ExamPractice = ({
+  copy,
+  courseSlug,
+  locale,
+  lessonNumber,
+  questions,
+}: {
+  copy: LessonUiCopy
+  courseSlug: string
+  locale: "de" | "uk" | "ru"
+  lessonNumber: number
+  questions: ExamQuestion[]
+}) => {
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [saved, setSaved] = useState(false)
   const allAnswered = questions.every((_, index) => Boolean(answers[index]))
@@ -524,11 +649,11 @@ const ExamPractice = ({ courseSlug, lessonNumber, questions }: { courseSlug: str
 
   return (
     <section className="course-lesson-section">
-      <h2>Prüfung · Екзамен</h2>
+      <h2>{copy.exam}</h2>
       <div className="course-exam-list">
         {questions.map((question, index) => (
           <fieldset className="course-exam-question" key={question.prompt}>
-            <legend>{index + 1}. {question.prompt}</legend>
+            <legend>{index + 1}. {localizeStudyText(question.prompt, locale)}</legend>
             {question.options.map((option) => {
               const selected = answers[index] === option
               const checked = Boolean(answers[index])
@@ -540,7 +665,7 @@ const ExamPractice = ({ courseSlug, lessonNumber, questions }: { courseSlug: str
                   type="button"
                   onClick={() => setAnswers((current) => ({ ...current, [index]: option }))}
                 >
-                  <SpeakableText value={option}>{option}</SpeakableText>
+                  <SpeakableText value={localizeStudyText(option, locale)}>{localizeStudyText(option, locale)}</SpeakableText>
                 </button>
               )
             })}
@@ -548,11 +673,11 @@ const ExamPractice = ({ courseSlug, lessonNumber, questions }: { courseSlug: str
         ))}
       </div>
       <div className="course-result-actions">
-        <strong className="course-score">{allAnswered ? `Екзамен: ${score}/${questions.length}` : "Выберите ответы"}</strong>
+        <strong className="course-score">{allAnswered ? `${copy.exam}: ${score}/${questions.length}` : copy.selectAnswers}</strong>
         <button type="button" disabled={!allAnswered} onClick={saveResult}>
-          {saved ? "Результат сохранен" : "Завершить урок"}
+          {saved ? copy.completed : copy.finish}
         </button>
-        {saved ? <Link to={`/course/${courseSlug}`}>К шкале результата</Link> : null}
+        {saved ? <Link to={`/course/${courseSlug}`}>{copy.lessonProgress}</Link> : null}
       </div>
     </section>
   )
@@ -560,6 +685,8 @@ const ExamPractice = ({ courseSlug, lessonNumber, questions }: { courseSlug: str
 
 export const CourseLessonPage = () => {
   const { slug = "deutsch-a1", lessonNumber = "1" } = useParams<{ slug: string; lessonNumber: string }>()
+  const { locale } = useUiPreferences()
+  const copy = localizedLessonUi(locale)
   const currentLessonNumber = Number(lessonNumber)
   const lesson = slug.includes("a1") ? a1Lessons[currentLessonNumber] : buildGenericLesson(slug, currentLessonNumber)
   const courseProgress = useMemo(() => getCourseProgress(slug), [slug])
@@ -568,10 +695,10 @@ export const CourseLessonPage = () => {
   const [theorySaved, setTheorySaved] = useState(lessonAlreadyCompleted)
   const modeLabel = useMemo(() => {
     if (!lesson) return ""
-    if (lesson.mode === "theory") return "Video + Theorie"
-    if (lesson.mode === "practice") return "Praktische Aufgabe"
-    return "Prüfung"
-  }, [lesson])
+    if (lesson.mode === "theory") return copy.theory
+    if (lesson.mode === "practice") return copy.practice
+    return copy.exam
+  }, [copy, lesson])
 
   if (!lesson || !Number.isInteger(currentLessonNumber) || currentLessonNumber < 1) {
     return <Navigate to={`/course/${slug}`} replace />
@@ -589,7 +716,7 @@ export const CourseLessonPage = () => {
   return (
     <main className="course-lesson-page">
       <nav className="course-lesson-topbar" aria-label="Lesson navigation">
-        <Link to={`/course/${slug}`}>← Zurück · Назад</Link>
+        <Link to={`/course/${slug}`}>← {copy.back}</Link>
         <img src={logo} alt="Hefner Sprach Hub" />
         <span>Modul {lesson.moduleNumber} · {modeLabel}</span>
       </nav>
@@ -597,7 +724,7 @@ export const CourseLessonPage = () => {
       <article className="course-lesson-sheet">
         <header>
           <h1>{lesson.title}</h1>
-          <p>{lesson.subtitle}</p>
+          <p>{localizeStudyText(lesson.subtitle, locale)}</p>
         </header>
 
         <AnnaAssistant level="A1" lessonTitle={lesson.title} mode="lesson" />
@@ -620,11 +747,11 @@ export const CourseLessonPage = () => {
                 <h2>{section.title}</h2>
                 <div className="course-lesson-table">
                   <div className="course-lesson-table__head">
-                    {section.headers.map((header) => <strong key={header}>{header}</strong>)}
+                    {section.headers.map((header) => <strong key={header}>{localizeStudyText(header, locale)}</strong>)}
                   </div>
                   {section.rows.map((row) => (
                     <div className="course-lesson-table__row" key={row.join("-")}>
-                      {row.map((cell) => <SpeakableText key={cell} value={cell} />)}
+                      {row.map((cell) => <SpeakableText key={cell} value={localizeStudyText(cell, locale)} />)}
                     </div>
                   ))}
                 </div>
@@ -637,7 +764,7 @@ export const CourseLessonPage = () => {
               <section className="course-lesson-section" key={section.title}>
                 <h2>{section.title}</h2>
                 <ul>
-                  {section.items.map((item) => <li key={item}><SpeakableText value={item}>{item}</SpeakableText></li>)}
+                  {section.items.map((item) => <li key={item}><SpeakableText value={localizeStudyText(item, locale)}>{localizeStudyText(item, locale)}</SpeakableText></li>)}
                 </ul>
               </section>
             )
@@ -647,7 +774,7 @@ export const CourseLessonPage = () => {
             <section className="course-lesson-section" key={section.title}>
               {section.title ? <h2>{section.title}</h2> : null}
               <div className="course-lesson-text">
-                {section.lines.map((line) => <p key={line}><SpeakableText value={line}>{line}</SpeakableText></p>)}
+                {section.lines.map((line) => <p key={line}><SpeakableText value={localizeStudyText(line, locale)}>{localizeStudyText(line, locale)}</SpeakableText></p>)}
               </div>
             </section>
           )
@@ -655,22 +782,22 @@ export const CourseLessonPage = () => {
 
         {lesson.mode === "theory" ? (
           <section className="course-complete-card">
-            <h2>Завершение урока</h2>
-            <p>После просмотра видео и теории нажмите кнопку, чтобы урок отметился как пройденный.</p>
+            <h2>{copy.completeTitle}</h2>
+            <p>{copy.completeText}</p>
             <button type="button" onClick={completeTheoryLesson}>
-              {theorySaved ? "Урок пройден" : "Завершить урок"}
+              {theorySaved ? copy.completedLesson : copy.completeLesson}
             </button>
-            {theorySaved ? <Link to={`/course/${slug}`}>К шкале результата</Link> : null}
+            {theorySaved ? <Link to={`/course/${slug}`}>{copy.lessonProgress}</Link> : null}
           </section>
         ) : null}
 
         {lesson.fillTasks && lesson.wordBank ? (
-          <FillPractice courseSlug={slug} lessonNumber={currentLessonNumber} tasks={lesson.fillTasks} wordBank={lesson.wordBank} />
+          <FillPractice copy={copy} courseSlug={slug} locale={locale} lessonNumber={currentLessonNumber} tasks={lesson.fillTasks} wordBank={lesson.wordBank} />
         ) : null}
-        {lesson.exam ? <ExamPractice courseSlug={slug} lessonNumber={currentLessonNumber} questions={lesson.exam} /> : null}
+        {lesson.exam ? <ExamPractice copy={copy} courseSlug={slug} locale={locale} lessonNumber={currentLessonNumber} questions={lesson.exam} /> : null}
 
         <footer className="course-lesson-actions">
-          <Link to={`/course/${slug}`}>К шкале результата</Link>
+          <Link to={`/course/${slug}`}>{copy.lessonProgress}</Link>
         </footer>
       </article>
     </main>

@@ -92,6 +92,13 @@ export const HomePage = () => {
       openLevel: "Zum Kurs",
       readyTitle: "Bereit anzufangen?",
       readyText: "Der erste Kurs wartet bereits auf Sie.",
+      welcomeHeading: "Willkommen bei",
+      welcomeParagraphs: [
+        "Mein Name ist Anna Hefner. Ich bin gebürtige Ukrainerin und lebe seit 26 Jahren in Deutschland.",
+        "Aus meiner langjährigen Arbeit in internationalen Banken weiß ich, wie herausfordernd der Berufsalltag sein kann, wenn die Sprache noch nicht sicher sitzt. Genau deshalb habe ich meine Sprachschule gegründet.",
+        "In meinen Kursen lernen Sie Deutsch Schritt für Schritt - mit Alphabet, Aussprache, Begrüßungen, Alltagssprache und beruflicher Kommunikation. Dabei sind mir Geduld, Verständnis und eine angenehme Lernatmosphäre besonders wichtig.",
+      ],
+      welcomeClosing: "Ich freue mich, dass Sie dabei sind. Willkommen im Kurs!",
     },
     uk: {
       title: "Hefner Sprach Hub - вивчення німецької",
@@ -109,6 +116,13 @@ export const HomePage = () => {
       openLevel: "До курсу",
       readyTitle: "Готові почати?",
       readyText: "Перший курс вже чекає на вас.",
+      welcomeHeading: "Ласкаво просимо до",
+      welcomeParagraphs: [
+        "Мене звати Анна Хефнер. Я народилась в Україні і вже 26 років живу в Німеччині.",
+        "Завдяки багаторічній роботі в міжнародних банках я добре знаю, наскільки складним може бути професійне життя, коли мова ще не достатньо впевнена. Саме тому я створила свою мовну школу.",
+        "На моїх курсах ми вчимо німецьку крок за кроком: алфавіт, вимову, привітання, повсякденну та професійну комунікацію. Для мене важливі терпіння, розуміння і приємна атмосфера навчання.",
+      ],
+      welcomeClosing: "Я рада, що ви тут. Ласкаво просимо на курс!",
     },
     ru: {
       title: "Hefner Sprach Hub - изучение немецкого",
@@ -126,6 +140,13 @@ export const HomePage = () => {
       openLevel: "К курсу",
       readyTitle: "Готовы начать?",
       readyText: "Первый курс уже ждет вас.",
+      welcomeHeading: "Добро пожаловать в",
+      welcomeParagraphs: [
+        "Меня зовут Анна Хефнер. Я родилась в Украине и уже 26 лет живу в Германии.",
+        "Благодаря многолетней работе в международных банках я хорошо понимаю, насколько сложной может быть профессиональная жизнь, когда язык еще не достаточно уверенный. Именно поэтому я создала свою языковую школу.",
+        "На моих курсах мы учим немецкий шаг за шагом: алфавит, произношение, приветствия, повседневную и профессиональную коммуникацию. Для меня важны терпение, понимание и приятная атмосфера обучения.",
+      ],
+      welcomeClosing: "Я рада, что вы здесь. Добро пожаловать на курс!",
     },
   } as const
   const copy = copyByLocale[locale]
@@ -169,11 +190,10 @@ export const HomePage = () => {
       <section className={styles.hero}>
         <div className={styles.divider} aria-hidden="true"><span /></div>
         <h1>
-          Willkommen bei
+          {copy.welcomeHeading}
           <span>Hefner Sprach Hub</span>
         </h1>
-          <p className={styles.heroDe}>Deutsch lernen - Schritt für Schritt</p>
-        <p className={styles.heroUa}>{isRussian ? "Учите немецкий - шаг за шагом" : "Вчимо німецьку - крок за кроком"}</p>
+        <p className={styles.heroDe}>{copy.heroLine}</p>
         <div className={styles.heroSmallDivider} aria-hidden="true" />
         <div className={styles.heroActions}>
           <Link to="/course/deutsch-a1" className={styles.primaryAction}>
@@ -197,33 +217,8 @@ export const HomePage = () => {
         </aside>
         <article className={styles.welcomeCopy}>
           <div className={styles.sectionTitle}>{copy.welcomeTitle}</div>
-          <p>
-            Mein Name ist <strong>Anna Hefner.</strong> Ich bin gebürtige Ukrainerin und lebe seit 26 Jahren in
-            Deutschland.
-          </p>
-          <p>
-            Aus meiner langjährigen Arbeit in internationalen Banken weiß ich, wie herausfordernd der Berufsalltag
-            sein kann, wenn die Sprache noch nicht sicher sitzt. Genau deshalb habe ich meine Sprachschule gegründet.
-          </p>
-          <p>
-            In meinen Kursen lernen Sie Deutsch Schritt für Schritt - mit Alphabet, Aussprache, Begrüßungen,
-            Alltagssprache und beruflicher Kommunikation. Dabei sind mir <strong>Geduld, Verständnis</strong> und
-            eine angenehme Lernatmosphäre besonders wichtig.
-          </p>
-          <em>Ich freue mich, dass Sie dabei sind. Willkommen im Kurs!</em>
-          <hr />
-          <p className={styles.translation}>
-            Мене звати <strong>Анна Хефнер.</strong> Я народилась в Україні і вже 26 років живу в Німеччині.
-            У моїх курсах ми вчимо німецьку крок за кроком - з алфавітом, вимовою, привітаннями,
-            повсякденною та професійною комунікацією. Ласкаво просимо!
-          </p>
-          {isRussian ? (
-            <p className={styles.translation}>
-              Меня зовут <strong>Анна Хефнер.</strong> Я родилась в Украине и уже 26 лет живу в Германии.
-              На моих курсах мы учим немецкий шаг за шагом - с алфавитом, произношением, приветствиями,
-              повседневной и профессиональной коммуникацией. Добро пожаловать!
-            </p>
-          ) : null}
+          {copy.welcomeParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          <em>{copy.welcomeClosing}</em>
         </article>
       </section>
 

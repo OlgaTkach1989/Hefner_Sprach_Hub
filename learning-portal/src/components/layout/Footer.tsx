@@ -2,9 +2,11 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 import logo from "../../assets/hefner-sprach-hub-logo.jpeg"
+import { useUiPreferences } from "../../context/UiPreferencesContext"
 import styles from "./Footer.module.css"
 
 export const Footer = () => {
+  const { locale } = useUiPreferences()
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -18,6 +20,8 @@ export const Footer = () => {
   const normalizedBasePath = appBasePath.endsWith("/") ? appBasePath.slice(0, -1) : appBasePath
   const homePath = `${normalizedBasePath || ""}/`
   const homeHashLink = (hash: string) => `${homePath}${hash}`
+  const coursesLabel = locale === "de" ? "Kurse" : locale === "ru" ? "Курсы" : "Курси"
+  const tagline = locale === "de" ? "Deutsch lernen" : locale === "ru" ? "Изучение немецкого" : "Вивчення німецької"
 
   return (
     <AnimatePresence>
@@ -36,7 +40,7 @@ export const Footer = () => {
               </a>
             </div>
             <nav className={styles.nav} aria-label="Main navigation">
-              <a href={homeHashLink("#levels")} className={styles.navLink}>Kurse</a>
+              <a href={homeHashLink("#levels")} className={styles.navLink}>{coursesLabel}</a>
               <a href="/course/deutsch-a1" className={styles.navLink}>A1</a>
               <a href="/course/deutsch-a2" className={styles.navLink}>A2</a>
               <a href="/course/deutsch-b1" className={styles.navLink}>B1</a>
@@ -46,7 +50,7 @@ export const Footer = () => {
             </nav>
 
             <div className={styles.contacts}>
-              <p>Deutsch lernen · Вивчення німецької</p>
+              <p>{tagline}</p>
               <a href="mailto:Annahefner79@yahoo.com">Annahefner79@yahoo.com</a>
               <a href="tel:+4915785553934">0049 15785553934</a>
             </div>

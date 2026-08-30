@@ -290,7 +290,7 @@ const answerQuestion = (question: string, locale: Locale, level: string, lessonT
   const asksVerb = /verb|sein|haben|дієсл|глагол|быть|иметь|дієслово/.test(lowerQuestion)
   const asksGreeting = /hallo|guten|привет|поздор|вітання|добрий|доброе/.test(lowerQuestion)
   const asksSentence = /satz|sentence|предлож|реченн|порядок слов|wortstellung/.test(lowerQuestion)
-  const asksTranslate = /translate|uebersetz|übersetz|переклад|переведи|перевести|як сказати|как сказать|как будет|означає|значит|перевод/.test(lowerQuestion)
+  const asksTranslate = /translate|übersetz|übersetz|переклад|переведи|перевести|як сказати|как сказать|как будет|означає|значит|перевод/.test(lowerQuestion)
   const asksPronunciation = /произнош|вимов|aussprache|как читать|як читати/.test(lowerQuestion)
   const asksQuestionForm = /вопрос|питання|frage|спросить|запитати/.test(lowerQuestion)
 
