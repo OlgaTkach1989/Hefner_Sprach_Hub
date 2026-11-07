@@ -43,7 +43,9 @@ jobs:
           mkdir -p learning-portal/dist/angebot
           cp -R business-card/landing/. learning-portal/dist/angebot/
           mkdir -p learning-portal/dist/visitenkarte
-          cp business-card/index.html business-card/card.css business-card/qr.svg business-card/landing/card-brand.css business-card/landing/logo.jpeg learning-portal/dist/visitenkarte/
+          cp business-card/index.html business-card/card.css business-card/qr.svg learning-portal/dist/visitenkarte/
+          mkdir -p learning-portal/dist/visitenkarte/landing
+          cp business-card/landing/card-brand.css business-card/landing/logo.jpeg learning-portal/dist/visitenkarte/landing/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
