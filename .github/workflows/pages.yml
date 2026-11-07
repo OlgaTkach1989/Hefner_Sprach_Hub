@@ -38,6 +38,11 @@ jobs:
           VITE_PUBLIC_BASE_PATH: /Hefner_Sprach_Hub/
         run: npm run build
 
+      - name: Add course information page
+        run: |
+          mkdir -p learning-portal/dist/angebot
+          cp -R business-card/landing/. learning-portal/dist/angebot/
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 

@@ -1,0 +1,21 @@
+.contact{padding:0 0 76px}
+.contact h2{margin-bottom:25px}
+.contact-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:12px}
+.contact-button{min-width:0;min-height:86px;padding:15px;display:flex;align-items:center;gap:12px;border:1px solid #d8d5ca;color:#18332e;text-decoration:none;background:#f5f3ec;transition:background .2s,border-color .2s}
+.contact-button:hover,.contact-button:focus-visible{background:#e9e6dc;border-color:#aa8752}
+.contact-button.primary{background:#14332e;color:#f8f4e9;border-color:#14332e}
+.contact-button.primary:hover,.contact-button.primary:focus-visible{background:#20463f}
+.contact-button>span:first-child{width:34px;height:34px;flex:none;border:1px solid #aa8752;border-radius:50%;display:grid;place-items:center;color:#aa8752;font-size:17px}
+.contact-button b,.contact-button small{display:block}
+.contact-button b{font-size:12px}
+.contact-button small{font-size:10px;opacity:.75;margin-top:5px;overflow-wrap:anywhere}
+.contact-button .arrow{margin-left:auto;color:#aa8752;font-size:15px;flex:none}
+.email-contact{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:start;gap:12px}
+.email-contact .contact-icon{width:34px;height:34px;display:grid;place-items:center;border:1px solid #aa8752;border-radius:50%;color:#aa8752;font-size:17px}
+.email-details{display:grid;grid-template-columns:minmax(0,1fr);min-width:0}
+.email-details>b{font-size:12px}
+.email-details>small{font-size:10px;opacity:.75;margin-top:5px;overflow-wrap:anywhere}
+.email-options{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.65fr);gap:7px;margin-top:10px;width:100%}
+.email-options a{min-width:0;min-height:30px;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-size:10px;font-weight:600;color:#f8f4e9;border:1px solid #aa8752;padding:5px 7px;text-decoration:none}
+.email-options a:hover,.email-options a:focus-visible{background:#d7bd8a;color:#18332e;outline:none}
+@media(max-width:680px){.contact{padding-bottom:52px}.contact-actions{grid-template-columns:minmax(0,1fr)}.contact-button{min-height:74px}.email-contact{min-height:94px}}
