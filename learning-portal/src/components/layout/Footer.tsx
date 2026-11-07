@@ -51,7 +51,7 @@ export const Footer = () => {
 
             <div className={styles.contacts}>
               <p>{tagline}</p>
-              <a href="mailto:Annahefner79@yahoo.com">Annahefner79@yahoo.com</a>
+              <a href="mailto:Annahefner79@gmail.com">Annahefner79@gmail.com</a>
               <a href="tel:+4915785553934">0049 15785553934</a>
             </div>
           </div>
