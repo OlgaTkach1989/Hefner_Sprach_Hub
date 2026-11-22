@@ -12,3 +12,10 @@
 .course-note{grid-area:course;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.4mm;border-top:.3mm solid #d7bd8a;padding-top:1mm;text-align:center;font-family:'Cormorant Garamond',serif}
 .course-note strong{color:#f3ce78;font-size:11pt;font-weight:600;letter-spacing:.055em;line-height:1}
 .course-note span{color:#fff;font-size:8.5pt;line-height:1.05}
+.brand-logo{box-shadow:0 0 .8mm #f3ce78cc,0 0 2mm #f3ce7866}
+.identity h1,.identity .person{ text-shadow:0 0 .6mm #ffe7a6,0 0 1.6mm #f3ce7880}
+.identity .person:before,.identity .person:after{box-shadow:0 0 1mm #f3ce78}
+.qr img{box-shadow:0 0 1mm #f3ce7880}
+.course-note{border-top:0}
+.course-note:before{content:"";position:absolute;top:0;left:0;right:0;height:.3mm;background:linear-gradient(90deg,transparent 0%,#f3ce78 14%,#fff1c1 50%,#f3ce78 86%,transparent 100%);box-shadow:0 0 1mm #f3ce78,0 0 2mm #f3ce7880}
+.course-note:after{content:"";position:absolute;top:-1.5mm;left:50%;transform:translateX(-50%);width:18mm;height:3mm;background:radial-gradient(ellipse,#fff9e7 0%,#f3ce7888 27%,#f3ce7822 55%,transparent 78%);filter:blur(.35mm);pointer-events:none}
