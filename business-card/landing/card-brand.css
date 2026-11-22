@@ -1,2 +1,14 @@
-.identity{display:grid;grid-template-columns:18mm 1fr;column-gap:2mm;align-items:center}.identity .brand-logo{grid-column:1;grid-row:1 / span 2;width:18mm;height:18mm;object-fit:cover;border-radius:2mm;border:0.25mm solid #d7bd8a}.identity .overline{grid-column:2;align-self:end}.identity h1{grid-column:2;grid-row:2;margin:1mm 0 0;font-size:20pt}.identity h1 i{font-size:.62em}.identity p,.identity .levels{grid-column:1 / span 2}.identity p{margin:2.5mm 0 1.5mm}.identity .levels{font-size:4.5pt}
-.identity h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;letter-spacing:-.04em}.identity h1 i{font-style:italic;word-spacing:.2em}.identity p,.identity .levels,.identity .overline,.qr strong,.qr span{font-family:'Cormorant Garamond',serif}.identity .overline{font-size:8pt;letter-spacing:.02em;color:#d7bd8a}.identity .levels{font-size:6pt;letter-spacing:0;color:#d7bd8a}.qr strong{font-size:8pt;letter-spacing:.02em;font-weight:600}.qr span{font-size:5.5pt;letter-spacing:.02em}
+.identity{grid-area:identity;display:grid;grid-template-columns:20mm minmax(0,1fr);align-items:center;gap:2mm;min-width:0;position:relative;z-index:1}
+.brand-logo{display:block;width:20mm;height:20mm;object-fit:cover;border:.3mm solid #d7bd8a;border-radius:3mm}
+.wordmark{min-width:0;text-align:center}
+.identity h1{margin:0;color:#f3ce78;font-family:'Cormorant Garamond',serif;font-size:12pt;font-style:italic;font-weight:600;line-height:1;letter-spacing:-.06em;white-space:nowrap}
+.identity .person{display:flex;align-items:center;gap:1mm;margin:1mm 0 0;color:#f3ce78;font-family:'Cormorant Garamond',serif;font-size:9pt;line-height:1;white-space:nowrap}
+.identity .person:before,.identity .person:after{content:"";height:.25mm;flex:1;background:#d7bd8a}
+.qr{grid-area:qr;width:21mm;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;align-self:center;color:#fff;text-decoration:none;text-align:center}
+.qr img{width:20mm;height:20mm;background:#fff;padding:1mm}
+.qr strong{font-family:'DM Sans',sans-serif;font-size:6pt;letter-spacing:.08em;text-transform:uppercase;color:#f3ce78;margin-top:1mm}
+.qr span{font-family:'DM Sans',sans-serif;font-size:4pt;letter-spacing:.025em;text-transform:uppercase;margin-top:.3mm;white-space:nowrap}
+.slogan{grid-area:slogan;position:relative;z-index:1;align-self:center;margin:0;color:#fff;font-family:'Cormorant Garamond',serif;font-size:10pt;font-weight:600;line-height:1.02}
+.course-note{grid-area:course;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.4mm;border-top:.3mm solid #d7bd8a;padding-top:1mm;text-align:center;font-family:'Cormorant Garamond',serif}
+.course-note strong{color:#f3ce78;font-size:11pt;font-weight:600;letter-spacing:.055em;line-height:1}
+.course-note span{color:#fff;font-size:8.5pt;line-height:1.05}
